@@ -21,7 +21,6 @@ produced them.
 | [`api.md`](api.md) | The shape of `defineBlock` through compile and render, and where UI hints live | draft |
 | [`authoring-flows.md`](authoring-flows.md) | What an author does step by step, and the failure modes each flow carries | draft |
 | [`studio.md`](studio.md) | How the self-hosted canvas, cross-iframe drag, and preview are architected | draft |
-| [`superseded.md`](superseded.md) | Names a decision replaced, kept permanently so old branches stay legible | reference |
 
 `draft` means the shape is expected to move. `stable` means changing it is a design change,
 not an edit.
@@ -40,9 +39,10 @@ content are deliberately not here:
 ## Keeping them honest
 
 Documentation rots differently from code: a stale sentence compiles, passes every lint, and
-still reads as authoritative. Four gates run against these files on every commit — links and
-anchors resolve, superseded terminology is rejected, no reference identifies a codebase that
-is not this one, and a document that trails something it links to gets flagged for re-reading.
+still reads as authoritative. Gates run against these files on every commit — links and
+anchors resolve, no claim rests on a corpus a reader cannot open, nothing reaches back for a
+name that no longer exists, no reference identifies a codebase that is not this one, and a
+document that trails something it links to gets flagged for re-reading.
 
 [`.claude/rules/documentation.md`](../.claude/rules/documentation.md) covers what the gates
 cannot: which document holds what, and the rule that a decision changes prose in *every*

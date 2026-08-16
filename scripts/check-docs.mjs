@@ -18,6 +18,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SCAN_ROOTS = [
   "docs",
   ".claude/rules",
+  ".claude/skills",
   "README.md",
   "AGENTS.md",
   "CONTRIBUTING.md",

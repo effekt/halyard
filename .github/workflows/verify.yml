@@ -33,9 +33,6 @@ jobs:
       - name: Documentation structure
         run: node scripts/check-docs.mjs --check
 
-      - name: Superseded terminology
-        run: node scripts/check-superseded.mjs --check
-
       # The denylist is gitignored — publishing it would defeat it — so this run catches
       # machine paths only. VENDOR_TERMS supplies the terms when the secret is configured.
       - name: Vendor references
@@ -46,6 +43,9 @@ jobs:
           node scripts/check-no-vendor-refs.mjs --check
         env:
           VENDOR_TERMS: ${{ secrets.VENDOR_TERMS }}
+
+      - name: Prose
+        run: node scripts/check-prose.mjs --check
 
       - name: Pinned dependencies
         run: node scripts/check-pinned-deps.mjs --check

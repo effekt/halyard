@@ -66,29 +66,37 @@ a database.
 
 ## What it refuses
 
-As much a part of the design as what it does. These are permanent, not deferred:
+Three things are out of scope by construction rather than by backlog. Each is stated with the
+reason, because a boundary nobody can re-derive is one the next maintainer has to take on
+faith — and this one has a reason you can check.
 
-- **Executable content.** No author-supplied JavaScript, no CSS blocks, no expression
-  language, no binding strings evaluated at render. An artifact is inert data validated
-  against a schema.
-- **Structured data that is not a page.** Rows consumed through typed transforms are a
-  database, not a CMS.
-- **Templates that generate many routes from bound state.** Those stay coded routes;
-  repetition belongs in components, which are reviewed as code.
+| Refused | Because |
+|---|---|
+| **Executable content** — author-supplied JavaScript, CSS blocks, an expression language, binding strings evaluated at render | Every one of them lets a person who cannot assess a security or performance risk ship one to production. Repetition and logic belong in components, which are reviewed as code. Accepting any of them means an artifact is no longer inert data, and the rendering and caching model rests on it being inert. |
+| **Structured data that is not a page** — rows consumed through typed transforms | That is a database with an editing UI, and a good one is a different product with different primitives. Building both makes each worse. |
+| **Templates that generate many routes from bound state** | The route table stops being enumerable, so nothing can tell you what URLs exist. Those stay coded routes. |
+
+The first is load-bearing — much of the architecture assumes it and would need redesigning
+without it. The second and third are scope, not physics: if you can show a design that keeps
+artifacts enumerable and inert, that is a conversation worth having in an issue.
 
 ## Status
 
 **Design, not software.** There is no implementation yet — deliberately.
 
-The architecture is settled and has been through an adversarial review that falsified
-several of its early claims. What exists today is the reasoning, the constraints, and the
-tooling that will hold an implementation to them. The gates that check documentation,
-terminology, and dependency pinning already run on every commit. The ones that check code
-are waiting for code.
+What exists is the architecture, the decisions and the alternatives each one beat, and the
+tooling that will hold an implementation to them. It has been through one adversarial review
+that falsified several of its early claims, which is a reason to trust it more than an
+unreviewed design and not a reason to treat it as finished — [the open
+questions](https://github.com/effekt/halyard/issues/15) are the parts known to still be wrong.
 
-The first milestone is not a feature. It is migrating two or three real pages with no editor
-at all, because that is the cheapest way to find out whether curated blocks are actually
-cheaper than the free-form authoring they replace.
+The gates that check documentation, terminology, and dependency pinning run on every commit.
+The ones that check code are waiting for code.
+
+The [roadmap](https://github.com/effekt/halyard/issues/14) sequences the build. Its first
+milestone is deliberately not a feature — it exists to falsify the project's own thesis, by
+authoring real pages against real blocks with no editor at all, before anything expensive is
+built on top of that assumption.
 
 | Read | For |
 |---|---|

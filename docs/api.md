@@ -161,7 +161,7 @@ ui: { fields: { bullets: { rowLabel: "heading", min: 1, max: 4 } } }
 
 ## Data lifecycle is a field hint, not a block flag
 
-Rejected: block-level `data: "static" | "request"` <!-- superseded-ok --> — all-or-nothing, so a hero with a
+Rejected: block-level `data: "static" | "request"` — all-or-nothing, so a hero with a
 static headline and a live price could not be expressed without forking the block. `data` is
 a field hint instead, same mechanism as `label` or `control`, resolved by path and validated
 at `createRegistry()`. See

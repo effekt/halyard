@@ -98,6 +98,8 @@ and idle until there is code, which is the order that keeps them honest.
 | `dependency-cruiser` | package boundaries — `core` stays portable |
 | `type-coverage` | ≥99% typed |
 | `publint` · `attw` | the published package resolves correctly |
+| `check-docs.mjs` | links and anchors resolve; every document is in the index |
+| `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 
 `pnpm verify` runs the lot.
 
@@ -112,9 +114,15 @@ Contributors work in other codebases, most of them closed. Nothing from those be
 not employer or client names, not internal application or package names, not product-specific
 routes, model names, or page titles, and not absolute paths from a developer's machine.
 
-**Keep the observation, drop the source.** A measurement is publishable — "in one production
-corpus, 98.9% of entries were data models rather than pages" is a useful finding and stands
-on its own. Where it came from adds nothing and is rarely yours to share.
+**Keep the conclusion, drop the measurement.** Anonymising a statistic is not enough. "In one
+audited corpus, most entries were data models rather than pages" names no one, and a reader
+still cannot open that corpus, test the claim, or argue with it — it reads as authority while
+supplying none, and it dates the document to one sample taken once.
+
+What a private codebase gives you is a thing you now *know*. Publish that, argued from why it
+holds: a visual CMS accumulates structured data models faster than pages because rows are
+cheap to add and a page needs a route. That claim stands on its own reasoning, and a reader
+who disagrees has something to push against.
 
 `scripts/check-no-vendor-refs.mjs` enforces this on every agent edit and at pre-commit. Its
 term list lives in `scripts/vendor-terms.txt`, which is gitignored — a published denylist

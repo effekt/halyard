@@ -17,14 +17,14 @@ const CODE_GATES = [
 /** Prose carries vendor references as readily as code, so docs are checked too. */
 const UNIVERSAL_GATES = [["node", ["scripts/check-no-vendor-refs.mjs", "--check"]]];
 
+/** Judged against the file alone, so it runs per-file and reports the exact line. */
+const PER_FILE_PROSE_GATES = [["node", ["scripts/check-prose.mjs", "--check"]]];
+
 /**
- * Documentation gates take no file argument — a link is only broken relative to every other
- * document, and a superseded term is only findable against the whole corpus.
+ * A link is only broken relative to every other document, so this one takes no file argument
+ * and runs against the whole corpus.
  */
-const PROSE_GATES = [
-  ["node", ["scripts/check-docs.mjs", "--check"]],
-  ["node", ["scripts/check-superseded.mjs", "--check"]],
-];
+const PROSE_GATES = [["node", ["scripts/check-docs.mjs", "--check"]]];
 
 const payload = await new Promise((resolve) => {
   let raw = "";
@@ -51,6 +51,7 @@ const isManifest = filePath.endsWith("package.json");
 const perFile = [
   ...(isCode ? CODE_GATES : []),
   ...(isManifest ? [["node", ["scripts/check-pinned-deps.mjs", "--check"]]] : []),
+  ...(isProse ? PER_FILE_PROSE_GATES : []),
   ...(isCode || isProse ? UNIVERSAL_GATES : []),
 ];
 
