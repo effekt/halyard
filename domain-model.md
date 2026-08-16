@@ -308,7 +308,7 @@ forgotten the way a deep object copy can.
 
 Two things that are easy to conflate and behave oppositely.
 
-| | Layout | Template |
+| Behaviour | Layout | Template |
 |---|---|---|
 | Relationship | Referenced by pages | Copied into a new page |
 | Editing it | Propagates to every page using it | Affects nothing already created |
