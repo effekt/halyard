@@ -18,17 +18,19 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      # Installed standalone rather than through the workspace: there is no lockfile yet,
-      # and commitlint is the one dev tool needed before any package exists. Versions are
-      # exact and must match the catalog block in pnpm-workspace.yaml.
-      - name: Install commitlint
-        run: npm install --no-save --no-package-lock
-          @commitlint/cli@21.2.2
-          @commitlint/config-conventional@21.2.2
+      - uses: pnpm/action-setup@v4
+
+      # Installed with pnpm, not npm: devDependencies use the `catalog:` protocol, which
+      # npm rejects outright ("Unsupported URL Type"). No --frozen-lockfile and no
+      # `cache: pnpm` until a lockfile exists — both require one. --ignore-scripts because
+      # nothing here needs to build, and lifecycle scripts are the supply-chain surface
+      # .claude/rules/dependencies.md exists to keep small.
+      - name: Install
+        run: pnpm install --no-frozen-lockfile --ignore-scripts
 
       - name: Lint commits in this PR
         run: >
-          npx commitlint
+          pnpm exec commitlint
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
           --verbose
