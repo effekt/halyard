@@ -15,7 +15,8 @@ jobs:
   # anything to check until the first package lands — see the Status section in README.md.
   #
   # check-schema-depth and check-single-export are absent despite also being scripts:
-  # both import `typescript`, so they need an install like the code gates do.
+  # both import `typescript`, so they run in the code job below alongside the gates
+  # that need node_modules.
   #
   # The code gates (biome, typecheck, test, boundaries) join this file in the commit that
   # adds the first package, together with the lockfile they need. They are deliberately
@@ -67,3 +68,47 @@ jobs:
       - name: Stale documents
         run: node scripts/check-stale-docs.mjs
         continue-on-error: true
+
+  # Everything needing an install. Absent while no package existed; a lockfile, a demo
+  # application that builds, and TypeScript that typechecks all arrived without this
+  # job arriving with them, so main could have broken while CI stayed green.
+  code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint and format
+        run: pnpm exec biome check .
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: One unit per file
+        run: node scripts/check-single-export.mjs --check
+
+      - name: Schema depth
+        run: node scripts/check-schema-depth.mjs --check
+
+      - name: Package boundaries
+        run: pnpm boundaries
+
+      - name: Duplication
+        run: pnpm dupes
+
+      - name: Dead code
+        run: pnpm knip
