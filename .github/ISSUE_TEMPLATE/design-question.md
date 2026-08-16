@@ -2,15 +2,15 @@
 name: Design question
 about: Disagree with or question something in the settled design
 title: ""
-labels: design
+labels: design-question
 ---
 
 ## Which question does this concern?
 
-Cite a number from
-[`docs/design/05-open-questions.md`](../../docs/design/05-open-questions.md), or the section
-of [`docs/decisions.md`](../../docs/decisions.md) you think was settled wrong. If neither
-fits, say what you think is missing a number.
+Link an existing issue labelled `design-question` — they are indexed in
+[Open design questions](https://github.com/effekt/halyard/issues/15) — or the section of
+[`docs/decisions.md`](../../docs/decisions.md) you think was settled wrong. If neither fits,
+say what you think is missing entirely.
 
 ## Your take
 
@@ -19,5 +19,6 @@ with.
 
 ## Cost of deciding it late
 
-Optional. The existing entries note what each open question blocks and what deciding it late
-would cost — if you have a view on that, include it.
+What does it cost if the opposite choice is made and turns out wrong — a migration, a
+breaking change to a stored format, or nothing much? The cost asymmetry is what actually
+decides most of these, so this is the most useful part of the issue.

@@ -36,7 +36,7 @@ Compiling that document freezes what's static and leaves the rest as a typed hol
 artifact never carries the schema, only the outcome of validating against it:
 
 ```ts
-// one node of the compiled Artifact — see docs/design/01-domain-model.md#artifact
+// one node of the compiled Artifact — see docs/domain-model.md
 {
   id: "n1",
   block: "Hero",
@@ -94,8 +94,9 @@ cheaper than the free-form authoring they replace.
 |---|---|
 | [`docs/architecture.md`](docs/architecture.md) | How the pieces fit |
 | [`docs/decisions.md`](docs/decisions.md) | What is settled, and what was rejected |
-| [`docs/design/`](docs/design/) | The model, the API shape, the studio, the roadmap |
-| [`docs/design/05-open-questions.md`](docs/design/05-open-questions.md) | What is still undecided — the best place to disagree |
+| [`docs/domain-model.md`](docs/domain-model.md) | Every entity and what owns it |
+| [`docs/api.md`](docs/api.md) | The API shape |
+| [Open design questions](https://github.com/effekt/halyard/issues/15) | What is still undecided — the best place to disagree |
 
 `pnpm catalog` prints every document with a one-line summary.
 

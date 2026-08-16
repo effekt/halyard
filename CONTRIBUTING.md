@@ -37,13 +37,12 @@ changes what's valuable:
 **Disagreement about the design is the most valuable contribution there is.** The
 architecture has already been through one adversarial review that falsified several of its
 early claims. It should survive more of that before code gets written on top of it. A
-convincing objection to something in `docs/design/` is worth more right now than any patch.
+convincing objection to something in `docs/` is worth more right now than any patch.
 
-**Cite an open question by number.** Numbers in
-[`docs/design/05-open-questions.md`](docs/design/05-open-questions.md) are stable identifiers
-— a resolved question keeps its number, a retired one leaves a gap, and other documents cite
-those numbers directly. Open an issue against a number, or send a PR proposing a resolution
-against that section.
+**Argue in an open question.** They live as issues labelled `design-question`, indexed in
+[Open design questions](https://github.com/effekt/halyard/issues/15). Each records what
+deciding it late would cost, because that is usually what settles it. Comment on one, or open
+a new one with the Design question template.
 
 **A settled decision can be reopened.** [`docs/decisions.md`](docs/decisions.md) holds what's
 already settled and why. If you think one was settled wrong, argue it — reopening a decision

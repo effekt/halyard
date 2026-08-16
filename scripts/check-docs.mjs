@@ -24,8 +24,8 @@ const SCAN_ROOTS = [
   "SECURITY.md",
   "CODE_OF_CONDUCT.md",
 ];
-const INDEX = join(ROOT, "docs/design/README.md");
-const INDEXED_DIR = join(ROOT, "docs/design");
+const INDEX = join(ROOT, "docs/README.md");
+const INDEXED_DIR = join(ROOT, "docs");
 
 /**
  * GitHub's heading-to-anchor rule. Each space becomes one hyphen and runs are *not*
@@ -113,7 +113,7 @@ if (existsSync(INDEX)) {
     .sort();
   for (const name of onDisk) {
     if (!indexText.includes(`(${name})`)) {
-      problems.push(`docs/design/README.md  missing from the index: ${name}`);
+      problems.push(`docs/README.md  missing from the index: ${name}`);
     }
   }
 }

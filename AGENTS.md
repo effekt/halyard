@@ -152,4 +152,4 @@ the governance, the gates above, and an architecture that has survived an advers
 That makes the invariants unusually cheap to honour and unusually easy to lose — there is no
 existing code pulling the first commit toward the right shape. Read `docs/architecture.md`
 for the model and `docs/decisions.md` for what has already been settled and why, and treat
-`docs/design/05-open-questions.md` as the list of things you may not silently decide.
+the open issues labelled `design-question` as the list of things you may not silently decide.

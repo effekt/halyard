@@ -23,8 +23,8 @@ open, and a superseded name scattered across nine files. Everything was internal
 | Document | Holds | Test |
 |---|---|---|
 | [`docs/decisions.md`](../../docs/decisions.md) | Settled choices and *why* | Would someone re-litigate this? Then it belongs here |
-| `docs/design/05-open-questions.md` | Undecided, with the cost of deciding late | Numbered; numbers are stable identifiers cited elsewhere |
-| `docs/design/*` | Being settled — allowed to be wrong | Graduates to `decisions.md` when it stops moving |
+| GitHub issues labelled `design-question` | Undecided, with the cost of deciding late | Discussable, linkable, and closable — a document cannot be any of those |
+| `docs/domain-model.md`, `docs/api.md` | The contracts an agent writes code against | Would an implementer need this open beside them? |
 | `docs/architecture.md` | How the system works now | Never aspirational, never historical |
 | `.claude/rules/*` | How to work in the repo | Judgment a gate cannot encode |
 
@@ -90,7 +90,7 @@ that adds a file and goes stale between regenerations; frontmatter lives beside 
 it describes, so there is nothing separate to drift. `pnpm map:docs` writes the JSON form
 into the gitignored `.repomix/`.
 
-The `docs/design/README.md` table is a separate, hand-written reading order — **gate:**
+The `docs/README.md` table is a separate, hand-written reading order — **gate:**
 `check-docs.mjs` verifies every file appears in it; the accuracy of a status line is on you.
 
 ### A document that trails what it depends on gets reviewed
@@ -118,5 +118,5 @@ came from. See [the repository section in `AGENTS.md`](../../AGENTS.md). **Gate:
 - [ ] A rename added a row to `docs/superseded.md`
 - [ ] Deliberate historical references are marked, not left to trip the gate
 - [ ] New links and anchors resolve
-- [ ] A new `docs/design/` file is in the index with an honest status
+- [ ] A new `docs/` file is in `docs/README.md` with an honest status
 - [ ] A settled decision graduated to `decisions.md` rather than living in two places
