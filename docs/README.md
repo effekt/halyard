@@ -15,6 +15,7 @@ produced them.
 
 | Read | For | Status |
 |---|---|---|
+| [`environment.md`](environment.md) | The plugins, skills and toolchain this repository is worked on with, and how to reproduce them | stable |
 | [`architecture.md`](architecture.md) | How the contract/content/output split and the compile-at-publish pipeline fit together. **Start here.** | stable |
 | [`decisions.md`](decisions.md) | Settled choices and the reasoning behind them, so they are not re-litigated | stable |
 | [`domain-model.md`](domain-model.md) | Every entity, what owns it, and where it lives across the three layers | draft |
