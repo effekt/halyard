@@ -68,8 +68,8 @@ The serious counter-proposal is to use each validator's *sanctioned* metadata sl
 field they describe. It loses on three counts.
 
 **1. Zod's registry is keyed by object identity, not by path.** A schema constant carries
-one set of metadata everywhere it is referenced. Halyard's own
-[schema rule](https://github.com/effekt/halyard/blob/main/.claude/rules/block-schemas.md) *requires* extracting shared
+one set of metadata everywhere it is referenced. Nubbin's own
+[schema rule](https://github.com/effekt/nubbin/blob/main/.claude/rules/block-schemas.md) *requires* extracting shared
 sub-schemas — `ctaSchema` imported by five blocks is the DRY win the rule exists to
 produce. Identity-keyed metadata is directly hostile to that: the shared schema cannot
 carry a per-use label, and the workaround is to re-wrap at every use site, which
@@ -91,7 +91,7 @@ component registry **by string name** — the coupling that would stop blocks be
 
 The pattern across mature systems predicts this: those that **own** their schema format
 embed hints (Sanity, Storyblok, Formily); those whose format is **foreign and portable**
-keep them separate (rjsf, JSON Forms, Contentful's `EditorInterface`). Halyard's format is
+keep them separate (rjsf, JSON Forms, Contentful's `EditorInterface`). Nubbin's format is
 foreign *and* doubles as runtime validation of untrusted props.
 
 ## Introspection is still needed, and is per-validator
@@ -124,7 +124,7 @@ arktype adapters follow with explicit capability-gating rather than silent degra
 The known failure of parallel UI structures is silent drift — rjsf's `uiSchema` mirrors the
 schema positionally and nothing checks that a key refers to a real property.
 
-Meshery solved this with a test (`TestFormSchemasAreSubsetOfCanonical`). **Halyard can do
+Meshery solved this with a test (`TestFormSchemasAreSubsetOfCanonical`). **Nubbin can do
 better, at compile time**, because the schema is TypeScript rather than JSON:
 
 ```ts
@@ -137,7 +137,7 @@ A CI check covers what types cannot: that every block has a resolvable control f
 prop, so a schema change cannot leave a field un-editable.
 
 JSON Forms issue #2338 asks for exactly this — a type-safe programmatic builder instead of
-hand-written JSON — which Halyard gets for free by deriving from zod.
+hand-written JSON — which Nubbin gets for free by deriving from zod.
 
 ## Control resolution: ranked testers, not a keyed map
 
@@ -255,7 +255,7 @@ about the layer changes.
 ```
 Artifact           serializable data only — an image URL or asset id, never a node
   ↓
-Halyard block      app-level. Renders <Image> with the app's own pipeline
+Nubbin block      app-level. Renders <Image> with the app's own pipeline
   ↓
 Design system      pure and framework-agnostic. Receives the rendered node
 ```
@@ -409,7 +409,7 @@ export default async function Page({ params }) {
 Meshery declares its RJSF types locally rather than importing from `@rjsf/utils`, so that
 consumers wanting only the JSON shape do not pull a UI runtime. Same rule here: **block
 definitions and the compiler must not drag the editor into a consumer's production bundle.**
-`ui` is plain serializable data in `@effekt/halyard`; the controls that read it live in the
+`ui` is plain serializable data in `@effekt/nubbin`; the controls that read it live in the
 studio.
 
 ## Failure modes designed against

@@ -57,21 +57,21 @@ most of its components, and several require it outright — a grid needing a
 consumer-supplied `desktopGridClassName` is the ordinary case, not the exception. The closed
 union belongs to the **schema**, not to the design system's own props.
 
-## Halyard ships no CSS and owns no tokens
+## Nubbin ships no CSS and owns no tokens
 
-Unchanged, and the reason is unchanged: Halyard passes `space: "lg"` through as data and
+Unchanged, and the reason is unchanged: Nubbin passes `space: "lg"` through as data and
 the block resolves it with the consumer's own system.
 
 What the earlier draft got wrong was implying no token registry exists. A mature design system runs a
 substantial one — `tokens/figma.tokens.json` in DTCG format, compiled by Style Dictionary
 into a Tailwind `@theme` block and a typed `dist/tokens.ts` with a `cssVar()` helper, with
 `noHexColors` lint-enforced. That registry is upstream infrastructure the block's enums
-depend on. Halyard simply does not *own* or *read* it.
+depend on. Nubbin simply does not *own* or *read* it.
 
 Nor is the discipline perfect in practice, which is worth knowing rather than pretending
 otherwise: class maps are routinely written as hand-literal utility strings rather than
 token references, so nothing keeps them in sync with the registry, and components hardcode
-raw hex where the scale has a gap. A design system with gaps is the normal case, and Halyard
+raw hex where the scale has a gap. A design system with gaps is the normal case, and Nubbin
 is unaffected by them because it never resolves the value.
 
 ## Name intent, not style — in the schema
@@ -145,7 +145,7 @@ schema: z.object({ image: z.object({ url: z.string(), alt: z.string() }) })
 ```
 
 Two consequences to accept rather than paper over: an image-bearing block necessarily
-carries an **open** string field, so not every prop is enum-valued; and Halyard's asset flow
+carries an **open** string field, so not every prop is enum-valued; and Nubbin's asset flow
 must feed the consumer's image pipeline, or the optimisation the `ReactNode` slot rule
 exists to protect is lost anyway.
 
@@ -156,11 +156,11 @@ space: responsive(z.enum(["none", "sm", "md", "lg"]))   // "md" | { base: "md", 
 ```
 
 A schema helper that widens a value into a sparse, mobile-first per-breakpoint record. No
-CSS involved; Halyard learns only that the object may carry keys the consumer named.
+CSS involved; Nubbin learns only that the object may carry keys the consumer named.
 
 ## Consequences
 
-- Consistency across blocks is the consumer's design system's job. Halyard cannot enforce
+- Consistency across blocks is the consumer's design system's job. Nubbin cannot enforce
   it without knowing what `"lg"` means.
 - The studio renders the consumer's real app in an iframe, so layout previews are correct
   for free.

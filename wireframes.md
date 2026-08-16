@@ -52,7 +52,7 @@ only; the canvas iframe reloads after debounce/blur, never per keystroke.
 
 **Narrow widths.** Below 900px: Sidebar and Inspector collapse to overlay drawers, each
 triggered by a toolbar icon and dismissed by Escape or an outside click; Canvas takes full
-width underneath. Below 600px: the studio renders a static notice — "Halyard works best at
+width underneath. Below 600px: the studio renders a static notice — "Nubbin works best at
 900px or wider" — with the canvas still visible read-only, since the editing surface is
 built for a desk, not a phone, and no attempt is made to make drag-and-drop work smaller.
 
@@ -139,7 +139,7 @@ rendering the field when the discriminant changes.
 
 | State | Visual | Trigger |
 |---|---|---|
-| Hover | 1px neutral outline + floating tag (block name) at top-left of bounds | Pointer over a `[data-halyard-node]` in the iframe |
+| Hover | 1px neutral outline + floating tag (block name) at top-left of bounds | Pointer over a `[data-nubbin-node]` in the iframe |
 | Selected | 2px accent outline + tag + action chip (duplicate, move, delete) | Click, or Enter on an Outline row |
 | Ancestor (breadcrumb) | No canvas outline; ancestor is highlighted only in the breadcrumb strip | Hovering a breadcrumb segment |
 
@@ -264,7 +264,7 @@ per §6, and clicking the disabled control focuses the first invalid field inste
 Accepting collapses the banner; Inspector fields switch to the `Disabled` state (§3),
 palette drag is inert, Outline stays browsable. No takeover action is offered — the lock
 model itself is an open question upstream (domain model open question 6, tracked in the
-project's [open design questions](https://github.com/effekt/halyard/issues/15)), so this
+project's [open design questions](https://github.com/effekt/nubbin/issues/15)), so this
 spec does not invent an expiry or force-release affordance.
 
 ### 7.6 Broken registry

@@ -21,7 +21,7 @@ behavior, and are cited rather than resolved here.
 3. Optionally start from a preset instead of blank. "Preset" is this document's working
    name; the stored enum value is still `kind: "template"` pending a rename tracked in the
    project's open design questions — see
-   [GitHub issue 15](https://github.com/effekt/halyard/issues/15).
+   [GitHub issue 15](https://github.com/effekt/nubbin/issues/15).
 
 **System:**
 - Blank start: `Document` created with `head: 1` and no route pointer, which is what "not
@@ -37,8 +37,8 @@ behavior, and are cited rather than resolved here.
 | Mode | Consequence |
 |---|---|
 | Route collides with another `Document`'s route | Nothing rejects it today. `Artifact.route` is never checked against `Document.route`. Collision surfaces later, silently, as one document evicting the other on publish. |
-| Route collides with a coded route in the consumer's app | Undetectable by Halyard — invariant 6 means Halyard has no visibility into the app's route tree. Next's file-system routing prefers an explicit route over the `[[...slug]]` catch-all, so the authored page is unreachable with no compile error and no publish error. |
-| Route needs a pattern, not a literal | Real content needs this: a single entry commonly serves a whole family of URLs off a prefix or param rule, with the remaining segment read at render. A literal-only route table cannot represent that class at all — it is unrepresentable, not merely awkward. Open — tracked in the project's [open design questions](https://github.com/effekt/halyard/issues/15). |
+| Route collides with a coded route in the consumer's app | Undetectable by Nubbin — invariant 6 means Nubbin has no visibility into the app's route tree. Next's file-system routing prefers an explicit route over the `[[...slug]]` catch-all, so the authored page is unreachable with no compile error and no publish error. |
+| Route needs a pattern, not a literal | Real content needs this: a single entry commonly serves a whole family of URLs off a prefix or param rule, with the remaining segment read at render. A literal-only route table cannot represent that class at all — it is unrepresentable, not merely awkward. Open — tracked in the project's [open design questions](https://github.com/effekt/nubbin/issues/15). |
 | Layout reference is stale or wrong | `layoutId` is not validated against an existing layout `Document` anywhere in the current design. |
 
 ```mermaid
@@ -46,7 +46,7 @@ flowchart TD
     A["Author enters route"] --> B{"Matches another\nDocument.route?"}
     B -- yes --> C["Not rejected today\nsilent risk"]
     B -- no --> D{"Matches a coded\nroute in the app?"}
-    D -- "unknown to Halyard" --> E["Coded route wins at request time\npage is unreachable, no error"]
+    D -- "unknown to Nubbin" --> E["Coded route wins at request time\npage is unreachable, no error"]
     D -- no --> F{"Needs startsWith\n/ pattern matching?"}
     F -- yes --> G["Needs a param or prefix\nroute pointer — open question"]
     F -- no --> H(("Document created\nhead 1, unpublished"))
@@ -152,7 +152,7 @@ recompile.
 
 **Schedule is not modeled.** There is no `scheduledAt` field, no job runner among the
 adapters, and `store.publish()` is synchronous. Recorded as one of the project's open
-design questions (see [GitHub issue 15](https://github.com/effekt/halyard/issues/15)),
+design questions (see [GitHub issue 15](https://github.com/effekt/nubbin/issues/15)),
 where the artifact model makes it unusually safe if added — the artifact is compiled and
 validated before the schedule is set, so firing cannot fail on a surprise validation error.
 
@@ -166,7 +166,7 @@ validated before the schedule is set, so firing cannot fail on a surprise valida
 | Route ownership | Unpublish a route, let another `Document` claim it, republish the first — the second is silently evicted. A uniqueness constraint on route → documentId is required and not yet implemented. |
 | Concurrent publishes | **Resolved:** route pointers are independently-writable records, one per route, so two publishes to different routes cannot interfere. A single manifest document permitted a silent lost update. |
 | `Document.publishedVersion` disagreeing with what is live | **Resolved:** `publishedVersion` is derived on read from the route pointer rather than stored, so there is no second copy to diverge. |
-| Artifact pruning | Rollback depends on the target artifact still existing. Retention must respect a stated rollback window, and `publish()` must reject a missing hash rather than wiring a dead pointer — see [`adapters.md`](https://github.com/effekt/halyard/blob/main/.claude/rules/adapters.md). No policy is set yet. |
+| Artifact pruning | Rollback depends on the target artifact still existing. Retention must respect a stated rollback window, and `publish()` must reject a missing hash rather than wiring a dead pointer — see [`adapters.md`](https://github.com/effekt/nubbin/blob/main/.claude/rules/adapters.md). No policy is set yet. |
 
 ## 6. Layouts vs presets
 
@@ -210,7 +210,7 @@ place in the Output layer that would need a runtime reference.
 
 Either way, `Artifact` needs to record a layout dependency the way it already records
 `blockVersions`, so staleness is at least detectable — that much both candidates agree on.
-See the project's [open design questions](https://github.com/effekt/halyard/issues/15).
+See the project's [open design questions](https://github.com/effekt/nubbin/issues/15).
 
 ## 7. Collaboration
 
@@ -219,7 +219,7 @@ See the project's [open design questions](https://github.com/effekt/halyard/issu
 The minimum viable answer is a pessimistic lock per `Document`, and it is explicitly
 unconfirmed: "worth confirming it is enough before the studio assumes it"
 ([`01`](domain-model.md#open-questions), question 6; open design questions,
-[issue 15](https://github.com/effekt/halyard/issues/15), question 13).
+[issue 15](https://github.com/effekt/nubbin/issues/15), question 13).
 Nothing below is designed in `02` or `04` — no lock entity in `01`, no lock/unlock call on
 `ArtifactStore` or elsewhere, no session heartbeat mentioned anywhere.
 

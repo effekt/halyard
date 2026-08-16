@@ -102,7 +102,7 @@ interface SlotConstraint {
 **A block is an organism.** Atomic Design's useful transfer is granularity: organisms are
 "distinct sections of an interface", and templates place them "within a layout". A block is
 a self-contained page section — a hero, an FAQ, a media carousel — never a button or an
-input. Atoms and molecules are the consumer's design system and Halyard has no opinion
+input. Atoms and molecules are the consumer's design system and Nubbin has no opinion
 about them; registering a `Button` as a block is the shape of misuse to warn against.
 
 Slots carry constraints rather than just names because Frost's templates "articulate the
@@ -241,7 +241,7 @@ A layout's named slots need no separate field: they are the slots of the node at
 | Client storage | IndexedDB (or equivalent), not JS memory alone — a tab crash loses at most the last tick |
 | Debounce | 800ms, matching Payload — small enough that losing undo history on reload is an acceptable, bounded trade |
 | Reconnect | Discard the on-disk pending diff and re-serialize the full working copy from memory. Figma's rule: a patched diff buffer can silently diverge from what the author actually has open |
-| Second tab / device | Undefined here by the same gap as two *authors* — presence plus a node lock (open design question 10; see the project's [open design questions](https://github.com/effekt/halyard/issues/15)) covers both with one mechanism |
+| Second tab / device | Undefined here by the same gap as two *authors* — presence plus a node lock (open design question 10; see the project's [open design questions](https://github.com/effekt/nubbin/issues/15)) covers both with one mechanism |
 | Crash mid-append | A version row is a single atomic insert keyed on `(documentId, version)`; `head` advances only after commit — a crash leaves the log short one entry, never a partial one |
 
 **Why not a CRDT.** `{root, elements}` maps closely onto a CRDT map-of-records (Yjs `Y.Map`,
@@ -311,7 +311,7 @@ Two things that are easy to conflate and behave oppositely.
 | Behaviour | Layout | Template |
 |---|---|---|
 | Relationship | Referenced by pages | Copied into a new page |
-| Editing it | Referenced by every page using it; propagation to published pages is unresolved ([#13](https://github.com/effekt/halyard/issues/13)) | Affects nothing already created |
+| Editing it | Referenced by every page using it; propagation to published pages is unresolved ([#13](https://github.com/effekt/nubbin/issues/13)) | Affects nothing already created |
 | Stored as | `Document` with `kind: "layout"` | `Document` with `kind: "template"` |
 | Composition | Page tree fills the layout's named slots | Page starts as a clone of the tree |
 
@@ -333,7 +333,7 @@ interface Artifact {
   blockVersions: Record<string, number>;   // what this was compiled against
   tree: ArtifactNode[];                    // resolved, validated — static fields frozen, request/revalidate fields left as holes
   meta: DocumentMeta;
-  compiledWith: string;                    // halyard version
+  compiledWith: string;                    // nubbin version
 }
 ```
 

@@ -6,7 +6,7 @@ hide_site_header: true
 
 <style>
   /* Home page only — this <style> ships with index.md and no other page includes it.
-     Palette: Deep Marine #0B2B33 · Halyard Teal #0E5A6B · Teal Light #4FB3C7 ·
+     Palette: Deep Marine #0B2B33 · Nubbin Teal #0E5A6B · Teal Light #4FB3C7 ·
      Signal Orange #E4572E · Orange Deep #BF411D · Brass #C08A3E · Canvas #F1F4F3.
      Measured ratios are noted where a pairing is load-bearing. */
 
@@ -132,7 +132,7 @@ hide_site_header: true
     max-width: 68ch;
   }
 
-  /* Halyard Teal reads at 7.8:1 on white; the layout already underlines links in main,
+  /* Nubbin Teal reads at 7.8:1 on white; the layout already underlines links in main,
      so colour is never the only indicator. */
   main a { color: #0E5A6B; }
   .hy-hero a, .hy-band a { color: #4FB3C7; }
@@ -166,7 +166,7 @@ hide_site_header: true
 </style>
 
 <div class="hy-hero">
-  <p class="hy-wordmark">Halyard</p>
+  <p class="hy-wordmark">Nubbin</p>
   <h1>Your components.<br>Their pages.</h1>
   <p class="hy-lede">
     A page builder that lives inside your codebase. Developers curate a set of blocks in
@@ -180,7 +180,7 @@ hide_site_header: true
   </p>
   <p class="hy-actions">
     <a class="hy-btn-primary" href="{{ '/domain-model.html' | relative_url }}">Read the design record</a>
-    <a class="hy-btn-quiet" href="https://github.com/effekt/halyard/issues/15">Open design questions ↗</a>
+    <a class="hy-btn-quiet" href="https://github.com/effekt/nubbin/issues/15">Open design questions ↗</a>
   </p>
   <svg class="hy-rope" viewBox="0 0 800 48" aria-hidden="true" focusable="false">
     <path d="M0 38 H300 C420 38 440 6 356 6 C292 6 296 38 400 38 H800"
@@ -191,7 +191,7 @@ hide_site_header: true
 ## One split, and everything follows
 
 A page builder holds two contracts: what a block will accept, and what an author composed.
-Halyard puts the first in your repository, shipping atomically with the component that reads
+Nubbin puts the first in your repository, shipping atomically with the component that reads
 it, and the second in a database, where it can change hourly without a build.
 
 <div class="hy-split">
@@ -314,7 +314,7 @@ second and third are judgments about what this project is.
       store with a page renderer attached — a different product with a different shape.
     </p>
     <p>
-      Halyard composes pages. Data that is not a page stays in whatever already owns it, and
+      Nubbin composes pages. Data that is not a page stays in whatever already owns it, and
       a block reads it at render through a field marked <code>data</code>.
     </p>
   </div>
@@ -340,18 +340,18 @@ tooling that will hold an implementation to them. It has been through one advers
 that falsified its live postMessage preview and its single-manifest publish — a reason to trust it more than an unreviewed
 design, and not a reason to treat it as finished.
 
-The [roadmap](https://github.com/effekt/halyard/issues/14) sequences the build. Its first
+The [roadmap](https://github.com/effekt/nubbin/issues/14) sequences the build. Its first
 milestone is deliberately not a feature: it exists to falsify the project's own thesis, by
 authoring real pages against real blocks with no editor at all, before anything expensive is
 built on that assumption.
 
-The [open design questions](https://github.com/effekt/halyard/issues/15) are the parts known
+The [open design questions](https://github.com/effekt/nubbin/issues/15) are the parts known
 to still be wrong. Disagreement about the design is more useful than agreement right now, and
 that issue is where to start.
 
 ## The design record
 
-The [repository](https://github.com/effekt/halyard) keeps a condensed working set of docs,
+The [repository](https://github.com/effekt/nubbin) keeps a condensed working set of docs,
 sized for someone implementing against them. This site is the other half: the long-form
 record behind them, carrying the reasoning, the rejected alternatives, and the threads that
 have not resolved.
@@ -369,5 +369,5 @@ define. `Authoring flows` walks what an author actually does, citing back into b
 | [Studio wireframes](wireframes.md) | Panel layout, inspector controls, and key-state specs for the editing screen |
 
 Open questions and roadmap phasing are not on this site. They live in the repository's
-[GitHub issues](https://github.com/effekt/halyard/issues), where they can be discussed and
+[GitHub issues](https://github.com/effekt/nubbin/issues), where they can be discussed and
 closed rather than sitting static in a document.

@@ -22,8 +22,8 @@ controls the site's headers, that whole class of problem is a configuration line
 
 | Studio location | Requires |
 |---|---|
-| `www.example.com/halyard` — same origin | `frame-ancestors 'self'` |
-| `halyard.example.com` — subdomain | `frame-ancestors https://halyard.example.com` |
+| `www.example.com/nubbin` — same origin | `frame-ancestors 'self'` |
+| `nubbin.example.com` — subdomain | `frame-ancestors https://nubbin.example.com` |
 | Headers not under your control | The extension |
 
 This is a smaller obstacle than it looks. A policy sent in report-only mode does not block
@@ -79,14 +79,14 @@ in the editor with HMR.
 The renderer emits a signal on managed pages, and only on managed pages:
 
 ```html
-<script type="application/json" id="halyard-page">
+<script type="application/json" id="nubbin-page">
 {"documentId":"…","route":"/landing","artifact":"a3f9…"}
 </script>
 ```
 
 **A DOM element, never a `window` global.** A content script runs in an isolated world and
 cannot read the page's JavaScript, but it can read the DOM — the same reason block roots
-carry `data-halyard-node`.
+carry `data-nubbin-node`.
 
 No signal means no toolbar. A checkout page, a search result, any coded route: the extension
 is inert. Fail-safe by construction, with no allowlist to maintain, and it answers directly
@@ -128,7 +128,7 @@ adoption.
 
 **The rule that makes both possible:** a content script runs in an isolated world and cannot
 read the page's JavaScript. So the studio may learn about the page **only through the DOM** —
-the signal element, `data-halyard-node` attributes, and measured rects. Never a `window`
+the signal element, `data-nubbin-node` attributes, and measured rects. Never a `window`
 global, never React internals, never a page-side registry object.
 
 This is already the design; the risk is a later shortcut. It fails silently — everything
@@ -170,7 +170,7 @@ Acceptable for marketing editing; a designer wanting live side-by-side is a late
 
 ### What the overlay still needs a route for
 
-Creating a page. You cannot edit a page that does not exist, so a thin `/halyard` admin
+Creating a page. You cannot edit a page that does not exist, so a thin `/nubbin` admin
 surface owns the page list, creation, and settings — while everything else happens in place
 on the page itself.
 
@@ -201,7 +201,7 @@ the editor's own React tree cannot show a server component, cannot run the app's
 fetching, and drifts from production CSS. An iframe of the real app cannot drift, because
 it *is* the app.
 
-It also creates the single hardest technical problem in Halyard: **dragging a block from a
+It also creates the single hardest technical problem in Nubbin: **dragging a block from a
 palette in the parent document into a drop target inside the iframe.**
 
 ## The canvas is a dev server, not staging or production
@@ -210,7 +210,7 @@ An earlier draft proposed mounting the studio as a route inside the consumer's p
 app to make the iframe same-origin. Review found that unworkable against a realistic
 deployment, on two independent counts: a header builder that hardcodes `frame-ancestors
 'none'` with no override, and an edge proxy owning most of the origin, so an
-`app/halyard/page.tsx` would never receive the request at all.
+`app/nubbin/page.tsx` would never receive the request at all.
 
 **Point the canvas at a purpose-run dev server instead.** The consumer's real app, real
 components, real CSS — running in development mode with dev overlays suppressed.
@@ -277,7 +277,7 @@ for any team already working Storybook-first.
 
 **A story is a node.** CSF is a component reference plus an args object:
 `export const Primary = { args: { label: 'Button' } }`. That is `Node { block, props }`. A
-Halyard document is a composed, persisted, routed tree of stories.
+Nubbin document is a composed, persisted, routed tree of stories.
 
 **`argTypes` corroborate the hint decision.** Storybook infers a control from types and
 lets you override per-arg in a structure **keyed by arg name, parallel to the component**:
@@ -294,7 +294,7 @@ what makes third-party inspector panels possible at all, and it holds whether th
 an iframe or an in-page overlay.
 
 **`globalTypes` fills a gap we had.** Storybook carries preview-level state that is not
-component props — theme, locale, viewport. Halyard had no concept of it, and previewing a
+component props — theme, locale, viewport. Nubbin had no concept of it, and previewing a
 page as a different locale, or logged-in versus anonymous, or at a breakpoint, is exactly
 that. It needs a home in the model, separate from `Node.props`.
 
@@ -346,7 +346,7 @@ defineBlock({
 Opaque strings the consumer supplies, so no coupling and no styling opinion. The studio
 renders "Open in Figma" / "Open in Storybook" for the selected block.
 `@storybook/addon-designs` already embeds Figma frames in a Storybook panel and Figma Dev
-Mode links out to stories, so both ends of the round trip exist — Halyard only carries the
+Mode links out to stories, so both ends of the round trip exist — Nubbin only carries the
 identifiers.
 
 ### HMR serves the developer, not the author
@@ -433,8 +433,8 @@ flowchart LR
         S["Selection + inspector"]
     end
     subgraph frame["iframe — consumer's real app, draft mode"]
-        B["Halyard bridge script"]
-        T["[data-halyard-slot]<br/>drop target"]
+        B["Nubbin bridge script"]
+        T["[data-nubbin-slot]<br/>drop target"]
     end
 
     P -->|"pointer drag session, dnd-kit"| T
@@ -457,7 +457,7 @@ should build pages accounting for *"different cart sizes, variable headline leng
 permission levels"* — because those variations *"directly influence how the underlying
 molecules, organisms, and templates are constructed"*.
 
-Frost has to author those cases by hand. **Halyard has the schema, so it can generate
+Frost has to author those cases by hand. **Nubbin has the schema, so it can generate
 them.** From `z.string().max(80)` come an 80-character value and a one-character value;
 from `z.array(bulletSchema).max(4)` come four items, one item, and — if optional — none.
 
@@ -471,10 +471,10 @@ config is hand-written.
 - **Same-origin is likely required.** Every demonstrated example of cross-document drag in
   the libraries reviewed is same-origin only; cross-origin is unsolved in every one of them,
   including the one adopted here. This is why self-hosting the studio matters — see the
-  project's [open design questions](https://github.com/effekt/halyard/issues/15).
+  project's [open design questions](https://github.com/effekt/nubbin/issues/15).
 - **Server component re-render after an edit is unaddressed by every tool reviewed**,
   because none of them render through a real external server-rendered app. Whether an edit
-  patches props client-side or refetches an RSC payload is a Halyard-specific decision, and
+  patches props client-side or refetches an RSC payload is a Nubbin-specific decision, and
   it is on the critical path for how the live preview feels.
 - **Accessibility across a document boundary is untested territory.** A live-region
   announcement and an action-menu reorder path alongside pointer drag are worth building
