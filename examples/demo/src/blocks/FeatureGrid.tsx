@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { featureGridSchema } from "./FeatureGrid.schema";
-import { TONE_SURFACE } from "./tone.constants";
+import { TONE_ACCENT, TONE_SURFACE } from "./tone.constants";
 
 type FeatureGridProps = z.infer<typeof featureGridSchema>;
 
@@ -9,11 +9,13 @@ const TONE_STYLES = {
     section: TONE_SURFACE.light,
     card: "border-brass/30 bg-white",
     body: "text-marine/70",
+    icon: TONE_ACCENT.light,
   },
   dark: {
     section: TONE_SURFACE.dark,
     card: "border-teal-light/20 bg-white/5",
     body: "text-canvas/70",
+    icon: TONE_ACCENT.dark,
   },
 } as const;
 
@@ -30,7 +32,7 @@ export function FeatureGrid({ heading, tone, items }: FeatureGridProps) {
   return (
     <section className={`${styles.section} px-6 py-24`}>
       <div className="mx-auto max-w-6xl">
-        <h2 className="max-w-2xl text-3xl font-semibold tracking-tight">{heading}</h2>
+        <h2 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight">{heading}</h2>
         <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((item) => (
             <li key={item.title} className={`${styles.card} rounded-lg border p-6`}>
@@ -39,7 +41,7 @@ export function FeatureGrid({ heading, tone, items }: FeatureGridProps) {
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={1.5}
-                className="h-6 w-6 text-teal"
+                className={`h-6 w-6 ${styles.icon}`}
                 aria-hidden="true"
               >
                 <path d={ICON_PATHS[item.icon]} strokeLinecap="round" strokeLinejoin="round" />

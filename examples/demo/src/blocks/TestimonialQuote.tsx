@@ -16,7 +16,12 @@ export function TestimonialQuote({ quote, name, role, avatar, tone }: Testimonia
       <figure className="mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
         <blockquote className="text-2xl font-medium leading-relaxed">“{quote}”</blockquote>
         <figcaption className="flex items-center gap-3">
-          <img src={avatar.url} alt={avatar.alt} className="h-10 w-10 rounded-full" />
+          <img
+            src={avatar.url}
+            alt={avatar.alt}
+            loading="lazy"
+            className="h-10 w-10 rounded-full"
+          />
           <span>
             <span className="font-semibold">{name}</span>
             <span className={`block text-sm ${styles.role}`}>{role}</span>

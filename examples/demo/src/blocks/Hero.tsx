@@ -27,11 +27,13 @@ export function Hero({ eyebrow, headline, body, tone, cta, image }: HeroProps) {
           <p className={`text-sm font-semibold uppercase tracking-wide ${styles.eyebrow}`}>
             {eyebrow}
           </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight md:text-5xl">{headline}</h1>
+          <h1 className="mt-4 text-balance text-4xl font-semibold tracking-tight md:text-5xl">
+            {headline}
+          </h1>
           <p className={`mt-6 max-w-md text-lg ${styles.body}`}>{body}</p>
           <a
             href={cta.href}
-            className="mt-8 inline-block rounded-md border border-orange-deep bg-orange-deep px-6 py-3 text-sm font-semibold text-white"
+            className="mt-8 inline-block rounded-md border border-orange-deep bg-orange-deep px-6 py-3 text-sm font-semibold text-white underline-offset-4 hover:underline"
           >
             {cta.label}
           </a>

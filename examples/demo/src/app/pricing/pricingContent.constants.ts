@@ -39,6 +39,6 @@ export const PRICING_FAQS = [
   {
     question: "Do you offer a nonprofit or education discount?",
     answer:
-      "Yes — contact sales with a verification and we'll apply a standard discount to any plan.",
+      "Yes — contact sales with a verification and we’ll apply a standard discount to any plan.",
   },
 ] as const;
