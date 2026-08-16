@@ -82,7 +82,7 @@ behaving oppositely.
 A registered component plus the schema describing what it accepts — the unit of curation. If
 it is not a block, an author cannot place it. A block is an organism, a self-contained page
 section (hero, FAQ, carousel) — never a button or an input; atoms and molecules are the
-consumer's design system, and Halyard has no opinion on them.
+consumer's design system, and Nubbin has no opinion on them.
 
 ```ts
 interface Block<Schema, Component> {
@@ -278,13 +278,13 @@ where a deep object copy could silently share ids by accident.
 | Behaviour | Layout | Template |
 |---|---|---|
 | Relationship | Referenced by pages | Copied into a new page |
-| Editing it | Referenced by every page using it; propagation to published pages is unresolved ([#13](https://github.com/effekt/halyard/issues/13)) | Affects nothing already created |
+| Editing it | Referenced by every page using it; propagation to published pages is unresolved ([#13](https://github.com/effekt/nubbin/issues/13)) | Affects nothing already created |
 | Stored as | `Document` with `kind: "layout"` | `Document` with `kind: "template"` |
 | Composition | Page tree fills the layout's named slots | Page starts as a clone of the tree |
 
 Naming these apart early is cheap; separating them later is a data migration. The
 studio-facing name for `kind: "template"` is under discussion
-([#7](https://github.com/effekt/halyard/issues/7)).
+([#7](https://github.com/effekt/nubbin/issues/7)).
 
 ## Output layer
 
@@ -302,7 +302,7 @@ interface Artifact {
   blockVersions: Record<string, number>;   // what this was compiled against
   tree: ArtifactNode[];                    // resolved, validated — static fields frozen, request/revalidate fields left as holes
   meta: DocumentMeta;
-  compiledWith: string;                    // halyard version
+  compiledWith: string;                    // nubbin version
 }
 ```
 
@@ -331,7 +331,7 @@ interface RoutePointer {
 `matchKind` is parsed from `route` at publish, not caller-supplied — `[name]` means param, a
 trailing `/*` means prefix, anything else is exact. Precedence is most-specific-first: exact
 beats param, param beats prefix. Whether authors can create pattern routes is open
-([#5](https://github.com/effekt/halyard/issues/5)).
+([#5](https://github.com/effekt/nubbin/issues/5)).
 
 `manifest()` is not a stored document — it is an advisory aggregation read over every
 `RoutePointer`, for the studio's route list and CI. No render path reads it; a request
@@ -350,7 +350,7 @@ pointer; the artifact stays, so republishing is a pointer move rather than a rec
 ### ArtifactStore
 
 The output layer's whole IO surface. The authoring store's interface is undesigned
-([#11](https://github.com/effekt/halyard/issues/11)). An adapter implements this; `core` only
+([#11](https://github.com/effekt/nubbin/issues/11)). An adapter implements this; `core` only
 ever returns values for it.
 
 ```ts
@@ -431,12 +431,12 @@ that closes:
 
 | Undecided | Where |
 |---|---|
-| Layout slot merge — may a page contribute to several of its layout's slots, or exactly one? | [#13](https://github.com/effekt/halyard/issues/13) |
-| Who owns `meta` — the document version, or a block placed in the tree | [#13](https://github.com/effekt/halyard/issues/13) |
-| Localization — one locale per `DocumentVersion`, or many | [#6](https://github.com/effekt/halyard/issues/6) |
-| Concurrent editing — whether a document-wide lock is enough | [#10](https://github.com/effekt/halyard/issues/10) |
-| The authoring store's interface — `ArtifactStore` has no counterpart on the content layer | [#11](https://github.com/effekt/halyard/issues/11) |
+| Layout slot merge — may a page contribute to several of its layout's slots, or exactly one? | [#13](https://github.com/effekt/nubbin/issues/13) |
+| Who owns `meta` — the document version, or a block placed in the tree | [#13](https://github.com/effekt/nubbin/issues/13) |
+| Localization — one locale per `DocumentVersion`, or many | [#6](https://github.com/effekt/nubbin/issues/6) |
+| Concurrent editing — whether a document-wide lock is enough | [#10](https://github.com/effekt/nubbin/issues/10) |
+| The authoring store's interface — `ArtifactStore` has no counterpart on the content layer | [#11](https://github.com/effekt/nubbin/issues/11) |
 
 Every open question is indexed in
-[#15](https://github.com/effekt/halyard/issues/15), with what deciding each one late would
+[#15](https://github.com/effekt/nubbin/issues/15), with what deciding each one late would
 cost.

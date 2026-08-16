@@ -1,5 +1,5 @@
 {
-  "name": "halyard",
+  "name": "nubbin",
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "description": "Your components. Their pages. A page builder that lives inside your codebase.",
@@ -16,11 +16,11 @@
   "author": "Jesse Wheeler (https://github.com/effekt)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/effekt/halyard.git"
+    "url": "git+https://github.com/effekt/nubbin.git"
   },
-  "homepage": "https://github.com/effekt/halyard#readme",
+  "homepage": "https://github.com/effekt/nubbin#readme",
   "bugs": {
-    "url": "https://github.com/effekt/halyard/issues"
+    "url": "https://github.com/effekt/nubbin/issues"
   },
   "scripts": {
     "build": "turbo run build",

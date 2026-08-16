@@ -22,15 +22,15 @@ configuration line:
 
 | Studio location | Requires |
 |---|---|
-| Same origin (`/halyard`) | `frame-ancestors 'self'` |
-| Subdomain (`halyard.example.com`) | `frame-ancestors https://halyard.example.com` |
+| Same origin (`/nubbin`) | `frame-ancestors 'self'` |
+| Subdomain (`nubbin.example.com`) | `frame-ancestors https://nubbin.example.com` |
 | Headers not under your control | An extension, or the in-site script below |
 
 **Two optional surfaces sit on top,** neither required. An **extension** is the escape hatch
 when headers can't be changed, and edits in place on the live page. An **in-site script**
 does the same with no install, and is the only path that reaches tablets, where extensions
 effectively don't exist. Both learn about the page only through the DOM — a signal element
-and `data-halyard-node` attributes, never a `window` global — which is what lets one studio
+and `data-nubbin-node` attributes, never a `window` global — which is what lets one studio
 bundle serve all three hosts.
 
 ## The canvas is a dev server, not staging or production
@@ -158,7 +158,7 @@ saved the other half of the work — that part is greenfield regardless.
   every library reviewed.
 - **Server-component re-render after an edit is unaddressed by every tool reviewed**, since
   none render through a real external server-rendered app. Whether an edit patches props
-  client-side or refetches an RSC payload is Halyard-specific, and on the critical path for
+  client-side or refetches an RSC payload is Nubbin-specific, and on the critical path for
   how live preview feels.
 - **Accessibility across a document boundary is untested territory** — a live-region
   announcement and a keyboard/action-menu reorder path alongside pointer drag are worth

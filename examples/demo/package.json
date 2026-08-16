@@ -2,7 +2,7 @@
   "name": "demo",
   "private": true,
   "version": "0.1.0",
-  "description": "Reference marketing site whose components are shaped as Halyard blocks.",
+  "description": "Reference marketing site whose components are shaped as Nubbin blocks.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

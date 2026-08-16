@@ -106,13 +106,13 @@ Artifacts are immutable and content-addressed (invariant 3) — frozen props wer
 ### A block renders one root element
 
 ```tsx
-// WRONG — two roots; nothing for the renderer to attach data-halyard-node to
+// WRONG — two roots; nothing for the renderer to attach data-nubbin-node to
 export function Hero() { return (<><h1>{title}</h1><p>{body}</p></>); }
 // CORRECT — one element the renderer can mark
 export function Hero() { return (<section><h1>{title}</h1><p>{body}</p></section>); }
 ```
 
-The studio learns about the page only through the DOM, so block roots carry `data-halyard-node`. A Fragment with multiple roots leaves nothing to attach it to, and no gate can see the difference. **Gate:** none.
+The studio learns about the page only through the DOM, so block roots carry `data-nubbin-node`. A Fragment with multiple roots leaves nothing to attach it to, and no gate can see the difference. **Gate:** none.
 
 ## Checklist
 

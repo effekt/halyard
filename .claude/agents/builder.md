@@ -1,10 +1,10 @@
 ---
 name: builder
-description: Implements a package or feature against Halyard's settled design, test-first, and verifies against the gates before claiming anything works. Use for phase work from the roadmap issues.
+description: Implements a package or feature against Nubbin's settled design, test-first, and verifies against the gates before claiming anything works. Use for phase work from the roadmap issues.
 model: fable
 ---
 
-You implement Halyard. The design is settled and documented; your job is to make it real without
+You implement Nubbin. The design is settled and documented; your job is to make it real without
 drifting from it.
 
 ## Before writing code
@@ -51,6 +51,6 @@ one-unit-per-file rule counts module-private functions too.
 ## Never
 
 - Reference a company, employer, client, or internal application. This repository is public.
-- Leave a `TODO`, a note about what something used to be called, or a promise of future work.
+- Leave a `TODO`, a note reaching back for an old name, or a promise of future work.
   Open an issue instead; `check-prose.mjs` rejects all three.
 - Claim something builds, passes, or works without having run it and read the output.

@@ -1,4 +1,4 @@
-# Halyard
+# Nubbin
 
 **Your components. Their pages.**
 
@@ -49,7 +49,7 @@ artifact never carries the schema, only the outcome of validating against it:
 ## Why
 
 A page builder holds two contracts: what a block will accept, and what an author composed.
-Halyard puts the first in your repository, shipping atomically with the component that reads
+Nubbin puts the first in your repository, shipping atomically with the component that reads
 it, and the second in a database, where it can change hourly without a build.
 
 That single split is the whole design, and everything below follows from it. Put the schema in
@@ -74,12 +74,12 @@ tooling that will hold an implementation to them. It has been through one advers
 which falsified the live postMessage preview and the single-manifest publish; both were
 redesigned. That is a reason to trust the design more than an unreviewed one, not a reason to
 treat it as finished — [the open
-questions](https://github.com/effekt/halyard/issues/15) are the parts known to still be wrong.
+questions](https://github.com/effekt/nubbin/issues/15) are the parts known to still be wrong.
 
 The gates that check documentation, prose, and dependency pinning run on every commit. The
 ones that check code are waiting for code.
 
-The [roadmap](https://github.com/effekt/halyard/issues/14) sequences the build. Its first
+The [roadmap](https://github.com/effekt/nubbin/issues/14) sequences the build. Its first
 milestone is deliberately not a feature — it exists to falsify the project's own thesis, by
 authoring real pages against real blocks with no editor at all, before anything expensive is
 built on top of that assumption.
@@ -90,7 +90,7 @@ built on top of that assumption.
 | [`docs/decisions.md`](docs/decisions.md) | What is settled, what was rejected, and what is out of scope |
 | [`docs/domain-model.md`](docs/domain-model.md) | Every entity and what owns it |
 | [`docs/api.md`](docs/api.md) | The API shape |
-| [Open design questions](https://github.com/effekt/halyard/issues/15) | What is still undecided — the best place to disagree |
+| [Open design questions](https://github.com/effekt/nubbin/issues/15) | What is still undecided — the best place to disagree |
 
 `pnpm catalog` prints every document with a one-line summary.
 
@@ -105,7 +105,7 @@ pinned, and every nameable step extracted. Quality gates are enforced rather tha
 including on prose — documentation rots faster than code and shows no symptoms.
 
 Disagreement about the design is more useful than agreement right now — the
-[open questions](https://github.com/effekt/halyard/issues/15) are where to start.
+[open questions](https://github.com/effekt/nubbin/issues/15) are where to start.
 
 Governed by the [Contributor Covenant](CODE_OF_CONDUCT.md). Report vulnerabilities per
 [`SECURITY.md`](SECURITY.md).

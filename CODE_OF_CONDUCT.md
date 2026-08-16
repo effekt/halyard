@@ -65,7 +65,7 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by opening a [private security advisory](https://github.com/effekt/halyard/security)
+reported by opening a [private security advisory](https://github.com/effekt/nubbin/security)
 on this repository, or by contacting the maintainer directly through their
 [GitHub profile](https://github.com/effekt).
 

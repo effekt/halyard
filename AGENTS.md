@@ -1,6 +1,6 @@
 ---
 title: Repository Guide
-summary: What Halyard is, its invariants, commands, and gates — loaded by agents automatically
+summary: What Nubbin is, its invariants, commands, and gates — loaded by agents automatically
 status: stable
 ---
 
@@ -10,7 +10,7 @@ Guidance for working in this repo. Loaded automatically by coding agents.
 
 ## What this is
 
-**Halyard** — a page builder that lives inside your codebase. Developers curate a set of
+**Nubbin** — a page builder that lives inside your codebase. Developers curate a set of
 blocks in code; non-developers compose pages from them. The composition is data, the
 contract is code, and publishing compiles a document into an immutable artifact.
 
@@ -19,10 +19,10 @@ package lands in the right place rather than wherever it was convenient. See `##
 
 ```
 packages/
-  core/       @effekt/halyard             — defineBlock, registry, compile, artifact types
-  react/      @effekt/halyard-react       — render an artifact tree with a block registry
-  next/       @effekt/halyard-next        — catch-all route, preview route, draft resolution
-  store-fs/   @effekt/halyard-store-fs    — reference storage adapter
+  core/       @effekt/nubbin             — defineBlock, registry, compile, artifact types
+  react/      @effekt/nubbin-react       — render an artifact tree with a block registry
+  next/       @effekt/nubbin-next        — catch-all route, preview route, draft resolution
+  store-fs/   @effekt/nubbin-store-fs    — reference storage adapter
 apps/
   studio/     the editor — pulled and run alongside your app, never a hosted service
 ```
@@ -49,7 +49,7 @@ These are the reason the project exists. Breaking one is a design change, not a 
    expression language, no binding strings evaluated at render — see
    [Artifacts contain data, never code](docs/decisions.md#artifacts-contain-data-never-code)
    for the security and performance argument.
-7. **Halyard knows nothing about the consumer's stack.** It constructs schemas and renders.
+7. **Nubbin knows nothing about the consumer's stack.** It constructs schemas and renders.
    It ships no CSS, holds no opinion about styling, and makes no assumption about their
    dependencies. A value like `space: "lg"` is passed through as data; what it *means* is
    resolved by the consumer's component, in the consumer's codebase, with the consumer's

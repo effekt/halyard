@@ -8,7 +8,7 @@ status: stable
 
 ## The split
 
-Three things are usually conflated in a CMS. Halyard separates them and puts each in the
+Three things are usually conflated in a CMS. Nubbin separates them and puts each in the
 only place it can live without drifting.
 
 | Concern | Lives in | Why there |

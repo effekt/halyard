@@ -1,17 +1,17 @@
 ---
 title: Demo Marketing Site
-summary: A reference Next.js app whose components are shaped exactly as Halyard blocks, with no dependency on Halyard itself
+summary: A reference Next.js app whose components are shaped exactly as Nubbin blocks, with no dependency on Nubbin itself
 status: reference
 ---
 
 # Demo marketing site
 
-Halyard has no implementation yet — `packages/core` is empty. This app exists so there is
+Nubbin has no implementation yet — `packages/core` is empty. This app exists so there is
 something real for `defineBlock` to register once it does: a marketing site for a fictional
 scheduling product, Tidewell, built from eight components whose shape already matches what a
 block requires.
 
-It does not import Halyard. Nothing here is a stub or a placeholder for a future API — every
+It does not import Nubbin. Nothing here is a stub or a placeholder for a future API — every
 component, schema, and page is ordinary Next.js code that stands on its own.
 
 ## What "block-shaped" means here
@@ -49,7 +49,7 @@ button, it is `orange-deep`, which is the pair that clears WCAG AA against white
 
 ## Running it
 
-This example is part of the `halyard` pnpm workspace and needs Node 22+ and pnpm.
+This example is part of the `nubbin` pnpm workspace and needs Node 22+ and pnpm.
 
 ```bash
 pnpm install

@@ -9,7 +9,7 @@ status: stable
 ## Reporting a vulnerability
 
 Use GitHub's private vulnerability reporting: open the
-[Security tab](https://github.com/effekt/halyard/security) on this repository and select
+[Security tab](https://github.com/effekt/nubbin/security) on this repository and select
 **Report a vulnerability**. That reaches the maintainer directly and privately.
 
 Do not open a public issue for a suspected vulnerability.
