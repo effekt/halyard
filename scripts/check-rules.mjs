@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Enforces the contract `.claude/rules/writing-rules.md` states for rule files.
 //
 // Rule files are the one place in this repository where a written rule had no gate at all —
@@ -11,8 +12,8 @@
 //
 // Usage: node scripts/check-rules.mjs [files...] [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -66,7 +67,8 @@ for (const file of targets) {
     problems.push(`${rel}  no frontmatter`);
   } else {
     for (const key of REQUIRED_KEYS) {
-      if (!keys.has(key) || keys.get(key) === "") problems.push(`${rel}  frontmatter missing: ${key}`);
+      if (!keys.has(key) || keys.get(key) === "")
+        problems.push(`${rel}  frontmatter missing: ${key}`);
     }
     // Without `paths` the rule loads at session start and spends context on every unrelated edit.
     if (keys.get("paths") === "") problems.push(`${rel}  empty paths glob`);

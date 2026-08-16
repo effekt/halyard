@@ -1,37 +1,32 @@
 {
   "threshold": 1,
-
   "minLines": 1,
   "minTokens": 15,
   "maxLines": 200,
-
   "mode": "mild",
   "gitignore": true,
   "ignoreCase": true,
-
   "format": ["typescript", "tsx", "javascript"],
-
   "reporters": ["consoleFull"],
-
   "ignorePattern": [
     "(?m)^\\s*import\\s.*$",
     "import\\s*\\{[\\s\\S]*?\\}\\s*from\\s*.[^'\"]*.;",
     "(?m)^\\s*.use client.;?\\s*$"
   ],
-
   "ignore": [
     "**/node_modules/**",
     "**/dist/**",
     "**/.turbo/**",
     "**/coverage/**",
     "**/.repomix/**",
-
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/__tests__/**",
     "**/fixtures/**",
-
     "**/*.config.*",
-    "**/scripts/**"
+    "**/scripts/**",
+    "**/*.schema.ts",
+    "**/*.constants.ts",
+    "**/*Defaults.ts"
   ]
 }

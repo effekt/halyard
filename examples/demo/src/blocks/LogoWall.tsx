@@ -13,7 +13,9 @@ export function LogoWall({ heading, tone, logos }: LogoWallProps) {
   return (
     <section className={`${styles.section} px-6 py-16`}>
       <div className="mx-auto max-w-6xl">
-        <p className={`text-center text-sm font-semibold uppercase tracking-wide ${styles.heading}`}>
+        <p
+          className={`text-center text-sm font-semibold uppercase tracking-wide ${styles.heading}`}
+        >
           {heading}
         </p>
         <ul className="mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-70 grayscale">

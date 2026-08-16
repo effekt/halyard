@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Prints a compact index of every document — path, status, and a one-line summary — so an
 // agent or a new contributor can see what exists without reading it all.
 //
@@ -8,8 +9,8 @@
 //
 // Usage: node scripts/docs-catalog.mjs [--json]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

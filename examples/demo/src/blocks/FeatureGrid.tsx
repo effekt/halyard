@@ -4,8 +4,16 @@ import type { featureGridSchema } from "./FeatureGrid.schema";
 type FeatureGridProps = z.infer<typeof featureGridSchema>;
 
 const TONE_STYLES = {
-  light: { section: "bg-canvas text-marine", card: "border-brass/30 bg-white", body: "text-marine/70" },
-  dark: { section: "bg-marine text-canvas", card: "border-teal-light/20 bg-white/5", body: "text-canvas/70" },
+  light: {
+    section: "bg-canvas text-marine",
+    card: "border-brass/30 bg-white",
+    body: "text-marine/70",
+  },
+  dark: {
+    section: "bg-marine text-canvas",
+    card: "border-teal-light/20 bg-white/5",
+    body: "text-canvas/70",
+  },
 } as const;
 
 /** One fixed glyph per closed icon name — a plain lookup, not a branch, so it stays data. */

@@ -7,12 +7,12 @@ const TONE_STYLES = {
   light: {
     section: "bg-canvas text-marine",
     body: "text-marine/70",
-    button: "bg-teal text-white",
+    button: "border-teal bg-teal text-white",
   },
   dark: {
     section: "bg-marine text-canvas",
     body: "text-canvas/75",
-    button: "bg-teal-light text-marine",
+    button: "border-teal-light bg-teal-light text-marine",
   },
 } as const;
 
@@ -25,7 +25,7 @@ export function CtaBanner({ heading, body, tone, cta }: CtaBannerProps) {
         <p className={`max-w-xl text-lg ${styles.body}`}>{body}</p>
         <a
           href={cta.href}
-          className={`${styles.button} inline-block rounded-md px-6 py-3 text-sm font-semibold`}
+          className={`${styles.button} inline-block rounded-md border px-6 py-3 text-sm font-semibold`}
         >
           {cta.label}
         </a>

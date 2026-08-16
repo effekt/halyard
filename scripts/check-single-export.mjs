@@ -17,12 +17,47 @@
 //
 // Usage: node scripts/check-single-export.mjs <files...> [--check]
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
 const args = process.argv.slice(2);
 const CHECK = args.includes("--check");
-const files = args.filter((arg) => !arg.startsWith("--"));
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+
+const SCAN_ROOTS = ["packages", "apps", "examples"];
+const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", ".repomix"]);
+
+/** Every source file under the workspace roots, for when no explicit paths are given. */
+function walkSources(dir, found) {
+  let entries;
+  try {
+    entries = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return found;
+  }
+  for (const entry of entries) {
+    if (EXCLUDED_DIRS.has(entry.name)) continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) walkSources(full, found);
+    else if (/\.tsx?$/.test(entry.name)) found.push(full);
+  }
+  return found;
+}
+
+/**
+ * Passing no paths used to scan nothing and report success, so `pnpm verify` ran this gate
+ * against zero files. An empty run is now a full run.
+ */
+function defaultTargets() {
+  const found = [];
+  for (const root of SCAN_ROOTS) walkSources(join(REPO_ROOT, root), found);
+  return found;
+}
+
+const explicit = args.filter((arg) => !arg.startsWith("--"));
+const files = explicit.length > 0 ? explicit : defaultTargets();
 
 const EXEMPT_PATTERNS = [
   /\.types\.tsx?$/,
@@ -44,26 +79,31 @@ const hasExportKeyword = (node) =>
 /** True when a declaration's initialiser is a function — the test for "unit, not data". */
 const isFunctionInitialiser = (declaration) =>
   declaration.initializer != null &&
-  (ts.isArrowFunction(declaration.initializer) ||
-    ts.isFunctionExpression(declaration.initializer));
+  (ts.isArrowFunction(declaration.initializer) || ts.isFunctionExpression(declaration.initializer));
+
+/** Function-valued names bound by one `const`/`let` statement. */
+function functionNamesInVariableStatement(statement) {
+  return statement.declarationList.declarations
+    .filter(
+      (declaration) => isFunctionInitialiser(declaration) && ts.isIdentifier(declaration.name),
+    )
+    .map((declaration) => declaration.name.text);
+}
+
+/** Names of the top-level units one statement keeps to itself. */
+function privateUnitNamesIn(statement) {
+  if (ts.isFunctionDeclaration(statement) || ts.isClassDeclaration(statement)) {
+    return [statement.name?.text ?? "(anonymous)"];
+  }
+  if (ts.isVariableStatement(statement)) return functionNamesInVariableStatement(statement);
+  return [];
+}
 
 /** Names of the top-level functions a file keeps to itself. */
 function privateUnitNames(source) {
-  const names = [];
-  for (const statement of source.statements) {
-    if (hasExportKeyword(statement)) continue;
-
-    if (ts.isFunctionDeclaration(statement) || ts.isClassDeclaration(statement)) {
-      names.push(statement.name?.text ?? "(anonymous)");
-    } else if (ts.isVariableStatement(statement)) {
-      for (const declaration of statement.declarationList.declarations) {
-        if (isFunctionInitialiser(declaration) && ts.isIdentifier(declaration.name)) {
-          names.push(declaration.name.text);
-        }
-      }
-    }
-  }
-  return names;
+  return source.statements
+    .filter((statement) => !hasExportKeyword(statement))
+    .flatMap(privateUnitNamesIn);
 }
 
 /** Names introduced by an exported runtime declaration. */

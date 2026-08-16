@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Structural integrity for documentation: links resolve, anchors exist, fences balance, and
 // the index matches what is on disk.
 //
@@ -9,8 +10,8 @@
 //
 // Usage: node scripts/check-docs.mjs [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

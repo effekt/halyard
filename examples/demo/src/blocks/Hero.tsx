@@ -30,7 +30,7 @@ export function Hero({ eyebrow, headline, body, tone, cta, image }: HeroProps) {
           <p className={`mt-6 max-w-md text-lg ${styles.body}`}>{body}</p>
           <a
             href={cta.href}
-            className="mt-8 inline-block rounded-md bg-orange-deep px-6 py-3 text-sm font-semibold text-white"
+            className="mt-8 inline-block rounded-md border border-orange-deep bg-orange-deep px-6 py-3 text-sm font-semibold text-white"
           >
             {cta.label}
           </a>

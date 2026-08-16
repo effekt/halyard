@@ -32,7 +32,7 @@
     "check": "biome check --write .",
     "dupes": "jscpd packages",
     "knip": "knip",
-    "boundaries": "depcruise packages --config .dependency-cruiser.cjs",
+    "boundaries": "node -e \"const{existsSync}=require('node:fs');const d=['packages','apps','examples'].filter(existsSync);if(!d.length){console.log('no source directories yet');process.exit(0)}require('node:child_process').execFileSync('pnpm',['exec','depcruise',...d,'--config','.dependency-cruiser.cjs'],{stdio:'inherit'})\"",
     "type-coverage": "type-coverage --project tsconfig.type-coverage.json --at-least 99 --strict --ignore-files \"**/*.test.ts\" --detail",
     "single-export": "node scripts/check-single-export.mjs --check",
     "junk-filenames": "node scripts/check-structure.mjs --check",

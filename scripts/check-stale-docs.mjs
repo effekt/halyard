@@ -16,8 +16,8 @@
 // Usage: node scripts/check-stale-docs.mjs [--check]
 
 import { execFile } from "node:child_process";
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";

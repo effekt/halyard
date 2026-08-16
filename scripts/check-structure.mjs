@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Rejects junk-drawer filenames: a file named for a category rather than for the unit it
 // holds accumulates whatever nobody wanted to name.
 //
@@ -9,8 +10,8 @@
 //
 // Pass explicit paths to check those; pass none to scan SCAN_ROOTS. `--check` exits 1.
 
-import { readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 

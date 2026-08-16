@@ -14,7 +14,8 @@
       "!**/.next",
       "!**/.turbo",
       "!**/.repomix",
-      "!.claude"
+      "!.claude",
+      "!**/*.grit"
     ]
   },
   "formatter": {
@@ -48,11 +49,17 @@
       "complexity": {
         "noExcessiveCognitiveComplexity": {
           "level": "error",
-          "options": { "maxAllowedComplexity": 10 }
+          "options": {
+            "maxAllowedComplexity": 10
+          }
         },
         "noExcessiveLinesPerFunction": {
           "level": "error",
-          "options": { "maxLines": 50, "skipBlankLines": true, "skipIifes": true }
+          "options": {
+            "maxLines": 50,
+            "skipBlankLines": true,
+            "skipIifes": true
+          }
         }
       },
       "performance": {
@@ -67,7 +74,10 @@
         "useImportType": "error",
         "noExcessiveLinesPerFile": {
           "level": "error",
-          "options": { "maxLines": 200, "skipBlankLines": true }
+          "options": {
+            "maxLines": 200,
+            "skipBlankLines": true
+          }
         },
         "useNamingConvention": {
           "level": "error",
@@ -75,9 +85,24 @@
             "strictCase": false,
             "requireAscii": true,
             "conventions": [
-              { "selector": { "kind": "variable" }, "match": "_|.{2,}" },
-              { "selector": { "kind": "objectLiteralProperty" }, "match": ".*" },
-              { "selector": { "kind": "typeProperty" }, "match": ".*" }
+              {
+                "selector": {
+                  "kind": "variable"
+                },
+                "match": "_|.{2,}"
+              },
+              {
+                "selector": {
+                  "kind": "objectLiteralProperty"
+                },
+                "match": ".*"
+              },
+              {
+                "selector": {
+                  "kind": "typeProperty"
+                },
+                "match": ".*"
+              }
             ]
           }
         },
@@ -104,8 +129,14 @@
       "includes": ["**/*.config.*", "**/*.d.ts", "packages/*/src/index.ts"],
       "linter": {
         "rules": {
-          "style": { "useFilenamingConvention": "off", "noExcessiveLinesPerFile": "off" },
-          "performance": { "noBarrelFile": "off", "noReExportAll": "off" }
+          "style": {
+            "useFilenamingConvention": "off",
+            "noExcessiveLinesPerFile": "off"
+          },
+          "performance": {
+            "noBarrelFile": "off",
+            "noReExportAll": "off"
+          }
         }
       }
     },
@@ -113,7 +144,9 @@
       "includes": ["**/*.types.ts", "**/*.constants.ts"],
       "linter": {
         "rules": {
-          "style": { "useFilenamingConvention": "off" }
+          "style": {
+            "useFilenamingConvention": "off"
+          }
         }
       }
     },
@@ -125,7 +158,10 @@
             "useFilenamingConvention": "off",
             "noExcessiveLinesPerFile": {
               "level": "error",
-              "options": { "maxLines": 60, "skipBlankLines": true }
+              "options": {
+                "maxLines": 60,
+                "skipBlankLines": true
+              }
             }
           }
         }
@@ -140,7 +176,9 @@
             "noMagicNumbers": "off",
             "noExcessiveLinesPerFile": "off"
           },
-          "complexity": { "noExcessiveLinesPerFunction": "off" }
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          }
         }
       }
     },
@@ -148,15 +186,45 @@
       "includes": ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**"],
       "linter": {
         "rules": {
-          "suspicious": { "noExplicitAny": "error", "noEmptyBlockStatements": "off" },
+          "suspicious": {
+            "noExplicitAny": "error",
+            "noEmptyBlockStatements": "off"
+          },
           "style": {
             "noMagicNumbers": "off",
             "useFilenamingConvention": "off",
             "noExcessiveLinesPerFile": "off"
           },
-          "complexity": { "noExcessiveLinesPerFunction": "off" }
+          "complexity": {
+            "noExcessiveLinesPerFunction": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "**/app/**/page.tsx",
+        "**/app/**/layout.tsx",
+        "**/app/**/loading.tsx",
+        "**/app/**/error.tsx",
+        "**/app/**/not-found.tsx",
+        "**/app/**/route.ts",
+        "**/app/**/template.tsx",
+        "**/app/**/default.tsx",
+        "**/*.cjs"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off"
+          }
         }
       }
     }
-  ]
+  ],
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  }
 }

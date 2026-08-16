@@ -53,7 +53,9 @@ const isManifest = filePath.endsWith("package.json");
  * leak that survived four hand sweeps was a comment in a `.grit` file, which nothing scanned
  * because it was neither.
  */
-const isScannable = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/.test(filePath);
+const isScannable = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/.test(
+  filePath,
+);
 
 const perFile = [
   ...(isCode ? CODE_GATES : []),

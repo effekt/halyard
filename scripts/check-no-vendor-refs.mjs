@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Rejects employer or client names, internal application names, and local absolute paths.
 //
 // This repository is public and its contributors work in codebases that are not. A
@@ -13,8 +14,8 @@
 //
 // Usage: node scripts/check-no-vendor-refs.mjs [files...] [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

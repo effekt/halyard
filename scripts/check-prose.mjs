@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Rejects two prose failures a reader cannot recover from.
 //
 // The first is an appeal to a measurement nobody outside the room can open — "77 of the
@@ -27,9 +28,9 @@
 //
 // Usage: node scripts/check-prose.mjs [files...] [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join, relative, resolve, dirname } from "node:path";
+import { readdir, readFile } from "node:fs/promises";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -127,36 +128,48 @@ async function collectTargets(explicit) {
 const args = process.argv.slice(2);
 const targets = await collectTargets(args.filter((arg) => !arg.startsWith("--")));
 
-const hits = [];
-for (const file of targets) {
-  const lines = (await readFile(file, "utf8")).split("\n");
-  let inFence = false;
-  let inFrontmatter = false;
+const ALL_PATTERNS = [...UNVERIFIABLE, ...HISTORICAL, ...FUTURE, ...FILLER];
 
-  lines.forEach((line, index) => {
-    if (index === 0 && line.trim() === "---") {
-      inFrontmatter = true;
-      return;
-    }
-    if (inFrontmatter) {
-      if (line.trim() === "---") inFrontmatter = false;
-      return;
-    }
+/** Body lines, frontmatter dropped. Numbers are the file's own, so reports stay navigable. */
+function* numberedBodyLines(text) {
+  const lines = text.split("\n");
+  const closes = lines[0]?.trim() === "---" ? lines.indexOf("---", 1) : -1;
+  for (let index = closes + 1; index < lines.length; index += 1) {
+    yield [index + 1, lines[index]];
+  }
+}
+
+/** Fenced blocks are quoted material, and an exempt line has opted out deliberately. */
+function* proseLines(text) {
+  let inFence = false;
+  for (const [lineNumber, line] of numberedBodyLines(text)) {
     if (/^\s*```/.test(line)) {
       inFence = !inFence;
-      return;
+    } else if (!inFence && !EXEMPT_LINE.test(line)) {
+      yield [lineNumber, line];
     }
-    if (inFence || EXEMPT_LINE.test(line)) return;
+  }
+}
 
-    const text = proseOnly(line);
-    for (const [pattern, why] of [...UNVERIFIABLE, ...HISTORICAL, ...FUTURE, ...FILLER]) {
-      const match = pattern.exec(text);
-      if (match) {
-        hits.push(`${relative(ROOT, file)}:${index + 1}  ${why}\n      ${match[0].trim()}`);
-        break;
-      }
+/** The first pattern a line trips, or null. One report per line keeps the output readable. */
+function firstOffence(line) {
+  const text = proseOnly(line);
+  for (const [pattern, why] of ALL_PATTERNS) {
+    const match = pattern.exec(text);
+    if (match) return { why, quote: match[0].trim() };
+  }
+  return null;
+}
+
+const hits = [];
+for (const file of targets) {
+  const text = await readFile(file, "utf8");
+  for (const [lineNumber, line] of proseLines(text)) {
+    const offence = firstOffence(line);
+    if (offence) {
+      hits.push(`${relative(ROOT, file)}:${lineNumber}  ${offence.why}\n      ${offence.quote}`);
     }
-  });
+  }
 }
 
 if (hits.length === 0) {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Rejects range specifiers in dependencies and devDependencies. Every version is exact.
 //
 // A caret is an instruction to install code nobody has reviewed, on a schedule set by
@@ -12,8 +13,8 @@
 //
 // Usage: node scripts/check-pinned-deps.mjs [files...] [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
