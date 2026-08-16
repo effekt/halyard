@@ -1,16 +1,17 @@
 import type { z } from "zod";
 import type { featureGridSchema } from "./FeatureGrid.schema";
+import { TONE_SURFACE } from "./tone.constants";
 
 type FeatureGridProps = z.infer<typeof featureGridSchema>;
 
 const TONE_STYLES = {
   light: {
-    section: "bg-canvas text-marine",
+    section: TONE_SURFACE.light,
     card: "border-brass/30 bg-white",
     body: "text-marine/70",
   },
   dark: {
-    section: "bg-marine text-canvas",
+    section: TONE_SURFACE.dark,
     card: "border-teal-light/20 bg-white/5",
     body: "text-canvas/70",
   },

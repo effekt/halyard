@@ -1,11 +1,12 @@
 import type { z } from "zod";
 import type { siteFooterSchema } from "./SiteFooter.schema";
+import { TONE_SURFACE } from "./tone.constants";
 
 type SiteFooterProps = z.infer<typeof siteFooterSchema>;
 
 const TONE_STYLES = {
-  light: { section: "bg-canvas text-marine", muted: "text-marine/60" },
-  dark: { section: "bg-marine text-canvas", muted: "text-canvas/50" },
+  light: { section: TONE_SURFACE.light, muted: "text-marine/60" },
+  dark: { section: TONE_SURFACE.dark, muted: "text-canvas/50" },
 } as const;
 
 export function SiteFooter({ tagline, tone, columns, legal }: SiteFooterProps) {

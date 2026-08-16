@@ -37,7 +37,6 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
       "suspicious": {
         "noExplicitAny": "error",
         "noEmptyBlockStatements": "error"
@@ -113,7 +112,8 @@
             "filenameCases": ["export"]
           }
         }
-      }
+      },
+      "preset": "recommended"
     }
   },
   "assist": {

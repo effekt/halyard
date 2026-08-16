@@ -1,11 +1,12 @@
 import type { z } from "zod";
 import type { logoWallSchema } from "./LogoWall.schema";
+import { TONE_SURFACE } from "./tone.constants";
 
 type LogoWallProps = z.infer<typeof logoWallSchema>;
 
 const TONE_STYLES = {
-  light: { section: "bg-canvas text-marine", heading: "text-marine/60" },
-  dark: { section: "bg-marine text-canvas", heading: "text-canvas/60" },
+  light: { section: TONE_SURFACE.light, heading: "text-marine/60" },
+  dark: { section: TONE_SURFACE.dark, heading: "text-canvas/60" },
 } as const;
 
 export function LogoWall({ heading, tone, logos }: LogoWallProps) {
