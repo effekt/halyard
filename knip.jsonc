@@ -1,0 +1,19 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+
+  // A published library's dead exports are worse than an app's: they ship, they get
+  // depended on, and semver then protects them forever. Knip is the gate that stops an
+  // export reaching the surface before anything needs it.
+  "ignore": ["**/*.d.ts", ".claude/**"],
+
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/**/*.mjs"],
+      "project": ["scripts/**/*.mjs"]
+    },
+    "packages/*": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.ts", "src/**/*.tsx"]
+    }
+  }
+}

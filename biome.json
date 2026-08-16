@@ -1,0 +1,162 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.8/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/.next",
+      "!**/.turbo",
+      "!**/.repomix",
+      "!.claude"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always"
+    }
+  },
+  "plugins": [
+    "./scripts/biome-plugins/noUnknownCast.grit",
+    "./scripts/biome-plugins/booleanNaming.grit"
+  ],
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "error",
+        "noEmptyBlockStatements": "error"
+      },
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 10 }
+        },
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": { "maxLines": 50, "skipBlankLines": true, "skipIifes": true }
+        }
+      },
+      "performance": {
+        "noBarrelFile": "error",
+        "noReExportAll": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "error",
+        "noMagicNumbers": "error",
+        "useConst": "error",
+        "useExportType": "error",
+        "useImportType": "error",
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": { "maxLines": 200, "skipBlankLines": true }
+        },
+        "useNamingConvention": {
+          "level": "error",
+          "options": {
+            "strictCase": false,
+            "requireAscii": true,
+            "conventions": [
+              { "selector": { "kind": "variable" }, "match": "_|.{2,}" },
+              { "selector": { "kind": "objectLiteralProperty" }, "match": ".*" },
+              { "selector": { "kind": "typeProperty" }, "match": ".*" }
+            ]
+          }
+        },
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "requireAscii": true,
+            "filenameCases": ["export"]
+          }
+        }
+      }
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.config.*", "**/*.d.ts", "packages/*/src/index.ts"],
+      "linter": {
+        "rules": {
+          "style": { "useFilenamingConvention": "off", "noExcessiveLinesPerFile": "off" },
+          "performance": { "noBarrelFile": "off", "noReExportAll": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.types.ts", "**/*.constants.ts"],
+      "linter": {
+        "rules": {
+          "style": { "useFilenamingConvention": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.schema.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off",
+            "noExcessiveLinesPerFile": {
+              "level": "error",
+              "options": { "maxLines": 60, "skipBlankLines": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["scripts/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useFilenamingConvention": "off",
+            "noMagicNumbers": "off",
+            "noExcessiveLinesPerFile": "off"
+          },
+          "complexity": { "noExcessiveLinesPerFunction": "off" }
+        }
+      }
+    },
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**"],
+      "linter": {
+        "rules": {
+          "suspicious": { "noExplicitAny": "error", "noEmptyBlockStatements": "off" },
+          "style": {
+            "noMagicNumbers": "off",
+            "useFilenamingConvention": "off",
+            "noExcessiveLinesPerFile": "off"
+          },
+          "complexity": { "noExcessiveLinesPerFunction": "off" }
+        }
+      }
+    }
+  ]
+}

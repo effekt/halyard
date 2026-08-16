@@ -1,0 +1,66 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+  - "examples/*"
+
+# Wait 3 days (4320 minutes) after publish before installing a new dependency version.
+#
+# Why 3 and not 5 or 7: the cooldown is a free-rider control — it only helps if someone
+# else installs a compromised release first and reports it. Real npm compromises are caught
+# in hours, not days (chalk/debug ~2.5h, axios ~3h, Shai-Hulud ~12h; npm security typically
+# removes inside 24-48h). Day 1 captures most of that value and day 3 nearly all of it,
+# while days 4-5 buy almost nothing — the attacks that survive a week (event-stream,
+# xz-utils) need a 30-90 day window no tolerable cooldown provides. 3 days also matches
+# Renovate's security:minimumReleaseAgeNpm preset.
+#
+# A security advisory must NOT wait on this. Bypass per-package via
+# minimumReleaseAgeExclude, on the condition that the published diff is read and npm
+# provenance confirmed first. Keep exemptions dated and delete them once the version
+# clears the gate on its own.
+minimumReleaseAge: 4320
+
+# Reject sub-dependencies resolved through git:, git+https:, tarball URLs, or
+# github:owner/repo — these bypass the registry, and with it the cooldown, provenance
+# checks, and npm takedowns.
+blockExoticSubdeps: true
+
+# Centralized versions for every shared dependency. Reference them in package.json as
+# "catalog:" so a version is pinned in exactly one place — and pinned EXACTLY, never with
+# a range. See .claude/rules/dependencies.md.
+catalog:
+  # Peers — consumers bring their own; we only ever devDepend on these
+  react: 19.2.7
+  react-dom: 19.2.7
+  next: 16.2.7
+
+  # Schema — Standard Schema is the interface, zod is what we test against
+  "@standard-schema/spec": 1.1.0
+  zod: 4.4.3
+
+  # Toolchain
+  typescript: 6.0.3
+  vitest: 4.1.10
+  "@biomejs/biome": 2.5.8
+  turbo: 2.10.9
+  tsup: 8.5.1
+  tsx: 4.22.4
+
+  # Ratchets
+  jscpd: 5.0.15
+  knip: 6.32.2
+  dependency-cruiser: 18.1.1
+  type-coverage: 2.30.1
+  lefthook: 2.1.10
+  "@commitlint/cli": 21.2.2
+  "@commitlint/config-conventional": 21.2.2
+
+  # Publishing
+  "@changesets/cli": 3.0.0
+  publint: 0.3.23
+  "@arethetypeswrong/cli": 0.18.5
+  repomix: 1.18.0
+
+  # Types
+  "@types/node": 25.9.2
+  "@types/react": 19.2.17
+  "@types/react-dom": 19.2.3

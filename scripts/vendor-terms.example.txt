@@ -1,0 +1,11 @@
+# One term per line. Matched case-insensitively on word boundaries.
+# Copy to vendor-terms.txt (gitignored) and add anything that would identify a
+# codebase this repository is not part of: employer or client names, internal
+# application and package names, product-specific routes, model names, page titles.
+#
+# Keep the observation, drop the source. "In one production corpus, 98.9% of
+# entries were data models" stands on its own; where it came from adds nothing.
+
+# ExampleCorp
+# example-app
+# @examplecorp

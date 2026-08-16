@@ -1,0 +1,5 @@
+# Blank issues stay enabled: the tooling in `scripts/` and the workflows in
+# `.github/workflows/` are real code and can have real bugs, which don't fit the design
+# template below. A dedicated bug template for the rest of the repo would be premature —
+# there's no shipped package yet to file one against.
+blank_issues_enabled: true

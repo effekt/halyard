@@ -1,0 +1,72 @@
+{
+  "name": "halyard",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "description": "A page builder that lives inside your codebase. Schema in code, content as data.",
+  "keywords": [
+    "page-builder",
+    "cms",
+    "schema",
+    "standard-schema",
+    "content-management",
+    "react",
+    "nextjs"
+  ],
+  "license": "MIT",
+  "author": "Jesse Wheeler (https://github.com/effekt)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effekt/halyard.git"
+  },
+  "homepage": "https://github.com/effekt/halyard#readme",
+  "bugs": {
+    "url": "https://github.com/effekt/halyard/issues"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "biome check --write .",
+    "dupes": "jscpd packages",
+    "knip": "knip",
+    "boundaries": "depcruise packages --config .dependency-cruiser.cjs",
+    "type-coverage": "type-coverage --project tsconfig.type-coverage.json --at-least 99 --strict --ignore-files \"**/*.test.ts\" --detail",
+    "single-export": "node scripts/check-single-export.mjs --check",
+    "junk-filenames": "node scripts/check-structure.mjs --check",
+    "schema-depth": "node scripts/check-schema-depth.mjs --check",
+    "vendor-refs": "node scripts/check-no-vendor-refs.mjs --check",
+    "docs": "node scripts/check-docs.mjs --check",
+    "superseded": "node scripts/check-superseded.mjs --check",
+    "stale-docs": "node scripts/check-stale-docs.mjs",
+    "catalog": "node scripts/docs-catalog.mjs",
+    "pinned-deps": "node scripts/check-pinned-deps.mjs --check",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm docs && pnpm superseded && pnpm vendor-refs && pnpm pinned-deps && pnpm junk-filenames && pnpm schema-depth",
+    "map": "repomix --style json --output .repomix/codebase.json",
+    "map:docs": "node scripts/docs-catalog.mjs --json > .repomix/docs.json",
+    "release": "turbo run build && changeset publish",
+    "changeset": "changeset",
+    "prepare": "lefthook install || true"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "catalog:",
+    "@biomejs/biome": "catalog:",
+    "@changesets/cli": "catalog:",
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "dependency-cruiser": "catalog:",
+    "jscpd": "catalog:",
+    "knip": "catalog:",
+    "lefthook": "catalog:",
+    "publint": "catalog:",
+    "repomix": "catalog:",
+    "turbo": "catalog:",
+    "type-coverage": "catalog:",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

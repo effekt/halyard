@@ -1,0 +1,74 @@
+# https://github.com/evilmartians/lefthook
+min_version: 2.1.6
+lefthook: pnpm exec lefthook
+
+pre-commit:
+  parallel: false
+  commands:
+    fix:
+      glob: "*.{js,mjs,ts,tsx,json,jsonc}"
+      run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+
+    # One unit per file — counts value exports AND module-private functions.
+    # Biome's filenameCases:["export"] checks the NAME; this checks the COUNT.
+    # Pre-commit only, never CI: it blocks the commit that touches a file, so the
+    # author decomposes what they are already editing.
+    single-export:
+      glob: "{packages,apps}/**/*.{ts,tsx}"
+      run: node scripts/check-single-export.mjs --check {staged_files}
+
+    junk-filenames:
+      glob: "{packages,apps}/**/*.{ts,tsx}"
+      run: node scripts/check-structure.mjs --check {staged_files}
+
+    # A large schema is one declaration with no branching, so every complexity gate
+    # scores it zero. This is the only thing that catches it.
+    schema-depth:
+      glob: "{packages,apps}/**/*.{ts,tsx}"
+      run: node scripts/check-schema-depth.mjs --check {staged_files}
+
+    duplication:
+      glob: "{packages,apps}/**/*.{ts,tsx}"
+      run: pnpm exec jscpd {staged_files}
+
+    # Ranges auto-install unreviewed code; minimumReleaseAge only delays it.
+    pinned-deps:
+      glob: "**/package.json"
+      run: node scripts/check-pinned-deps.mjs --check {staged_files}
+
+    # Public repo, contributors from private ones.
+    vendor-refs:
+      glob: "*.{md,ts,tsx,mjs,json,jsonc,yml,yaml}"
+      run: node scripts/check-no-vendor-refs.mjs --check {staged_files}
+
+    # Corpus-wide, so no {staged_files}: a link is only broken relative to every other
+    # document, and a superseded term is only findable against the whole set.
+    docs:
+      glob: "*.md"
+      run: node scripts/check-docs.mjs --check
+
+    superseded-terms:
+      glob: "*.md"
+      run: node scripts/check-superseded.mjs --check
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}
+
+pre-push:
+  parallel: true
+  commands:
+    typecheck:
+      run: pnpm typecheck
+    test:
+      run: pnpm test
+    boundaries:
+      run: pnpm boundaries
+    dead-code:
+      run: pnpm knip
+    stale-docs:
+      run: pnpm stale-docs
+    type-coverage:
+      run: pnpm type-coverage

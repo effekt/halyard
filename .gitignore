@@ -1,0 +1,23 @@
+node_modules/
+dist/
+.next/
+.turbo/
+*.tsbuildinfo
+.DS_Store
+
+.env
+.env.local
+.env.*.local
+
+coverage/
+.halyard/
+
+# Generated on demand by `pnpm map` — a committed codebase map goes stale and
+# conflicts on every branch that adds a unit.
+.repomix/
+
+# jscpd report output
+report/
+
+# Vendor scrub list — kept private; see vendor-terms.example.txt
+scripts/vendor-terms.txt

@@ -1,0 +1,27 @@
+// Boolean variables must read as predicates — prefix with is/has/should/can/will/did/are.
+// Biome's useNamingConvention isn't type-aware, so this GritQL plugin catches the
+// SYNTACTIC boolean assignments (literals, negation, comparisons, Boolean(), instanceof).
+// Type-inferred booleans (`const x = fn()`) can't be caught without types — convention covers those.
+//
+// Diagnostic-only BY DESIGN — no rewrite is possible: the prefix is a semantic
+// choice (is/has/should/...), and a rename must update every reference, which
+// GritQL's single-node rewrite cannot do (it would leave dangling identifiers).
+or {
+  `const $name = true`,
+  `const $name = false`,
+  `const $name = !$x`,
+  `const $name = $a === $b`,
+  `const $name = $a !== $b`,
+  `const $name = $a >= $b`,
+  `const $name = $a <= $b`,
+  `const $name = $a > $b`,
+  `const $name = $a < $b`,
+  `const $name = Boolean($x)`,
+  `const $name = $a instanceof $b`
+} where {
+  $name <: not r"^(?:is|has|should|can|will|did|are|was|does|must)(?:[A-Z0-9].*)?$",
+  register_diagnostic(
+    span = $name,
+    message = "Boolean variables should read as a predicate — prefix with is/has/should/can/will (e.g. `isOpen`, not `open`)."
+  )
+}

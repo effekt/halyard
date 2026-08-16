@@ -1,0 +1,14 @@
+// Flags `x as unknown as T` double-assertions. Biome has no built-in rule for this
+// (noExplicitAny only catches `as any`), so this GritQL plugin fills the gap. Use a
+// type guard, `satisfies`, or a typed fixture instead.
+//
+// Diagnostic-only BY DESIGN — do not add a `$cast => ...` rewrite. The obvious
+// fix (`$value as $type`) is exactly the direct cast that TS2352 rejects (the
+// double-assertion exists to silence it), so an autofix would either break the
+// build or assert unsoundly. The real remediation needs human judgment.
+`$value as unknown as $type` where {
+  register_diagnostic(
+    span = $value,
+    message = "Avoid `as unknown as` double-assertions — use a type guard, `satisfies`, or a typed fixture."
+  )
+}

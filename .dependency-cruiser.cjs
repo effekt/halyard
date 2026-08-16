@@ -1,0 +1,108 @@
+/**
+ * Mechanical enforcement of `.claude/rules/package-boundaries.md`.
+ *
+ * The portability of `core` is the product's central claim — it has to run in a browser
+ * studio, a worker, and a CI step. A review can miss a stray `node:crypto` import; this
+ * cannot.
+ */
+
+/** @type {import('dependency-cruiser').IConfiguration} */
+module.exports = {
+  forbidden: [
+    {
+      name: "core-imports-no-node-builtins",
+      severity: "error",
+      comment:
+        "core must run in a browser and a worker, so it may not reach for node builtins. " +
+        "Move the IO behind an adapter interface. See .claude/rules/package-boundaries.md.",
+      from: { path: "^packages/core/src" },
+      to: { dependencyTypes: ["core"] },
+    },
+    {
+      name: "core-imports-no-framework",
+      severity: "error",
+      comment:
+        "core is framework-agnostic. Component types reach it as a generic parameter, never " +
+        "as an import. See .claude/rules/package-boundaries.md.",
+      from: { path: "^packages/core/src" },
+      to: { path: "node_modules/(react|react-dom|next)/" },
+    },
+    {
+      name: "core-depends-on-nothing-local",
+      severity: "error",
+      comment: "core is the bottom of the graph — it may not import a sibling package.",
+      from: { path: "^packages/core/src" },
+      to: { path: "^packages/(?!core/)" },
+    },
+    {
+      name: "no-cross-adapter-imports",
+      severity: "error",
+      comment:
+        "Adapters are independent and interchangeable; they compose through core, never " +
+        "through each other. (`next` depending on `react` is the one allowed exception.)",
+      from: { path: "^packages/store-fs/src" },
+      to: { path: "^packages/(react|next)/" },
+    },
+    {
+      name: "no-react-to-next",
+      severity: "error",
+      comment: "The React binding must not depend on Next — the dependency runs the other way.",
+      from: { path: "^packages/react/src" },
+      to: { path: "^packages/(next|store-fs)/" },
+    },
+    {
+      name: "no-deep-package-imports",
+      severity: "error",
+      comment:
+        "Import a package through its published entrypoint only. A deep path becomes a " +
+        "de-facto API that semver cannot protect.",
+      from: { path: "^(packages|apps)/" },
+      to: {
+        path: "^packages/[^/]+/src/",
+        pathNot: "^packages/[^/]+/src/index\\.tsx?$",
+      },
+    },
+    {
+      name: "no-app-in-packages",
+      severity: "error",
+      comment: "Packages are libraries; they may not depend on an app.",
+      from: { path: "^packages/[^/]+/src" },
+      to: { path: "^apps/" },
+    },
+    {
+      name: "no-circular",
+      severity: "error",
+      comment: "Circular dependencies make load order undefined and tree-shaking unreliable.",
+      from: {},
+      to: { circular: true },
+    },
+    {
+      name: "no-orphans",
+      severity: "warn",
+      comment: "An orphan module is unreachable — either wire it up or delete it.",
+      from: { orphan: true, pathNot: "\\.d\\.ts$|\\.config\\.[cm]?[jt]s$" },
+      to: {},
+    },
+  ],
+  options: {
+    doNotFollow: { path: "(^|/)(node_modules|dist|\\.next|coverage)($|/)" },
+    exclude: {
+      path: [
+        "node_modules",
+        "\\.test\\.(ts|tsx)$",
+        "__tests__/",
+        "/dist/",
+        "\\.next/",
+        "/coverage/",
+        "\\.d\\.ts$",
+      ],
+    },
+    tsPreCompilationDeps: true,
+    tsConfig: { fileName: "tsconfig.base.json" },
+    enhancedResolveOptions: {
+      exportsFields: ["exports"],
+      conditionNames: ["import", "node", "default", "types"],
+      mainFields: ["main", "types"],
+    },
+  },
+};

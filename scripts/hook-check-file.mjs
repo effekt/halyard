@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+// PostToolUse bridge: run the mechanical gates against the single file an agent just
+// wrote, so a violation surfaces at the edit rather than at commit time.
+//
+// Reads the hook payload on stdin, extracts `tool_input.file_path`, and delegates.
+// Exit 2 blocks and returns stderr to the agent.
+
+import { spawnSync } from "node:child_process";
+
+const CODE_GATES = [
+  ["node", ["scripts/check-single-export.mjs", "--check"]],
+  ["node", ["scripts/check-structure.mjs", "--check"]],
+  ["node", ["scripts/check-schema-depth.mjs", "--check"]],
+  ["pnpm", ["exec", "biome", "check", "--no-errors-on-unmatched"]],
+];
+
+/** Prose carries vendor references as readily as code, so docs are checked too. */
+const UNIVERSAL_GATES = [["node", ["scripts/check-no-vendor-refs.mjs", "--check"]]];
+
+/**
+ * Documentation gates take no file argument — a link is only broken relative to every other
+ * document, and a superseded term is only findable against the whole corpus.
+ */
+const PROSE_GATES = [
+  ["node", ["scripts/check-docs.mjs", "--check"]],
+  ["node", ["scripts/check-superseded.mjs", "--check"]],
+];
+
+const payload = await new Promise((resolve) => {
+  let raw = "";
+  process.stdin.setEncoding("utf8");
+  process.stdin.on("data", (chunk) => {
+    raw += chunk;
+  });
+  process.stdin.on("end", () => resolve(raw));
+});
+
+let filePath;
+try {
+  filePath = JSON.parse(payload)?.tool_input?.file_path;
+} catch {
+  process.exit(0);
+}
+
+if (!filePath) process.exit(0);
+
+const isCode = /\.tsx?$/.test(filePath);
+const isProse = /\.(md|mdx)$/.test(filePath);
+const isManifest = filePath.endsWith("package.json");
+
+const perFile = [
+  ...(isCode ? CODE_GATES : []),
+  ...(isManifest ? [["node", ["scripts/check-pinned-deps.mjs", "--check"]]] : []),
+  ...(isCode || isProse ? UNIVERSAL_GATES : []),
+];
+
+if (perFile.length === 0 && !isProse) process.exit(0);
+
+const failures = [
+  ...perFile.map(([command, args]) =>
+    spawnSync(command, [...args, filePath], { encoding: "utf8" }),
+  ),
+  ...(isProse
+    ? PROSE_GATES.map(([command, args]) => spawnSync(command, args, { encoding: "utf8" }))
+    : []),
+].filter((result) => result.status !== 0);
+
+if (failures.length === 0) process.exit(0);
+
+for (const failure of failures) {
+  process.stderr.write(`${failure.stdout ?? ""}${failure.stderr ?? ""}`);
+}
+process.exit(2);

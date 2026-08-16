@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # npm/pnpm is deliberately not configured here. .claude/rules/dependencies.md pins every
+  # version exactly and enforces a 3-day minimumReleaseAge cooldown in pnpm-workspace.yaml;
+  # shared versions live once in its `catalog:` block. Dependabot's npm updater would either
+  # fight that (a same-day PR that pnpm install refuses until the version clears the cooldown)
+  # or duplicate it (its own `cooldown` config, redundant with minimumReleaseAge and one more
+  # place for the policy to drift). With ~20 devDependencies in one catalog block, the manual
+  # "bump deliberately, in its own commit, scope deps" workflow the rule already requires is
+  # cheaper than reconciling two cooldown mechanisms.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"

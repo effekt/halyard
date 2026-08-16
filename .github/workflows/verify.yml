@@ -1,0 +1,75 @@
+name: verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The prose gates are plain Node with no dependencies, so they run against a bare
+  # checkout. They are also the only gates with anything to check until the first
+  # package lands — see the Status section in README.md.
+  prose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # check-stale-docs compares commit times across link edges, so it needs history.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Documentation structure
+        run: node scripts/check-docs.mjs --check
+
+      - name: Superseded terminology
+        run: node scripts/check-superseded.mjs --check
+
+      # The denylist is gitignored — publishing it would defeat it — so this run catches
+      # machine paths only. VENDOR_TERMS supplies the terms when the secret is configured.
+      - name: Vendor references
+        run: |
+          if [ -n "$VENDOR_TERMS" ]; then
+            printf '%s\n' "$VENDOR_TERMS" > scripts/vendor-terms.txt
+          fi
+          node scripts/check-no-vendor-refs.mjs --check
+        env:
+          VENDOR_TERMS: ${{ secrets.VENDOR_TERMS }}
+
+      - name: Pinned dependencies
+        run: node scripts/check-pinned-deps.mjs --check
+
+      - name: Junk-drawer filenames
+        run: node scripts/check-structure.mjs --check
+
+      # Advisory: a document trailing something it links to is worth re-reading,
+      # not worth failing a build over.
+      - name: Stale documents
+        run: node scripts/check-stale-docs.mjs
+        continue-on-error: true
+
+  # Enabled by the commit that adds the first package, together with a lockfile.
+  # Running it now would fail on `--frozen-lockfile` and lint an empty workspace.
+  code:
+    if: ${{ hashFiles('pnpm-lock.yaml') != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Gates
+        run: pnpm lint && pnpm typecheck && pnpm test
