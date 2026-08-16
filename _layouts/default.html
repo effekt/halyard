@@ -5,11 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% seo %}
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
     <![endif]-->
     <style>
+      /* Styled as the theme's h1 but not one — the page's own title is the sole h1,
+         so the document outline reads "site name, then page" instead of two competing h1s. */
+      .site-title { font-size: 2em; font-weight: 600; line-height: 1.25; margin: 0 0 0.3em; }
+      .site-title a { text-decoration: none; color: inherit; }
       .site-nav { border-bottom: 1px solid #e1e4e8; margin-bottom: 2em; padding-bottom: 1em; }
       .site-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.25em 1.25em; }
       .site-nav a { text-decoration: none; }
@@ -37,9 +42,12 @@
         background: #0B2B33; color: #F1F4F3; padding: 0.6em 1em; border-radius: 0 0 4px 0;
       }
       .skip-link:focus { left: 0; top: 0; z-index: 100; }
-      .site-nav a.current { font-weight: 600; color: #24292e; border-bottom: 2px solid #0366d6; }
+      /* Brand palette, not the theme's blue: Deep Marine text over a Halyard Teal rule. */
+      .site-nav a.current { font-weight: 600; color: #0B2B33; border-bottom: 2px solid #0E5A6B; }
       .site-footer { border-top: 1px solid #e1e4e8; margin-top: 3em; padding-top: 1em; color: #586069; font-size: 0.9em; }
       .mermaid { text-align: center; margin: 1.5em 0; }
+      /* In-page anchor jumps land with breathing room instead of the heading flush to the top edge. */
+      main h1, main h2, main h3, main h4 { scroll-margin-top: 1rem; }
     </style>
   </head>
   <body>
@@ -51,7 +59,7 @@
       {% endcomment %}
       {% unless page.hide_site_header %}
       <header>
-        <h1><a href="{{ '/' | relative_url }}" style="text-decoration:none; color:inherit;">{{ site.title }}</a></h1>
+        <p class="site-title"><a href="{{ '/' | relative_url }}">{{ site.title }}</a></p>
         <p>{{ site.description }}</p>
       </header>
       {% endunless %}

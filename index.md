@@ -163,10 +163,6 @@ hide_site_header: true
      that wrapping only takes effect on a narrow screen. */
   main pre { overflow-x: auto; }
   main pre, main pre > code { white-space: pre-wrap; overflow-wrap: anywhere; }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .hy-actions a { transition: background-color 120ms ease; }
-  }
 </style>
 
 <div class="hy-hero">
@@ -291,9 +287,9 @@ never carries the schema, only the outcome of validating against it:
 
 ## What it refuses
 
-Three capabilities that visual editors commonly ship are out of scope here, and each is out
-for the same reason: it moves a decision that belongs in a reviewed codebase into a database
-row that nobody reviews.
+Three capabilities that visual editors commonly ship are out of scope here. The first is
+load-bearing — the rendering and caching model rests on artifacts staying inert data; the
+second and third are judgments about what this project is.
 
 <div class="hy-refusals">
   <div>
@@ -330,8 +326,9 @@ row that nobody reviews.
       review stands between the two.
     </p>
     <p>
-      A route is a decision. It is made in code, where a diff can show what changed and a
-      test can hold it.
+      A route is a decision an author makes once, recorded as one enumerable pointer. A
+      template fanning routes out of a bound query is logic no review sees, and the route
+      table stops being answerable.
     </p>
   </div>
 </div>
