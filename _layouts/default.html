@@ -45,10 +45,16 @@
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
     <div class="wrapper" style="max-width: 960px; margin: 0 auto; padding: 2em 1em;">
+      {% comment %}
+        A page that opens with its own masthead sets `hide_site_header: true` and supplies
+        the sole h1 itself. Every page without the flag renders this header unchanged.
+      {% endcomment %}
+      {% unless page.hide_site_header %}
       <header>
         <h1><a href="{{ '/' | relative_url }}" style="text-decoration:none; color:inherit;">{{ site.title }}</a></h1>
         <p>{{ site.description }}</p>
       </header>
+      {% endunless %}
 
       <nav class="site-nav">
         <ul>
