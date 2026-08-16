@@ -33,7 +33,7 @@ import { join, relative, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = ["docs", ".claude/rules", ".claude/skills"];
+const SCAN_ROOTS = ["docs", ".claude/rules", ".claude/skills", "examples"];
 const EXEMPT_LINE = /<!--\s*prose-ok\s*-->/;
 
 /**

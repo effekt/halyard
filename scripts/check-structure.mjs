@@ -15,7 +15,7 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = ["packages", "apps"];
+const SCAN_ROOTS = ["packages", "apps", "examples"];
 const SOURCE_EXT = /\.(ts|tsx)$/;
 const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", "generated"]);
 const JUNK_BASENAME =

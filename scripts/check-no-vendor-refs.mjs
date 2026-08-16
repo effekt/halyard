@@ -23,7 +23,7 @@ const TERMS_FILE = join(ROOT, "scripts/vendor-terms.txt");
 // Directories are walked recursively; every file at the repository root is scanned as well.
 // Enumerating root files by name is how the last leak survived — a `.grit` file nobody had
 // added to the list — so the root is swept wholesale instead.
-const SCAN_ROOTS = ["docs", "packages", "apps", ".claude", "scripts", ".github"];
+const SCAN_ROOTS = ["docs", "packages", "apps", "examples", ".claude", "scripts", ".github"];
 const SCANNED_EXT = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/;
 const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", ".repomix"]);
 
