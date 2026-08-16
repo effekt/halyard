@@ -4,23 +4,21 @@
   // A published library's dead exports are worse than an app's: they ship, they get
   // depended on, and semver then protects them forever. Knip is the gate that stops an
   // export reaching the surface before anything needs it.
-  "ignore": ["**/*.d.ts", ".claude/**", "**/.next/**"],
+  "ignore": ["**/*.d.ts", ".claude/**"],
 
-  // Tooling for a package that has not been written yet. Each is wired into a gate that
-  // runs the moment the first package exists, and deleting them now would mean rediscovering
-  // the same set later. Delete an entry here when the tool starts being reached for real.
-  "ignoreDependencies": ["@arethetypeswrong/cli", "publint", "@commitlint/types"],
+  // publint and attw check a published package, so they are unreachable until one exists,
+  // and both are already wired into the gate table. @commitlint/types is a type-only import
+  // in the commitlint config. tailwindcss is reached from `@import "tailwindcss"` in
+  // globals.css, which knip does not follow out of a stylesheet.
+  "ignoreDependencies": ["@arethetypeswrong/cli", "publint", "@commitlint/types", "tailwindcss"],
 
   "workspaces": {
     ".": {
-      "entry": ["scripts/**/*.mjs", "commitlint.config.mjs", ".dependency-cruiser.cjs"],
+      "entry": ["scripts/**/*.mjs"],
       "project": ["scripts/**/*.mjs"]
     },
     "examples/*": {
-      "entry": [
-        "src/app/**/{page,layout,not-found,error,loading,route}.{ts,tsx}",
-        "next.config.ts"
-      ],
+      "entry": ["src/app/**/{page,layout,not-found,error,loading,route}.{ts,tsx}"],
       "project": ["src/**/*.{ts,tsx}"]
     },
     "packages/*": {
