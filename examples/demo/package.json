@@ -1,0 +1,26 @@
+{
+  "name": "demo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Reference marketing site whose components are shaped as Halyard blocks.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "tailwindcss": "4.3.3",
+    "typescript": "catalog:"
+  }
+}
