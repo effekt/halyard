@@ -21,3 +21,11 @@ report/
 
 # Vendor scrub list — kept private; see vendor-terms.example.txt
 scripts/vendor-terms.txt
+
+# Skills installed by the skills CLI into the project. Third-party content that is not
+# ours to redistribute, and it arrives as symlinks into .agents/ which git would follow.
+# The decision skill is ours and stays tracked.
+/.agents/
+skills-lock.json
+/.claude/skills/*
+!/.claude/skills/decision/
