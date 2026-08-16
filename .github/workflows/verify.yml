@@ -16,7 +16,7 @@ jobs:
   prose:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # check-stale-docs compares commit times across link edges, so it needs history.
           fetch-depth: 0
@@ -60,7 +60,7 @@ jobs:
     if: ${{ hashFiles('pnpm-lock.yaml') != '' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v4
 
