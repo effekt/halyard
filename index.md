@@ -337,7 +337,7 @@ second and third are judgments about what this project is.
 
 What exists is the architecture, the decisions and the alternatives each one beat, and the
 tooling that will hold an implementation to them. It has been through one adversarial review
-that falsified several of its early claims — a reason to trust it more than an unreviewed
+that falsified its live postMessage preview and its single-manifest publish — a reason to trust it more than an unreviewed
 design, and not a reason to treat it as finished.
 
 The [roadmap](https://github.com/effekt/halyard/issues/14) sequences the build. Its first

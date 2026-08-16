@@ -129,7 +129,8 @@ better, at compile time**, because the schema is TypeScript rather than JSON:
 
 ```ts
 type FieldHints<S> = { [K in keyof InferProps<S>]?: FieldHint };
-//                     ^ a key that is not a real prop is a type error, not a runtime surprise
+//   Not a compile-time guard: a mapped type reaches top-level scalars only, so `cta.label`
+//   is not expressible. Every path is resolved against the schema at createRegistry().
 ```
 
 A CI check covers what types cannot: that every block has a resolvable control for every
@@ -398,7 +399,8 @@ interface ArtifactStore {
 export default async function Page({ params }) {
   const artifact = await resolveArtifact(store, params.slug);
   if (!artifact) notFound();          // unpublished has no artifact — a real server 404
-  return <Renderer artifact={artifact} registry={registry} />;
+  const blocks = await loadBlocks(registry, artifact.blockVersions);
+  return <Renderer artifact={artifact} blocks={blocks} />;
 }
 ```
 

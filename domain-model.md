@@ -311,7 +311,7 @@ Two things that are easy to conflate and behave oppositely.
 | Behaviour | Layout | Template |
 |---|---|---|
 | Relationship | Referenced by pages | Copied into a new page |
-| Editing it | Propagates to every page using it | Affects nothing already created |
+| Editing it | Referenced by every page using it; propagation to published pages is unresolved ([#13](https://github.com/effekt/halyard/issues/13)) | Affects nothing already created |
 | Stored as | `Document` with `kind: "layout"` | `Document` with `kind: "template"` |
 | Composition | Page tree fills the layout's named slots | Page starts as a clone of the tree |
 
@@ -398,7 +398,7 @@ interface ArtifactStore {
 ```mermaid
 flowchart LR
     A["Edit in studio"] --> B["DocumentVersion<br/>immutable, appended"]
-    B --> C{"compile(version, registry)"}
+    B --> C{"compile(version, catalog)"}
     C -->|"invalid"| D["Reject with node paths<br/>author sees it immediately"]
     C -->|"valid"| E["Resolve refs<br/>freeze static props"]
     E --> F["Artifact<br/>content-addressed hash"]
