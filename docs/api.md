@@ -190,7 +190,7 @@ substituting for a query as the data source.
 ```
 Artifact           serializable data only — an image URL or asset id, never a node
   ↓
-Halyard block      app-level. Renders <Image> with the app's own pipeline
+Nubbin block      app-level. Renders <Image> with the app's own pipeline
   ↓
 Design system      pure and framework-agnostic. Receives the rendered node
 ```

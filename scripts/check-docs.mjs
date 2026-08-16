@@ -20,6 +20,7 @@ const SCAN_ROOTS = [
   "docs",
   ".claude/rules",
   ".claude/skills",
+  ".claude/agents",
   "README.md",
   "AGENTS.md",
   "CONTRIBUTING.md",

@@ -41,7 +41,7 @@ code gets written on top of it. A
 convincing objection to something in `docs/` is worth more right now than any patch.
 
 **Argue in an open question.** They live as issues labelled `design-question`, indexed in
-[Open design questions](https://github.com/effekt/halyard/issues/15). Each records what
+[Open design questions](https://github.com/effekt/nubbin/issues/15). Each records what
 deciding it late would cost, because that is usually what settles it. Comment on one, or open
 a new one with the Design question template.
 

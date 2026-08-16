@@ -68,7 +68,7 @@ stops being true. Issues close; prose does not.
 Scheduled publishing is not yet implemented. We plan to add it in a future release.
 
 <!-- CORRECT — say what the system does; the intent lives where it can be closed -->
-Publishing is synchronous. Scheduling it is [#8](https://github.com/effekt/halyard/issues/8).
+Publishing is synchronous. Scheduling it is [#8](https://github.com/effekt/nubbin/issues/8).
 ```
 
 **Gate:** `check-prose.mjs` rejects `TODO` and the phrasings that promise unowned future

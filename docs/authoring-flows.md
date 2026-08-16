@@ -19,7 +19,7 @@ failure modes are open questions rather than settled behavior, and are marked as
 `Document` with `kind: "layout"`) or none; optionally start from a preset instead of blank.
 "Preset" is the working name here — the stored enum value is still `kind: "template"`, and
 renaming it to avoid colliding with Atomic Design's meaning of "template" is an open question
-([#7](https://github.com/effekt/halyard/issues/7)).
+([#7](https://github.com/effekt/nubbin/issues/7)).
 
 **System:**
 - Blank start: `Document` created with `head: 1` and no route pointer — that absence, not a
@@ -35,8 +35,8 @@ renaming it to avoid colliding with Atomic Design's meaning of "template" is an 
 | Mode | Consequence |
 |---|---|
 | Route collides with another `Document`'s route | Nothing in the current design rejects it — `Artifact.route` is never checked against `Document.route`. Collision surfaces later, silently, as one document evicting the other on publish. |
-| Route collides with a coded route in the consumer's app | Undetectable by Halyard — it has no visibility into the app's route tree. Next's file-system routing prefers an explicit route over a catch-all, so the authored page is unreachable with no compile error and no publish error. |
-| Route needs a pattern, not a literal | Real content needs this — a single entry often serves a whole family of URLs off a prefix or param rule, with the remaining segment read at render. Whether authors can create pattern routes is open ([#5](https://github.com/effekt/halyard/issues/5)); the pointer model sketches exact, param and prefix matching ([route pointer](domain-model.md#route-pointer)). |
+| Route collides with a coded route in the consumer's app | Undetectable by Nubbin — it has no visibility into the app's route tree. Next's file-system routing prefers an explicit route over a catch-all, so the authored page is unreachable with no compile error and no publish error. |
+| Route needs a pattern, not a literal | Real content needs this — a single entry often serves a whole family of URLs off a prefix or param rule, with the remaining segment read at render. Whether authors can create pattern routes is open ([#5](https://github.com/effekt/nubbin/issues/5)); the pointer model sketches exact, param and prefix matching ([route pointer](domain-model.md#route-pointer)). |
 | Layout reference is stale or wrong | `layoutId` is not validated against an existing layout `Document` anywhere in the current design. |
 
 ## 2. Compose
@@ -127,7 +127,7 @@ pointer moves, never a recompile.
 
 **Schedule is not modeled.** There is no `scheduledAt` field, no job runner among the
 adapters, and `store.publish()` is synchronous. Open
-([#8](https://github.com/effekt/halyard/issues/8)) — but the artifact model makes it
+([#8](https://github.com/effekt/nubbin/issues/8)) — but the artifact model makes it
 unusually safe if added, since the artifact is compiled and validated before the schedule is
 set, so firing cannot fail on a surprise validation error.
 
@@ -138,10 +138,10 @@ set, so firing cannot fail on a surprise validation error.
 | Compile fails | `CompileError { issues: [{ nodeId, path, code, message }] }`; the document stays on its previous artifact. |
 | Rollback target no longer validates against the current registry | Rollback is a pointer move with no recompile, so frozen props from an older block version could feed a changed component. **Resolved:** `checkRollback` compares the artifact's `registryFingerprint` and `blockVersions` against the live registry before the swap, and either rejects or recompiles the historical version through the `migrate` chain. |
 | A live artifact's block is deleted from the registry | A static block is inert — its data is frozen into the resolved tree, no lookup at render. A request-mode field is not: it needs the registry at request time, so deletion breaks the live page with no republish involved. **Resolved:** the CI guardrail is a required, failing check, and deletion is treated as an incompatible version bump. |
-| Route ownership | Unpublish a route, let another `Document` claim it, republish the first — the second is silently evicted. Nothing enforces uniqueness of route → documentId, so the eviction is silent ([#12](https://github.com/effekt/halyard/issues/12)). |
+| Route ownership | Unpublish a route, let another `Document` claim it, republish the first — the second is silently evicted. Nothing enforces uniqueness of route → documentId, so the eviction is silent ([#12](https://github.com/effekt/nubbin/issues/12)). |
 | Concurrent publishes | **Resolved:** route pointers are independently-writable records, one per route, so two publishes to different routes cannot interfere. |
 | `Document.publishedVersion` disagreeing with what is live | **Resolved:** `publishedVersion` is derived on read from the route pointer rather than stored, so there is no second copy to diverge. |
-| Artifact pruning | Rollback depends on the target artifact still existing. Retention must respect a stated rollback window, and `publish()` must reject a missing hash rather than wiring a dead pointer — see [`adapters.md`](../.claude/rules/adapters.md). No policy is set yet ([#13](https://github.com/effekt/halyard/issues/13)). |
+| Artifact pruning | Rollback depends on the target artifact still existing. Retention must respect a stated rollback window, and `publish()` must reject a missing hash rather than wiring a dead pointer — see [`adapters.md`](../.claude/rules/adapters.md). No policy is set yet ([#13](https://github.com/effekt/nubbin/issues/13)). |
 
 ## 6. Layouts vs presets
 
@@ -172,7 +172,7 @@ Either way, `Artifact` needs to record a layout dependency the way it already re
 **Trigger:** a second author opens a document already open elsewhere.
 
 The minimum viable answer is a pessimistic lock per `Document`, explicitly unconfirmed as
-sufficient ([#10](https://github.com/effekt/halyard/issues/10)). Nothing below is designed yet —
+sufficient ([#10](https://github.com/effekt/nubbin/issues/10)). Nothing below is designed yet —
 no lock entity, no lock/unlock call on `ArtifactStore`, no session heartbeat. Minimally it
 needs a lock owner, an acquired-at timestamp, and a release condition (explicit close, or a
 heartbeat/TTL for a crashed tab). The second author sees the canvas and inspector render

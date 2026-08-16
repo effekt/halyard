@@ -10,7 +10,7 @@ dist/
 .env.*.local
 
 coverage/
-.halyard/
+.nubbin/
 
 # Generated on demand by `pnpm map` — a committed codebase map goes stale and
 # conflicts on every branch that adds a unit.

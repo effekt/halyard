@@ -70,7 +70,7 @@ Repetition and logic live in components, which are code and are reviewed as code
 that renders a list takes the list as a prop and loops internally; the document never
 expresses the loop.
 
-## Layout is ordinary props, and Halyard ships no CSS
+## Layout is ordinary props, and Nubbin ships no CSS
 
 A value like `space: "lg"` passes through as data. What it *means* is resolved by the
 consumer's component, in their codebase, with their design system.

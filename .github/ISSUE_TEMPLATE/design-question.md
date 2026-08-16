@@ -8,7 +8,7 @@ labels: design-question
 ## Which question does this concern?
 
 Link an existing issue labelled `design-question` — they are indexed in
-[Open design questions](https://github.com/effekt/halyard/issues/15) — or the section of
+[Open design questions](https://github.com/effekt/nubbin/issues/15) — or the section of
 [`docs/decisions.md`](../../docs/decisions.md) you think was settled wrong. If neither fits,
 say what you think is missing entirely.
 
