@@ -14,6 +14,9 @@ jobs:
   # checkout with no install step and no lockfile. They are also the only gates with
   # anything to check until the first package lands — see the Status section in README.md.
   #
+  # check-schema-depth and check-single-export are absent despite also being scripts:
+  # both import `typescript`, so they need an install like the code gates do.
+  #
   # The code gates (biome, typecheck, test, boundaries) join this file in the commit that
   # adds the first package, together with the lockfile they need. They are deliberately
   # absent rather than skipped: a job that cannot run is better left unwritten than
@@ -46,6 +49,9 @@ jobs:
 
       - name: Prose
         run: node scripts/check-prose.mjs --check
+
+      - name: Rule files
+        run: node scripts/check-rules.mjs --check
 
       - name: Pinned dependencies
         run: node scripts/check-pinned-deps.mjs --check

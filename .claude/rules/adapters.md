@@ -9,9 +9,7 @@ status: stable
 
 > **An adapter is IO and nothing else. If a line in it makes a decision `core` didn't already make, it's in the wrong package.**
 
-## Why this is separate from `package-boundaries.md`
-
-[`package-boundaries.md`](package-boundaries.md) governs the dependency graph — what an adapter is allowed to import. This rule governs what an adapter is allowed to *do*: the semantics a storage, presence, or auth implementation must preserve regardless of which backend it wraps.
+[`package-boundaries.md`](package-boundaries.md) governs what an adapter may *import*. This governs what it may *do* — the semantics every storage, presence, or auth implementation preserves regardless of the backend it wraps.
 
 ## Rules
 

@@ -78,7 +78,7 @@ settled.
 
 Changing a decision means grepping for what described the old one and fixing all of it in the
 same commit, including tables, diagram labels, and API names inside diagrams. **Gate:** none —
-`check-superseded.mjs` catches renamed *terms*, never a paragraph that is merely wrong now.
+`check-prose.mjs` catches renamed *terms*, never a paragraph that is merely wrong now.
 
 ### State the system, not the path to it
 
@@ -93,6 +93,8 @@ production app was rejected: a hardcoded `frame-ancestors 'none'` and an edge pr
 the origin each break it independently.
 ```
 
+**Gate:** `check-prose.mjs` rejects the phrasings that narrate a draft. <!-- prose-ok -->
+
 ### Cut the words that carry nothing
 
 `in order to` → `to`. `it should be noted that` → delete. Also out: *obviously*, *clearly*,
@@ -105,7 +107,8 @@ author had not finished thinking through. **Gate:** `check-prose.mjs`.
 
 A sentence past roughly 40 words is usually two claims wearing a coat, and the second one is
 where the error hides. Split it. Tables beat paragraphs whenever the content has repeating
-shape — most of this repository's documentation is tables for that reason.
+shape — most of this repository's documentation is tables for that reason. **Gate:** none —
+no regex can tell a long sentence carrying one claim from a long sentence carrying two.
 
 ## What is not covered here
 

@@ -22,7 +22,7 @@ bare checkout:
 
 ```bash
 node scripts/check-docs.mjs --check
-node scripts/check-superseded.mjs --check
+node scripts/check-prose.mjs --check
 node scripts/check-no-vendor-refs.mjs --check
 ```
 
@@ -54,7 +54,7 @@ reasoning already on the page, not just the conclusion.
 Most contributions right now are documentation. Read
 [`.claude/rules/documentation.md`](.claude/rules/documentation.md) before editing anything
 under `docs/` — it covers frontmatter, which document holds what, and the rule that a rename
-adds a row to `docs/superseded.md` in the same commit.
+leaves no trace of the old name.
 
 ## Commits
 

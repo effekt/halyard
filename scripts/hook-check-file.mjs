@@ -48,11 +48,18 @@ const isCode = /\.tsx?$/.test(filePath);
 const isProse = /\.(md|mdx)$/.test(filePath);
 const isManifest = filePath.endsWith("package.json");
 
+/**
+ * Every extension the vendor scanner reads. Deliberately wider than code and prose: the one
+ * leak that survived four hand sweeps was a comment in a `.grit` file, which nothing scanned
+ * because it was neither.
+ */
+const isScannable = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/.test(filePath);
+
 const perFile = [
   ...(isCode ? CODE_GATES : []),
   ...(isManifest ? [["node", ["scripts/check-pinned-deps.mjs", "--check"]]] : []),
   ...(isProse ? PER_FILE_PROSE_GATES : []),
-  ...(isCode || isProse ? UNIVERSAL_GATES : []),
+  ...(isScannable ? UNIVERSAL_GATES : []),
 ];
 
 if (perFile.length === 0 && !isProse) process.exit(0);

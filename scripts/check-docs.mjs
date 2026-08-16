@@ -5,7 +5,7 @@
 // Documentation rots differently from code. A stale sentence compiles, passes every lint,
 // and reads as authoritative — the only signal is a reader acting on it. These are the
 // failures a machine can see; terminology drift is the other half, and lives in
-// `check-superseded.mjs`.
+// `check-prose.mjs`.
 //
 // Usage: node scripts/check-docs.mjs [--check]
 

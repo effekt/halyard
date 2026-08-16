@@ -54,6 +54,11 @@ pre-commit:
       glob: "*.md"
       run: node scripts/check-prose.mjs --check {staged_files}
 
+    # A rule file is re-read on every matching edit, so its length is a running cost.
+    rule-files:
+      glob: ".claude/rules/*.md"
+      run: node scripts/check-rules.mjs --check {staged_files}
+
 commit-msg:
   commands:
     commitlint:
