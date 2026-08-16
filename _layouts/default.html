@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% seo %}
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <![endif]-->
+    <style>
+      .site-nav { border-bottom: 1px solid #e1e4e8; margin-bottom: 2em; padding-bottom: 1em; }
+      .site-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.25em 1.25em; }
+      .site-nav a { text-decoration: none; }
+      .site-nav a.current { font-weight: 600; color: #24292e; border-bottom: 2px solid #0366d6; }
+      .site-footer { border-top: 1px solid #e1e4e8; margin-top: 3em; padding-top: 1em; color: #586069; font-size: 0.9em; }
+      .mermaid { text-align: center; margin: 1.5em 0; }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper" style="max-width: 960px; margin: 0 auto; padding: 2em 1em;">
+      <header>
+        <h1><a href="{{ '/' | relative_url }}" style="text-decoration:none; color:inherit;">{{ site.title }}</a></h1>
+        <p>{{ site.description }}</p>
+      </header>
+
+      <nav class="site-nav">
+        <ul>
+          {% assign nav_pages = site.pages | where_exp: "p", "p.nav_order" | sort: "nav_order" %}
+          {% for p in nav_pages %}
+          <li>
+            <a href="{{ p.url | relative_url }}"{% if page.url == p.url %} class="current"{% endif %}>{{ p.title }}</a>
+          </li>
+          {% endfor %}
+          <li><a href="https://github.com/effekt/halyard">GitHub repository ↗</a></li>
+        </ul>
+      </nav>
+
+      <section>
+        {{ content }}
+      </section>
+
+      <footer class="site-footer">
+        <p>
+          Halyard is free and MIT-licensed. Source, issues, and the condensed working docs
+          live in the <a href="https://github.com/effekt/halyard">repository</a>.
+        </p>
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Kramdown renders ```mermaid fences as <pre><code class="language-mermaid">,
+        // possibly wrapped by Rouge's highlighter markup. Pull the raw text via
+        // textContent (which ignores any syntax-highlighting spans) and hand mermaid
+        // a plain <div class="mermaid"> to render in place.
+        document.querySelectorAll('code.language-mermaid').forEach(function (codeEl) {
+          var text = codeEl.textContent;
+          var container = document.createElement('div');
+          container.className = 'mermaid';
+          container.textContent = text;
+          var host = codeEl.closest('div.language-mermaid') || codeEl.closest('pre') || codeEl.parentElement;
+          host.parentNode.replaceChild(container, host);
+        });
+        if (window.mermaid) {
+          mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'strict' });
+          mermaid.run({ querySelector: '.mermaid' });
+        }
+      });
+    </script>
+  </body>
+</html>

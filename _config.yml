@@ -1,0 +1,8 @@
+title: Halyard Design Record
+description: >-
+  The full, long-form design record for Halyard, a public, MIT-licensed page
+  builder. Schema lives in code, content lives in a database, and publishing
+  compiles a document into an immutable content-addressed artifact.
+theme: jekyll-theme-primer
+markdown: kramdown
+show_downloads: false
