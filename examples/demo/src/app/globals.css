@@ -17,3 +17,10 @@ body {
   background-color: var(--color-canvas);
   font-family: var(--font-sans);
 }
+
+/* Removes the 300ms double-tap-to-zoom delay on touch devices without disabling zoom. */
+a,
+button,
+summary {
+  touch-action: manipulation;
+}

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { CtaBanner } from "@/blocks/CtaBanner";
 import { FaqAccordion } from "@/blocks/FaqAccordion";
 import { FeatureGrid } from "@/blocks/FeatureGrid";
@@ -7,6 +8,12 @@ import { siteFooterDefaults } from "@/blocks/siteFooterDefaults";
 import { PlanCard } from "./PlanCard";
 import { PLANS } from "./plans.constants";
 import { INCLUDED_FEATURES, PRICING_FAQS } from "./pricingContent.constants";
+
+export const metadata: Metadata = {
+  title: "Pricing — Tidewell",
+  description:
+    "Every Tidewell plan includes unlimited workstreams and the same fast setup. Pick the seat count that matches your team today.",
+};
 
 /** Not a block — a pricing table is page-specific composition, not one of the curated eight. */
 export default function PricingPage() {
@@ -24,7 +31,9 @@ export default function PricingPage() {
         }}
       />
       <section id="plans" className="bg-canvas px-6 py-24 text-marine">
-        <h2 className="mx-auto mb-12 max-w-5xl text-3xl font-semibold tracking-tight">Plans</h2>
+        <h2 className="mx-auto mb-12 max-w-5xl text-balance text-3xl font-semibold tracking-tight">
+          Plans
+        </h2>
         <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-3">
           {PLANS.map((plan) => (
             <PlanCard key={plan.name} plan={plan} />

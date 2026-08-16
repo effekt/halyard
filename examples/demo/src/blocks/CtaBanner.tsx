@@ -22,11 +22,11 @@ export function CtaBanner({ heading, body, tone, cta }: CtaBannerProps) {
   return (
     <section className={`${styles.section} border-brass/30 border-y`}>
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 py-20 text-center">
-        <h2 className="text-3xl font-semibold tracking-tight">{heading}</h2>
+        <h2 className="text-balance text-3xl font-semibold tracking-tight">{heading}</h2>
         <p className={`max-w-xl text-lg ${styles.body}`}>{body}</p>
         <a
           href={cta.href}
-          className={`${styles.button} inline-block rounded-md border px-6 py-3 text-sm font-semibold`}
+          className={`${styles.button} inline-block rounded-md border px-6 py-3 text-sm font-semibold underline-offset-4 hover:underline`}
         >
           {cta.label}
         </a>
