@@ -14,6 +14,9 @@ const CODE_GATES = [
   ["pnpm", ["exec", "biome", "check", "--no-errors-on-unmatched"]],
 ];
 
+/** Markup and stylesheets, which is where an accessibility failure is written. */
+const MARKUP_GATES = [["node", ["scripts/check-a11y.mjs", "--check"]]];
+
 /** Prose carries vendor references as readily as code, so docs are checked too. */
 const UNIVERSAL_GATES = [["node", ["scripts/check-no-vendor-refs.mjs", "--check"]]];
 
@@ -45,6 +48,7 @@ try {
 if (!filePath) process.exit(0);
 
 const isCode = /\.tsx?$/.test(filePath);
+const isMarkup = /\.(tsx|jsx|css)$/.test(filePath);
 const isProse = /\.(md|mdx)$/.test(filePath);
 const isManifest = filePath.endsWith("package.json");
 
@@ -59,6 +63,7 @@ const isScannable = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|
 
 const perFile = [
   ...(isCode ? CODE_GATES : []),
+  ...(isMarkup ? MARKUP_GATES : []),
   ...(isManifest ? [["node", ["scripts/check-pinned-deps.mjs", "--check"]]] : []),
   ...(isProse ? PER_FILE_PROSE_GATES : []),
   ...(isScannable ? UNIVERSAL_GATES : []),

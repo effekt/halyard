@@ -32,6 +32,12 @@ pre-commit:
       glob: "{packages,apps}/**/*.{ts,tsx}"
       run: pnpm exec jscpd {staged_files}
 
+    # Nobody on the team reports an accessibility defect, because the person who can
+    # see it is the one who cannot use the page. It has to be caught at the edit.
+    accessibility:
+      glob: "{packages,apps,examples}/**/*.{tsx,jsx,css}"
+      run: node scripts/check-a11y.mjs --check {staged_files}
+
     # Ranges auto-install unreviewed code; minimumReleaseAge only delays it.
     pinned-deps:
       glob: "**/package.json"

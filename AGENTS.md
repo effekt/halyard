@@ -101,10 +101,11 @@ and idle until there is code, which is the order that keeps them honest.
 | `check-docs.mjs` | links and anchors resolve; every document is in the index |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
+| `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; `onClick` on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 
 `pnpm verify` runs every gate above and needs a full install. CI runs only the subset that
-works against a bare checkout — the documentation and prose gates — because the rest need
-`node_modules`. Both are real; neither is a superset of the other until a package exists.
+works against a bare checkout — the documentation, prose, and accessibility gates — because the
+rest need `node_modules`. Both are real; neither is a superset of the other until a package exists.
 
 **The gates cannot catch everything.** A function that formats a date inline is one
 declaration, eight lines, complexity 1 — every gate passes and it is still wrong. That

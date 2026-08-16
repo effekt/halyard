@@ -50,6 +50,9 @@ jobs:
       - name: Prose
         run: node scripts/check-prose.mjs --check
 
+      - name: Accessibility
+        run: node scripts/check-a11y.mjs --check
+
       - name: Rule files
         run: node scripts/check-rules.mjs --check
 
