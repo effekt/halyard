@@ -4,20 +4,31 @@ on: pull_request
 
 jobs:
   commitlint:
+    # Dependabot's subject line is fixed by the tool ("Bump x from 4 to 7") and trips
+    # config-conventional's subject-case rule. Its scope is already constrained by the
+    # commit-message prefix in dependabot.yml, so there is nothing left here to check.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+
+      # Installed standalone rather than through the workspace: there is no lockfile yet,
+      # and commitlint is the one dev tool needed before any package exists. Versions are
+      # exact and must match the catalog block in pnpm-workspace.yaml.
+      - name: Install commitlint
+        run: npm install --no-save --no-package-lock
+          @commitlint/cli@21.2.2
+          @commitlint/config-conventional@21.2.2
+
       - name: Lint commits in this PR
         run: >
-          pnpm exec commitlint
+          npx commitlint
           --from ${{ github.event.pull_request.base.sha }}
           --to ${{ github.event.pull_request.head.sha }}
           --verbose
