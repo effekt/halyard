@@ -83,15 +83,11 @@ Both paths stay behind one adapter module, version-pinned and tested, so the ren
 touches a validator's internals. zod is the reference implementation; other validators follow
 with explicit capability-gating rather than silent degradation.
 
-A parallel `ui` structure risks silent drift — a key that no longer refers to a real property,
-going unnoticed. Guarded at compile time, since the schema is TypeScript rather than JSON:
+A parallel `ui` structure risks silent drift: a key that no longer refers to a real property.
+Every path is resolved against the schema at `createRegistry()`, so an unresolvable key fails
+registration — see below.
 
-```ts
-type FieldHints<S> = { [K in keyof InferProps<S>]?: FieldHint };
-//                     ^ a key that is not a real prop is a type error, not a runtime surprise
-```
-
-A CI check covers what types cannot: every block has a resolvable control for every prop, so
+A CI check covers what path resolution cannot: every block has a resolvable control for every prop, so
 a schema change cannot leave a field un-editable.
 
 ## Control resolution: ranked testers, not a keyed map
@@ -304,7 +300,8 @@ Same `ArtifactStore` interface used by the output layer — see
 export default async function Page({ params }) {
   const artifact = await resolveArtifact(store, params.slug);
   if (!artifact) notFound();          // unpublished has no artifact — a real server 404
-  return <Renderer artifact={artifact} registry={registry} />;
+  const blocks = await loadBlocks(registry, artifact.blockVersions);
+  return <Renderer artifact={artifact} blocks={blocks} />;
 }
 ```
 
@@ -319,10 +316,11 @@ in the studio.
 1. **Custom editors as second-class.** Answered by the open control registry.
 2. **Per-keystroke re-render on a large tree.** The inspector edits one node by `id`, never
    the whole document.
-3. **Hint drift.** Answered by typed `FieldHints<S>` plus the CI completeness check.
-4. **Auto-generation degrading at depth.** Every schema-driven form library handles scalars
-   and one level of nesting well, then degrades — hence explicit `rowLabel`, `groups`, and
-   `order` rather than hoping structure alone reads well.
+3. **Hint drift.** Answered by path resolution at `createRegistry()` plus the CI
+   completeness check.
+4. **Auto-generation degrading at depth.** JSON Forms and react-jsonschema-form both handle
+   scalars and one level of nesting well, then degrade — hence explicit `rowLabel`, `groups`,
+   and `order` rather than hoping structure alone reads well.
 5. **Hidden fields retaining stale values.** A conditionally hidden field that keeps its last
    saved value with no clearing means published props can carry data for fields the author
    never saw. A field hidden by a discriminated union must have its value dropped at compile,
