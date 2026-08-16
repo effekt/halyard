@@ -72,8 +72,8 @@ erDiagram
 ```
 
 `NODE ||--o{ NODE` is the slot tree the compiler recurses over; `DOCUMENT }o--o| DOCUMENT` is
-a page pointing at its layout, why layouts and templates share one table despite behaving
-oppositely.
+a page pointing at its layout. That edge is why layouts and templates share one table despite
+behaving oppositely.
 
 ## Contract layer
 
@@ -221,8 +221,9 @@ A layout's named slots need no separate field: they are the slots of the node at
 | Crash mid-append | A version row is one atomic insert keyed on `(documentId, version)`; `head` advances only after commit — a crash leaves the log short one entry, never a partial one |
 
 Not a CRDT: `{root, elements}` maps onto a CRDT map-of-records incidentally, from the flat
-editing shape, not by choice. No centralized-server system reviewed uses one as its primary
-mechanism; presence plus node locks covers v1, with a CRDT sync layer left as a later swap.
+editing shape, not by choice. Neither Figma nor Linear — both centralized-server collaborative
+systems — uses one as its primary sync mechanism; presence plus node locks covers v1, with a
+CRDT sync layer left as a later swap.
 
 ### Node — flat while authoring, nested once published
 
@@ -277,11 +278,13 @@ where a deep object copy could silently share ids by accident.
 | Behaviour | Layout | Template |
 |---|---|---|
 | Relationship | Referenced by pages | Copied into a new page |
-| Editing it | Propagates to every page using it | Affects nothing already created |
+| Editing it | Referenced by every page using it; propagation to published pages is unresolved ([#13](https://github.com/effekt/halyard/issues/13)) | Affects nothing already created |
 | Stored as | `Document` with `kind: "layout"` | `Document` with `kind: "template"` |
 | Composition | Page tree fills the layout's named slots | Page starts as a clone of the tree |
 
-Naming these apart early is cheap; separating them later is a data migration.
+Naming these apart early is cheap; separating them later is a data migration. The
+studio-facing name for `kind: "template"` is under discussion
+([#7](https://github.com/effekt/halyard/issues/7)).
 
 ## Output layer
 
@@ -327,7 +330,8 @@ interface RoutePointer {
 
 `matchKind` is parsed from `route` at publish, not caller-supplied — `[name]` means param, a
 trailing `/*` means prefix, anything else is exact. Precedence is most-specific-first: exact
-beats param, param beats prefix.
+beats param, param beats prefix. Whether authors can create pattern routes is open
+([#5](https://github.com/effekt/halyard/issues/5)).
 
 `manifest()` is not a stored document — it is an advisory aggregation read over every
 `RoutePointer`, for the studio's route list and CI. No render path reads it; a request
@@ -345,7 +349,9 @@ pointer; the artifact stays, so republishing is a pointer move rather than a rec
 
 ### ArtifactStore
 
-The whole IO surface. An adapter implements this; `core` only ever returns values for it.
+The output layer's whole IO surface. The authoring store's interface is undesigned
+([#11](https://github.com/effekt/halyard/issues/11)). An adapter implements this; `core` only
+ever returns values for it.
 
 ```ts
 interface ArtifactStore {
@@ -363,7 +369,7 @@ interface ArtifactStore {
 ```mermaid
 flowchart LR
     A["Edit in studio"] --> B["DocumentVersion<br/>immutable, appended"]
-    B --> C{"compile(version, registry)"}
+    B --> C{"compile(version, catalog)"}
     C -->|"invalid"| D["Reject with node paths<br/>author sees it immediately"]
     C -->|"valid"| E["Resolve refs<br/>freeze static props"]
     E --> F["Artifact<br/>content-addressed hash"]
@@ -419,7 +425,7 @@ before offering "rollback," and a script can call it from a terminal outside any
 
 ## What this model has not settled
 
-Four things above are deliberately undecided, so that they get settled on purpose rather than
+Five things above are deliberately undecided, so that they get settled on purpose rather than
 by whoever implements first. They live as issues, not prose, because each needs a discussion
 that closes:
 
@@ -429,6 +435,7 @@ that closes:
 | Who owns `meta` — the document version, or a block placed in the tree | [#13](https://github.com/effekt/halyard/issues/13) |
 | Localization — one locale per `DocumentVersion`, or many | [#6](https://github.com/effekt/halyard/issues/6) |
 | Concurrent editing — whether a document-wide lock is enough | [#10](https://github.com/effekt/halyard/issues/10) |
+| The authoring store's interface — `ArtifactStore` has no counterpart on the content layer | [#11](https://github.com/effekt/halyard/issues/11) |
 
 Every open question is indexed in
 [#15](https://github.com/effekt/halyard/issues/15), with what deciding each one late would

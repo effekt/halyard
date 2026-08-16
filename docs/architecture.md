@@ -61,8 +61,9 @@ cycle-freedom, and reachability get checked.
 ## Why compile at publish
 
 Validation at publish means an invalid page cannot be published — the failure surfaces to
-the person who caused it, while they are looking at it. The render path then handles only
-artifacts already proven valid, so it does no schema work per request.
+the person who caused it, while they are looking at it. The render path does no schema work
+per request: frozen fields were proven valid at compile, and hole data is fetched by the
+block's own code, outside schema validation.
 
 It also lets the compiler do real work once instead of per request: resolve references,
 freeze values that cannot change, and record which block versions the artifact was built
@@ -101,11 +102,9 @@ A recommendation for the Next binding, not a requirement of `core`.
 ## Artifacts contain data, never code
 
 No author-supplied JavaScript, no CSS blocks, no expression language, no binding strings
-evaluated at render. Every value is inert data validated against a schema.
-
-This is a security and performance boundary, not a stylistic preference: the alternative is
-executable content authored by someone who cannot assess either risk. Repetition and logic
-live in components, which are code, reviewed as code.
+evaluated at render — every value is inert data validated against a schema. See
+[Artifacts contain data, never code](decisions.md#artifacts-contain-data-never-code) for the
+security and performance argument.
 
 ## Preview
 

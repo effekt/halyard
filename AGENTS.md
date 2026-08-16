@@ -40,17 +40,15 @@ These are the reason the project exists. Breaking one is a design change, not a 
 2. **`core` has no runtime dependencies beyond Standard Schema.** No React, no Next, no
    `node:*`. It runs in a browser, a worker, and a build step unchanged.
 3. **Published artifacts are immutable and content-addressed.** Publishing writes a new
-   artifact and moves a pointer. Nothing mutates in place, so nothing needs invalidating.
+   artifact and moves a pointer. Nothing mutates in place, so nothing needs invalidating at
+   the store.
 4. **Compiling is not building.** Compile validates and serializes a document — it never
    invokes a bundler. Publishing and previewing must never require a deploy.
 5. **IO happens in adapters.** `core` computes; adapters read and write.
 6. **Artifacts contain data, never code.** No author-supplied JavaScript, no CSS blocks, no
-   expression language, no binding strings evaluated at render. Every value in an artifact is
-   inert data validated against a schema. Hosted visual CMSes routinely permit all four —
-   compiled JavaScript bundles, stylesheet blocks, and string expressions over authoring
-   state, all stored as content and evaluated at render — and each is a security and
-   performance liability authored by someone with no way to assess either. Repetition and
-   logic live in components, which are code, reviewed as code.
+   expression language, no binding strings evaluated at render — see
+   [Artifacts contain data, never code](docs/decisions.md#artifacts-contain-data-never-code)
+   for the security and performance argument.
 7. **Halyard knows nothing about the consumer's stack.** It constructs schemas and renders.
    It ships no CSS, holds no opinion about styling, and makes no assumption about their
    dependencies. A value like `space: "lg"` is passed through as data; what it *means* is

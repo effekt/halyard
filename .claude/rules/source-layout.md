@@ -22,12 +22,12 @@ or reuse it. Splitting makes each unit testable directly and findable by name.
 
 ```ts
 // WRONG — three units in one file; two of them are untestable
-export function compile(doc: Document, registry: Registry) { … }
+export function compile(doc: Document, catalog: Catalog) { … }
 function walkNodes(nodes: Node[]) { … }
 const toIssue = (node: Node) => { … };
 
 // CORRECT — compile.ts, walkNodes.ts, toIssue.ts, each with a sibling test
-export function compile(doc: Document, registry: Registry) { … }
+export function compile(doc: Document, catalog: Catalog) { … }
 ```
 
 Plain data `const`s are not units — a module-private `const FNV_PRIME = 0x100000001b3n` is

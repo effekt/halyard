@@ -48,9 +48,10 @@ discouraged.
 
 ## Artifacts are immutable and content-addressed
 
-An immutable artifact has no invalidation semantics — nothing to revalidate, no
-stale-while-revalidate, no negative cache, no single-flight. Publishing points at a new
-hash; rolling back points at the old one.
+An immutable artifact has no invalidation semantics at the store: nothing to revalidate, no
+negative cache, no single-flight. (Field-level `revalidate` is data freshness inside an
+artifact, not artifact invalidation.) Publishing points at a new hash; rolling back points
+at the old one.
 
 The only mutable output is a **route pointer**, one atomic record per route. A single
 manifest document was the first design and it permitted silent lost updates: two concurrent
@@ -63,6 +64,7 @@ read-modify-write over a whole table is not.
 No author-supplied JavaScript, no CSS blocks, no expression language, no binding strings
 evaluated at render. This is a security and performance boundary, not a preference — the
 alternative is executable content authored by someone positioned to assess neither risk.
+Hosted visual CMSes routinely permit all four, stored as content and evaluated at render.
 
 Repetition and logic live in components, which are code and are reviewed as code. A block
 that renders a list takes the list as a prop and loops internally; the document never
@@ -92,8 +94,9 @@ schema constant carries one set of hints everywhere it is referenced. Extracting
 sub-schemas is a rule here; identity-keyed hints are hostile to it. Standard Schema also
 exposes only `validate()`, so in-schema authoring would mean an adapter per validator.
 
-Four independent systems that faced the same choice — three form libraries and a component
-workshop — all keep hints parallel when the schema format is foreign to them.
+JSON Forms and react-jsonschema-form both keep a UI schema parallel to the data schema, and
+Storybook keeps `argTypes` beside the component — hints stay parallel when the schema format
+is foreign to the tool.
 
 ## Catalog and registry are separate
 
@@ -163,8 +166,9 @@ holds the publishing token. Pinning removes the automatic upgrade; `minimumRelea
 covers the window where a pin is deliberately bumped to something freshly hijacked. Either
 control alone leaks.
 
-3 days, not 7: real npm compromises are caught in hours. Day 3 captures nearly all the
-value, and the attacks that survive a week need a window no tolerable cooldown provides.
+3 days, not 7: real npm compromises are caught in hours — the September 2025 `chalk` and
+`debug` takeover was detected and removed the same day — and the attacks that survive a week
+need a window no tolerable cooldown provides.
 
 ## No committed catalog of the codebase
 

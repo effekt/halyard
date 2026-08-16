@@ -35,8 +35,9 @@ There is no implementation yet — deliberately (see [`README.md`](README.md#sta
 changes what's valuable:
 
 **Disagreement about the design is the most valuable contribution there is.** The
-architecture has already been through one adversarial review that falsified several of its
-early claims. It should survive more of that before code gets written on top of it. A
+architecture has already been through one adversarial review, which falsified the live
+postMessage preview and the single-manifest publish. It should survive more of that before
+code gets written on top of it. A
 convincing objection to something in `docs/` is worth more right now than any patch.
 
 **Argue in an open question.** They live as issues labelled `design-question`, indexed in

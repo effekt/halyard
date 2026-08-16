@@ -7,9 +7,9 @@ non-developers compose pages from them. The composition is data, the contract is
 publishing compiles a document into an immutable artifact — no bundler, no deploy, no second
 source of truth.
 
-There is no package to install yet — see [Status](#status) — but the shape is settled. A
-block declares its schema once, and each field decides for itself whether it freezes at
-publish or stays live:
+There is no package to install yet — see [Status](#status) — but the split is settled and
+the block shape below is close. A block declares its schema once, and each field decides for
+itself whether it freezes at publish or stays live:
 
 ```ts
 // hero.schema.ts — sub-schemas are extracted so blocks can share them
@@ -60,7 +60,7 @@ a cache to survive a round trip on every render.
 |---|---|
 | **Schema in code** | Props are inferred from the schema. There is no second definition to drift. |
 | **Content as data** | One store, versions instead of environments. Promotion is a pointer move, not a copy. |
-| **Immutable artifacts** | Content-addressed, cached forever, rolled back by pointer. Nothing to invalidate. |
+| **Immutable artifacts** | Content-addressed, cached forever, rolled back by pointer. Nothing to invalidate at the store; the page cache drops one route on publish. |
 | **No deploy to publish** | Compiling validates and serializes. Only a *code* change needs a build. |
 | **Precise code-splitting** | An artifact names the blocks a page uses, so the hundredth block costs other pages nothing. |
 | **Bring your own everything** | Storage, auth, and validation are adapters. The core depends on nothing but Standard Schema. |
@@ -70,9 +70,10 @@ a cache to survive a round trip on every render.
 **Design, not software.** There is no implementation yet — deliberately.
 
 What exists is the architecture, the decisions and the alternatives each one beat, and the
-tooling that will hold an implementation to them. It has been through one adversarial review
-that falsified several of its early claims, which is a reason to trust it more than an
-unreviewed design and not a reason to treat it as finished — [the open
+tooling that will hold an implementation to them. It has been through one adversarial review,
+which falsified the live postMessage preview and the single-manifest publish; both were
+redesigned. That is a reason to trust the design more than an unreviewed one, not a reason to
+treat it as finished — [the open
 questions](https://github.com/effekt/halyard/issues/15) are the parts known to still be wrong.
 
 The gates that check documentation, prose, and dependency pinning run on every commit. The

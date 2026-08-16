@@ -40,7 +40,7 @@ than convenience:
 
 | Plugin | What it changes |
 |---|---|
-| `accesslint` | Runs a WCAG 2.2 engine against a live page over CDP. Found 27 failing syntax-highlight colours and a missing `main` landmark that four reviewers had read past |
+| `accesslint` | Runs a WCAG 2.2 engine against a live page over CDP — it finds contrast failures and missing landmarks that human review reads past |
 | `superpowers` | Test-driven development, systematic debugging, adversarial review, plan writing |
 | `playwright` | Drives a real browser, which is what makes the accessibility scans possible |
 | `context7` | Fetches current library documentation instead of relying on training data |

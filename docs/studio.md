@@ -35,11 +35,10 @@ bundle serve all three hosts.
 
 ## The canvas is a dev server, not staging or production
 
-Mounting the studio as a route inside the consumer's production app fails against a realistic
-deployment — a header builder that hardcodes `frame-ancestors 'none'` with no override, or an
-edge proxy owning most of the origin so the route never receives the request at all — so
-**the canvas instead points at a purpose-run dev server**: the consumer's real app, real
-components, real CSS, running in development mode with dev overlays suppressed.
+The canvas points at a purpose-run dev server: the consumer's real app, real components,
+real CSS, in development mode with overlays suppressed. Mounting the studio inside the
+production app was rejected — a hardcoded `frame-ancestors 'none'` and an edge proxy owning
+the origin each break it independently.
 
 | Problem with a production-mounted studio | Why the dev server avoids it |
 |---|---|
@@ -68,7 +67,8 @@ converges with the drag adapter, which can't read dragged data during hover, onl
 live preview *during* an interaction was never available either way.
 
 **The canvas updates on commit, not continuously.** The inspector holds local state while
-typing; the canvas refreshes on debounce or blur — how most CMS live previews already behave.
+typing; the canvas refreshes on debounce or blur — a server round trip per keystroke would
+spend renders on states the author is still typing through.
 The studio's preview route is the same code path as the public catch-all, given a draft
 document instead of a published artifact, and the production path does not parse schemas —
 it reads a pre-validated artifact. Schema work happens at publish and in preview only.
@@ -109,12 +109,7 @@ Dragging a block from a palette in the parent document into a drop target inside
 is the hardest technical problem in the studio, and the one no page builder gets for free.
 
 **Pragmatic (`@atlaskit/pragmatic-drag-and-drop`) cannot bridge a same-origin iframe with
-pointer events.** Its element adapter binds to the global `document` singleton rather than
-`element.ownerDocument`, by design — the maintainers state that each window is expected to
-manage its own drag and drop, not one window managing another. Crossing the boundary means
-falling back to its external adapter, native HTML5 `DataTransfer`, which reintroduces the
-limitations that made that approach expensive: data unreadable during hover, drop detection
-via a non-public `dropEffect`, no Android support.
+pointer events** — see [Why not the alternatives](#why-not-the-alternatives).
 
 **dnd-kit's same-origin frame traversal handles it, and this is the library.**
 `@dnd-kit/dom`'s `getDocuments()` recursively walks `iframe`/`frame` elements, catching the

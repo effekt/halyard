@@ -26,7 +26,7 @@ import { readFile } from "node:fs/promises";
 import type { ReactNode } from "react";
 
 // CORRECT — the caller supplies the value; core only computes over it
-export async function compile(document: Document, registry: Registry): Promise<Artifact>
+export async function compile(document: Document, catalog: Catalog): Promise<Artifact>
 ```
 
 Component types reach `core` as a generic parameter, never as an import. That keeps
