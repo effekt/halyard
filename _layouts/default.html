@@ -15,17 +15,23 @@
       .site-nav a { text-decoration: none; }
       /* A link inside a paragraph must be distinguishable without colour (WCAG 1.4.1). */
       main a, .site-footer a { text-decoration: underline; }
-      /* Twenty-two of the theme's syntax colours fall below 4.5:1 on the code background,
-         from 1.81:1 upward — the highlighting is broadly unreadable, not one bad token. This
-         remaps every failing class onto the brand palette at AA or better. Ratios in comments. */
-      .highlight .c, .highlight .cd, .highlight .cm, .highlight .cp, .highlight .cs,
-      .highlight .c1, .highlight .gh, .highlight .gu, .highlight .go, .highlight .w,
-      .highlight .bp { color: #55696E; }                                    /* 5.44:1 */
-      .highlight .na, .highlight .no, .highlight .nv, .highlight .vc,
-      .highlight .vg, .highlight .vi { color: #0E5A6B; }                    /* 7.34:1 */
-      .highlight .mi, .highlight .mf, .highlight .mh, .highlight .mo,
-      .highlight .mx, .highlight .il { color: #0B6472; }                    /* 6.42:1 */
-      .highlight .sr { color: #186040; }                                    /* 7.10:1 */
+      /* Twenty-seven of the theme's syntax colours fall below 4.5:1 on the code
+         background, down to 1.81:1 — the highlighting is broadly unreadable rather than
+         carrying one bad token. Remapped onto the brand palette; measured ratios inline. */
+      /* comments, prompts, whitespace markers — 5.44:1 */
+      .highlight .c, .highlight .c1, .highlight .cd, .highlight .cm, .highlight .cp,
+      .highlight .cs, .highlight .gh, .highlight .gu, .highlight .go, .highlight .bp,
+      .highlight .w { color: #55696E; }
+      /* attributes, constants, variables — 7.34:1 */
+      .highlight .na, .highlight .no, .highlight .nv, .highlight .vc, .highlight .vg,
+      .highlight .vi { color: #0E5A6B; }
+      /* numbers — 6.42:1 */
+      .highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi,
+      .highlight .mo, .highlight .mx, .highlight .il { color: #0B6472; }
+      /* built-ins — 7.24:1 */
+      .highlight .nb { color: #0A5A75; }
+      /* regex literals — 7.1:1 */
+      .highlight .sr { color: #186040; }
       .skip-link {
         position: absolute; left: -9999px;
         background: #0B2B33; color: #F1F4F3; padding: 0.6em 1em; border-radius: 0 0 4px 0;
