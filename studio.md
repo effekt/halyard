@@ -111,7 +111,7 @@ The extension is not the only delivery path, and shipping both costs very little
 studio bundle can be injected by a content script **or** loaded by a `<script>` the app
 renders for signed-in editors.
 
-| | Extension | In-site script |
+| Concern | Extension | In-site script |
 |---|---|---|
 | Footprint in the app | None | A gated bundle |
 | Several apps on one origin | Covered at once | Per app |

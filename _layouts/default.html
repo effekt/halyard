@@ -77,7 +77,18 @@
         });
         if (window.mermaid) {
           mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'strict' });
-          mermaid.run({ querySelector: '.mermaid' });
+          // mermaid stamps role="graphics-document document" on each <svg>, which ARIA does
+          // not permit there. A labelled img is the accessible equivalent for a static diagram.
+          var fixDiagramRoles = function () {
+            document.querySelectorAll('svg[id^="mermaid-"]').forEach(function (svg) {
+              svg.setAttribute('role', 'img');
+              if (!svg.getAttribute('aria-label')) {
+                var caption = svg.querySelector('text');
+                svg.setAttribute('aria-label', caption ? caption.textContent : 'Diagram');
+              }
+            });
+          };
+          Promise.resolve(mermaid.run({ querySelector: '.mermaid' })).then(fixDiagramRoles);
         }
       });
     </script>
