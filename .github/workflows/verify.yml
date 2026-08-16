@@ -10,18 +10,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # The prose gates are plain Node with no dependencies, so they run against a bare
-  # checkout. They are also the only gates with anything to check until the first
-  # package lands — see the Status section in README.md.
+  # Every gate here is plain Node with no dependencies, so it runs against a bare
+  # checkout with no install step and no lockfile. They are also the only gates with
+  # anything to check until the first package lands — see the Status section in README.md.
+  #
+  # The code gates (biome, typecheck, test, boundaries) join this file in the commit that
+  # adds the first package, together with the lockfile they need. They are deliberately
+  # absent rather than skipped: a job that cannot run is better left unwritten than
+  # written and disabled.
   prose:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # check-stale-docs compares commit times across link edges, so it needs history.
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
 
@@ -53,23 +58,3 @@ jobs:
       - name: Stale documents
         run: node scripts/check-stale-docs.mjs
         continue-on-error: true
-
-  # Enabled by the commit that adds the first package, together with a lockfile.
-  # Running it now would fail on `--frozen-lockfile` and lint an empty workspace.
-  code:
-    if: ${{ hashFiles('pnpm-lock.yaml') != '' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - run: pnpm install --frozen-lockfile
-
-      - name: Gates
-        run: pnpm lint && pnpm typecheck && pnpm test
