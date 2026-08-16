@@ -6,10 +6,20 @@
   // export reaching the surface before anything needs it.
   "ignore": ["**/*.d.ts", ".claude/**"],
 
+  // publint and attw check a published package, so they are unreachable until one exists,
+  // and both are already wired into the gate table. @commitlint/types is a type-only import
+  // in the commitlint config. tailwindcss is reached from `@import "tailwindcss"` in
+  // globals.css, which knip does not follow out of a stylesheet.
+  "ignoreDependencies": ["@arethetypeswrong/cli", "publint", "@commitlint/types", "tailwindcss"],
+
   "workspaces": {
     ".": {
       "entry": ["scripts/**/*.mjs"],
       "project": ["scripts/**/*.mjs"]
+    },
+    "examples/*": {
+      "entry": ["src/app/**/{page,layout,not-found,error,loading,route}.{ts,tsx}"],
+      "project": ["src/**/*.{ts,tsx}"]
     },
     "packages/*": {
       "entry": ["src/index.ts"],

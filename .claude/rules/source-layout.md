@@ -48,11 +48,13 @@ one-unit rule because neither holds a unit.
 
 Each package has exactly one `src/index.ts`, and it is the published surface. Internal
 modules import each other by path. A mid-tree `index.ts` that re-exports a folder makes the
-dependency graph unreadable and defeats tree-shaking.
+dependency graph unreadable and defeats tree-shaking. **Gate:** Biome's `noBarrelFile`
+and `noReExportAll`.
 
 ### Caps
 
-≤200 lines per source file (tests exempt), enforced by `scripts/check-structure.mjs`.
+≤200 lines per source file, enforced by Biome's `noExcessiveLinesPerFile` — tests are exempt
+by override, and `*.schema.ts` is capped lower at 60.
 Over the cap is a signal the file holds more than one unit, not a reason to raise the cap.
 
 ### Never a category name

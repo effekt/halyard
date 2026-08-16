@@ -119,8 +119,7 @@ its code never reaches the browser — so the canvas updates **on commit**: the 
 holds local state while typing, a committed change is written to the draft store, and the
 canvas re-renders from the server.
 
-See [`design/04-studio-ui.md`](design/04-studio-ui.md) for the canvas and its delivery
-surfaces.
+See [`studio.md`](studio.md) for the canvas and its delivery surfaces.
 
 ## Versioning and the guardrail
 

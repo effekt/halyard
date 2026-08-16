@@ -38,7 +38,7 @@ tone: z.string()
 tone: z.enum(["brand", "neutral"])
 ```
 
-Same rule as [`07`](../../docs/design/07-layout-contract.md#name-intent-not-style--in-the-schema), applied to the block's own schema — has to be a rule, not a convention: in one audited component set, open `string` fields outnumbered enum-shaped ones roughly thirty to one. **Gate:** none; `check-schema-depth.mjs` checks nesting, not openness.
+Name intent, not style — the same rule the layout contract applies, here applied to the block's own schema. It has to be a rule rather than a convention, because the default pull is always toward an open `string`: it is faster to write, accepts anything an author asks for, and only reveals its cost once the values are stored and someone wants to change what they mean. **Gate:** none; `check-schema-depth.mjs` checks nesting, not openness.
 
 ### A block is an organism, never a primitive
 
@@ -49,7 +49,7 @@ export const buttonBlock = defineBlock({ name: "Button", schema: buttonSchema, c
 export const ctaBannerBlock = defineBlock({ name: "CtaBanner", schema: ctaBannerSchema, component: CtaBanner });
 ```
 
-`01-domain-model.md`: "registering a `Button` as a block is the shape of misuse to warn against." A content audit shows why: in one corpus, ten hand-built primitives — variant-per-name buttons and cards — existed only inside the CMS, because the real components were never registered and authors rebuilt a design system to fill the gap. **Gate:** none — registration is implicit off the file convention below; this is a review judgment.
+[`domain-model.md`](../../docs/domain-model.md): "registering a `Button` as a block is the shape of misuse to warn against." The failure it prevents is authors rebuilding a design system inside the CMS — once primitives are placeable, a variant-per-name sprawl of hand-built buttons and cards accumulates, none of it the real component and none of it reviewed as code. **Gate:** none — registration is implicit off the file convention below; this is a review judgment.
 
 ### Props must be serializable — never `ReactNode` in a schema
 
@@ -61,7 +61,7 @@ image: z.object({ url: z.string(), alt: z.string() })
 // component.tsx: <Image src={image.url} alt={image.alt} />
 ```
 
-An artifact is inert data (invariant 6) and props are frozen into it — a `ReactNode` can't survive that. Same asymmetry [`07`](../../docs/design/07-layout-contract.md#images) describes for the design system; the block is the only layer allowed to close it. **Gate:** none — `z.custom<ReactNode>()` typechecks and passes every structural gate.
+An artifact is inert data (invariant 6) and props are frozen into it — a `ReactNode` can't survive that. A design system may reasonably accept rendered children; a block may not, and the block is the only layer allowed to close that gap. **Gate:** none — `z.custom<ReactNode>()` typechecks and passes every structural gate.
 
 ### Slots declare `allow`, `min`, `max`
 
@@ -83,7 +83,7 @@ body: z.string()
 body: richText()   // a thin z.string() wrapper, symmetric to responsive()
 ```
 
-Not stylistic: `html` fields are 8% of in-scope production schemas, and free-form content is where migration risk concentrates — 72 of 122 design-system components expose `ReactNode` fields (`07-layout-contract.md`). **That risk is the consumer's** — marking the field only makes it findable. **Gate:** none.
+Not stylistic. Free-form rich text is where migration risk concentrates: stored markup encodes assumptions about the styles that rendered it, so a design-system change can force a bulk rewrite of published content. **That risk is the consumer's** — marking the field only makes it findable. **Gate:** none.
 
 ### Version bumps aren't optional
 
@@ -101,7 +101,7 @@ Artifacts are immutable and content-addressed (invariant 3) — frozen props wer
 
 ### File convention, `docs`, and the tests a block ships
 
-`<Name>.block.ts` beside `<Name>.tsx` registers a block, implicitly, off the file's existence (`02-api-sketch.md`). Add `docs: { figma, storybook }` too — one line, cheap. Ships with: the schema's accept/reject test ([`block-schemas.md`](block-schemas.md#checklist)), a test that `defaults` validates, and a component test if props branch the render ([`testing.md`](testing.md)).
+`<Name>.block.ts` beside `<Name>.tsx` registers a block, implicitly, off the file's existence ([`api.md`](../../docs/api.md)). Add `docs: { figma, storybook }` too — one line, cheap. Ships with: the schema's accept/reject test ([`block-schemas.md`](block-schemas.md#checklist)), a test that `defaults` validates, and a component test if props branch the render ([`testing.md`](testing.md)).
 
 ### A block renders one root element
 

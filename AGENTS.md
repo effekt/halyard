@@ -98,8 +98,14 @@ and idle until there is code, which is the order that keeps them honest.
 | `dependency-cruiser` | package boundaries — `core` stays portable |
 | `type-coverage` | ≥99% typed |
 | `publint` · `attw` | the published package resolves correctly |
+| `check-docs.mjs` | links and anchors resolve; every document is in the index |
+| `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
+| `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
+| `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; `onClick` on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 
-`pnpm verify` runs the lot.
+`pnpm verify` runs every gate above and needs a full install. CI runs only the subset that
+works against a bare checkout — the documentation, prose, and accessibility gates — because the
+rest need `node_modules`. Both are real; neither is a superset of the other until a package exists.
 
 **The gates cannot catch everything.** A function that formats a date inline is one
 declaration, eight lines, complexity 1 — every gate passes and it is still wrong. That
@@ -112,9 +118,15 @@ Contributors work in other codebases, most of them closed. Nothing from those be
 not employer or client names, not internal application or package names, not product-specific
 routes, model names, or page titles, and not absolute paths from a developer's machine.
 
-**Keep the observation, drop the source.** A measurement is publishable — "in one production
-corpus, 98.9% of entries were data models rather than pages" is a useful finding and stands
-on its own. Where it came from adds nothing and is rarely yours to share.
+**Keep the conclusion, drop the measurement.** Anonymising a statistic is not enough. "In one
+audited corpus, most entries were data models rather than pages" names no one, and a reader
+still cannot open that corpus, test the claim, or argue with it — it reads as authority while
+supplying none, and it dates the document to one sample taken once.
+
+What a private codebase gives you is a thing you now *know*. Publish that, argued from why it
+holds: a visual CMS accumulates structured data models faster than pages because rows are
+cheap to add and a page needs a route. That claim stands on its own reasoning, and a reader
+who disagrees has something to push against.
 
 `scripts/check-no-vendor-refs.mjs` enforces this on every agent edit and at pre-commit. Its
 term list lives in `scripts/vendor-terms.txt`, which is gitignored — a published denylist
@@ -152,4 +164,4 @@ the governance, the gates above, and an architecture that has survived an advers
 That makes the invariants unusually cheap to honour and unusually easy to lose — there is no
 existing code pulling the first commit toward the right shape. Read `docs/architecture.md`
 for the model and `docs/decisions.md` for what has already been settled and why, and treat
-`docs/design/05-open-questions.md` as the list of things you may not silently decide.
+the open issues labelled `design-question` as the list of things you may not silently decide.

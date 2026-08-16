@@ -14,17 +14,20 @@ const CODE_GATES = [
   ["pnpm", ["exec", "biome", "check", "--no-errors-on-unmatched"]],
 ];
 
+/** Markup and stylesheets, which is where an accessibility failure is written. */
+const MARKUP_GATES = [["node", ["scripts/check-a11y.mjs", "--check"]]];
+
 /** Prose carries vendor references as readily as code, so docs are checked too. */
 const UNIVERSAL_GATES = [["node", ["scripts/check-no-vendor-refs.mjs", "--check"]]];
 
+/** Judged against the file alone, so it runs per-file and reports the exact line. */
+const PER_FILE_PROSE_GATES = [["node", ["scripts/check-prose.mjs", "--check"]]];
+
 /**
- * Documentation gates take no file argument — a link is only broken relative to every other
- * document, and a superseded term is only findable against the whole corpus.
+ * A link is only broken relative to every other document, so this one takes no file argument
+ * and runs against the whole corpus.
  */
-const PROSE_GATES = [
-  ["node", ["scripts/check-docs.mjs", "--check"]],
-  ["node", ["scripts/check-superseded.mjs", "--check"]],
-];
+const PROSE_GATES = [["node", ["scripts/check-docs.mjs", "--check"]]];
 
 const payload = await new Promise((resolve) => {
   let raw = "";
@@ -45,13 +48,25 @@ try {
 if (!filePath) process.exit(0);
 
 const isCode = /\.tsx?$/.test(filePath);
+const isMarkup = /\.(tsx|jsx|css)$/.test(filePath);
 const isProse = /\.(md|mdx)$/.test(filePath);
 const isManifest = filePath.endsWith("package.json");
 
+/**
+ * Every extension the vendor scanner reads. Deliberately wider than code and prose: the one
+ * leak that survived four hand sweeps was a comment in a `.grit` file, which nothing scanned
+ * because it was neither.
+ */
+const isScannable = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/.test(
+  filePath,
+);
+
 const perFile = [
   ...(isCode ? CODE_GATES : []),
+  ...(isMarkup ? MARKUP_GATES : []),
   ...(isManifest ? [["node", ["scripts/check-pinned-deps.mjs", "--check"]]] : []),
-  ...(isCode || isProse ? UNIVERSAL_GATES : []),
+  ...(isProse ? PER_FILE_PROSE_GATES : []),
+  ...(isScannable ? UNIVERSAL_GATES : []),
 ];
 
 if (perFile.length === 0 && !isProse) process.exit(0);

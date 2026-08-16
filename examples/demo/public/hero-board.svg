@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" fill="none" role="img" aria-hidden="true">
+  <rect width="480" height="360" rx="24" fill="#0E5A6B" opacity="0.08" />
+  <rect x="24" y="32" width="130" height="296" rx="12" fill="#F1F4F3" />
+  <rect x="175" y="32" width="130" height="296" rx="12" fill="#F1F4F3" />
+  <rect x="326" y="32" width="130" height="296" rx="12" fill="#F1F4F3" />
+  <rect x="40" y="52" width="98" height="14" rx="7" fill="#0B2B33" opacity="0.5" />
+  <rect x="191" y="52" width="98" height="14" rx="7" fill="#0B2B33" opacity="0.5" />
+  <rect x="342" y="52" width="98" height="14" rx="7" fill="#0B2B33" opacity="0.5" />
+  <g fill="#4FB3C7">
+    <rect x="40" y="84" width="98" height="44" rx="8" />
+    <rect x="40" y="140" width="98" height="44" rx="8" />
+    <rect x="40" y="196" width="98" height="44" rx="8" />
+  </g>
+  <g fill="#C08A3E">
+    <rect x="191" y="84" width="98" height="44" rx="8" />
+    <rect x="191" y="140" width="98" height="44" rx="8" />
+  </g>
+  <g fill="#0E5A6B">
+    <rect x="342" y="84" width="98" height="44" rx="8" />
+    <rect x="342" y="140" width="98" height="44" rx="8" />
+    <rect x="342" y="196" width="98" height="44" rx="8" />
+    <rect x="342" y="252" width="98" height="44" rx="8" />
+  </g>
+</svg>

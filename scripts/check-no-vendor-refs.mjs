@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 // Rejects employer or client names, internal application names, and local absolute paths.
 //
 // This repository is public and its contributors work in codebases that are not. A
@@ -13,8 +14,8 @@
 //
 // Usage: node scripts/check-no-vendor-refs.mjs [files...] [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -23,7 +24,7 @@ const TERMS_FILE = join(ROOT, "scripts/vendor-terms.txt");
 // Directories are walked recursively; every file at the repository root is scanned as well.
 // Enumerating root files by name is how the last leak survived — a `.grit` file nobody had
 // added to the list — so the root is swept wholesale instead.
-const SCAN_ROOTS = ["docs", "packages", "apps", ".claude", "scripts", ".github"];
+const SCAN_ROOTS = ["docs", "packages", "apps", "examples", ".claude", "scripts", ".github"];
 const SCANNED_EXT = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/;
 const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", ".repomix"]);
 

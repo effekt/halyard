@@ -1,16 +1,17 @@
 #!/usr/bin/env node
+
 // Structural integrity for documentation: links resolve, anchors exist, fences balance, and
 // the index matches what is on disk.
 //
 // Documentation rots differently from code. A stale sentence compiles, passes every lint,
 // and reads as authoritative — the only signal is a reader acting on it. These are the
 // failures a machine can see; terminology drift is the other half, and lives in
-// `check-superseded.mjs`.
+// `check-prose.mjs`.
 //
 // Usage: node scripts/check-docs.mjs [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,14 +19,15 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SCAN_ROOTS = [
   "docs",
   ".claude/rules",
+  ".claude/skills",
   "README.md",
   "AGENTS.md",
   "CONTRIBUTING.md",
   "SECURITY.md",
   "CODE_OF_CONDUCT.md",
 ];
-const INDEX = join(ROOT, "docs/design/README.md");
-const INDEXED_DIR = join(ROOT, "docs/design");
+const INDEX = join(ROOT, "docs/README.md");
+const INDEXED_DIR = join(ROOT, "docs");
 
 /**
  * GitHub's heading-to-anchor rule. Each space becomes one hyphen and runs are *not*
@@ -86,6 +88,19 @@ for (const [file, text] of bodies) {
   const fences = (text.match(/^```/gm) ?? []).length;
   if (fences % 2 !== 0) problems.push(`${rel}  unbalanced code fences (${fences})`);
 
+  // An empty header cell renders as a <th> with no text, so a screen reader announces the
+  // column by nothing at all. Markdown makes this easy to write and impossible to see.
+  const lines = text.split("\n");
+  lines.forEach((line, index) => {
+    if (!/^\|/.test(line)) return;
+    const isDivider = /^\|[\s:|-]+\|$/.test(lines[index + 1] ?? "");
+    if (!isDivider) return;
+    const cells = line.split("|").slice(1, -1);
+    if (cells.some((cell) => cell.trim() === "")) {
+      problems.push(`${rel}:${index + 1}  table header has an empty cell — name the column`);
+    }
+  });
+
   for (const match of text.matchAll(/\]\((?!https?:|mailto:|#)([^)\s]+)\)/g)) {
     const [target, anchor] = match[1].split("#");
     if (!target.endsWith(".md")) continue;
@@ -113,7 +128,7 @@ if (existsSync(INDEX)) {
     .sort();
   for (const name of onDisk) {
     if (!indexText.includes(`(${name})`)) {
-      problems.push(`docs/design/README.md  missing from the index: ${name}`);
+      problems.push(`docs/README.md  missing from the index: ${name}`);
     }
   }
 }
