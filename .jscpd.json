@@ -27,6 +27,7 @@
     "**/scripts/**",
     "**/*.schema.ts",
     "**/*.constants.ts",
-    "**/*Defaults.ts"
+    "**/*Defaults.ts",
+    "**/examples/**"
   ]
 }

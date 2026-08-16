@@ -1,11 +1,12 @@
 import type { z } from "zod";
 import type { heroSchema } from "./Hero.schema";
+import { TONE_ACCENT, TONE_SURFACE } from "./tone.constants";
 
 type HeroProps = z.infer<typeof heroSchema>;
 
 const TONE_STYLES = {
-  light: { section: "bg-canvas text-marine", eyebrow: "text-teal", body: "text-marine/70" },
-  dark: { section: "bg-marine text-canvas", eyebrow: "text-teal-light", body: "text-canvas/75" },
+  light: { section: TONE_SURFACE.light, eyebrow: TONE_ACCENT.light, body: "text-marine/70" },
+  dark: { section: TONE_SURFACE.dark, eyebrow: TONE_ACCENT.dark, body: "text-canvas/75" },
 } as const;
 
 /**

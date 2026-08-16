@@ -1,11 +1,12 @@
 import type { z } from "zod";
 import type { faqAccordionSchema } from "./FaqAccordion.schema";
+import { TONE_SURFACE } from "./tone.constants";
 
 type FaqAccordionProps = z.infer<typeof faqAccordionSchema>;
 
 const TONE_STYLES = {
-  light: { section: "bg-canvas text-marine", item: "border-brass/30" },
-  dark: { section: "bg-marine text-canvas", item: "border-teal-light/20" },
+  light: { section: TONE_SURFACE.light, item: "border-brass/30" },
+  dark: { section: TONE_SURFACE.dark, item: "border-teal-light/20" },
 } as const;
 
 /** Native `<details>` gives the disclosure behaviour for free — no client state, one root. */

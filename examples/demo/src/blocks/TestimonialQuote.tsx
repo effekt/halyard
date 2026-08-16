@@ -1,11 +1,12 @@
 import type { z } from "zod";
 import type { testimonialQuoteSchema } from "./TestimonialQuote.schema";
+import { TONE_SURFACE } from "./tone.constants";
 
 type TestimonialQuoteProps = z.infer<typeof testimonialQuoteSchema>;
 
 const TONE_STYLES = {
-  light: { section: "bg-canvas text-marine", role: "text-marine/60" },
-  dark: { section: "bg-marine text-canvas", role: "text-canvas/60" },
+  light: { section: TONE_SURFACE.light, role: "text-marine/60" },
+  dark: { section: TONE_SURFACE.dark, role: "text-canvas/60" },
 } as const;
 
 export function TestimonialQuote({ quote, name, role, avatar, tone }: TestimonialQuoteProps) {

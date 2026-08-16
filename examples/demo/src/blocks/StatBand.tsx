@@ -1,11 +1,12 @@
 import type { z } from "zod";
 import type { statBandSchema } from "./StatBand.schema";
+import { TONE_ACCENT, TONE_SURFACE } from "./tone.constants";
 
 type StatBandProps = z.infer<typeof statBandSchema>;
 
 const TONE_STYLES = {
-  light: { section: "bg-canvas text-marine", value: "text-teal", label: "text-marine/60" },
-  dark: { section: "bg-marine text-canvas", value: "text-teal-light", label: "text-canvas/60" },
+  light: { section: TONE_SURFACE.light, value: TONE_ACCENT.light, label: "text-marine/60" },
+  dark: { section: TONE_SURFACE.dark, value: TONE_ACCENT.dark, label: "text-canvas/60" },
 } as const;
 
 export function StatBand({ tone, stats }: StatBandProps) {

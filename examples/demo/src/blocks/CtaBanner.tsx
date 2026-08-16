@@ -1,16 +1,17 @@
 import type { z } from "zod";
 import type { ctaBannerSchema } from "./CtaBanner.schema";
+import { TONE_SURFACE } from "./tone.constants";
 
 type CtaBannerProps = z.infer<typeof ctaBannerSchema>;
 
 const TONE_STYLES = {
   light: {
-    section: "bg-canvas text-marine",
+    section: TONE_SURFACE.light,
     body: "text-marine/70",
     button: "border-teal bg-teal text-white",
   },
   dark: {
-    section: "bg-marine text-canvas",
+    section: TONE_SURFACE.dark,
     body: "text-canvas/75",
     button: "border-teal-light bg-teal-light text-marine",
   },
