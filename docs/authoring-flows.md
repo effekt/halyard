@@ -143,7 +143,7 @@ set, so firing cannot fail on a surprise validation error.
 
 ## 6. Layouts vs presets
 
-| | Layout | Preset (`kind: "template"`) |
+| Behaviour | Layout | Preset (`kind: "template"`) |
 |---|---|---|
 | Editing it | Propagates to every page that references it — in principle | Affects nothing already created; no ongoing link after clone |
 | Used at | Every render of a page that references it | Once, at page creation (flow 1) |

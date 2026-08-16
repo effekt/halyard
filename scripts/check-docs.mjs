@@ -87,6 +87,19 @@ for (const [file, text] of bodies) {
   const fences = (text.match(/^```/gm) ?? []).length;
   if (fences % 2 !== 0) problems.push(`${rel}  unbalanced code fences (${fences})`);
 
+  // An empty header cell renders as a <th> with no text, so a screen reader announces the
+  // column by nothing at all. Markdown makes this easy to write and impossible to see.
+  const lines = text.split("\n");
+  lines.forEach((line, index) => {
+    if (!/^\|/.test(line)) return;
+    const isDivider = /^\|[\s:|-]+\|$/.test(lines[index + 1] ?? "");
+    if (!isDivider) return;
+    const cells = line.split("|").slice(1, -1);
+    if (cells.some((cell) => cell.trim() === "")) {
+      problems.push(`${rel}:${index + 1}  table header has an empty cell — name the column`);
+    }
+  });
+
   for (const match of text.matchAll(/\]\((?!https?:|mailto:|#)([^)\s]+)\)/g)) {
     const [target, anchor] = match[1].split("#");
     if (!target.endsWith(".md")) continue;

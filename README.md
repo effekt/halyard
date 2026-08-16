@@ -56,7 +56,7 @@ That single split is the whole design, and everything below follows from it. Put
 a database instead and you inherit two environments that drift, tooling to reconcile them, and
 a cache to survive a round trip on every render.
 
-| | |
+| Property | What it buys |
 |---|---|
 | **Schema in code** | Props are inferred from the schema. There is no second definition to drift. |
 | **Content as data** | One store, versions instead of environments. Promotion is a pointer move, not a copy. |

@@ -274,7 +274,7 @@ where a deep object copy could silently share ids by accident.
 
 ### Layout and Template
 
-| | Layout | Template |
+| Behaviour | Layout | Template |
 |---|---|---|
 | Relationship | Referenced by pages | Copied into a new page |
 | Editing it | Propagates to every page using it | Affects nothing already created |
