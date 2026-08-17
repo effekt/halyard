@@ -119,9 +119,23 @@ node -p 'Object.keys(require("./plugins-lock.json").plugins).join("\n")' |
   xargs -I{} claude plugin install {}
 
 pnpm plugins-lock             # confirms the record and your machine agree
+
+pnpm run skills:install       # rebuilds every skill in skills-lock.json
 ```
 
-Then install the skills in `skills-lock.json` and restart the session so the hooks load.
+Then **restart the session** so the hooks load. A plugin or hook enabled part-way through a
+session is not wired for the rest of it, and nothing reports that while it is happening.
+
+`skills:install` fetches each skill's directory from the source the lockfile names and **verifies
+the digest before writing anything**. A skill whose upstream has moved since the lockfile was
+written is reported and skipped, leaving whatever you already had in place — writing it and
+reporting afterwards is how an agent ends up running instructions nobody recorded. The skills that
+do verify still install, so one moved upstream does not leave you with none.
+
+`--check` verifies against upstream and writes nothing at all.
+
+It fetches the default branch, because entries record a source and a path but no commit, so a
+*past* state is not reachable — [#165](https://github.com/effekt/nubbin/issues/165) is that.
 
 None of this is required to read the design or open an issue. It is required to reproduce a
 result — and to have the gates catch, on your machine, what they catch here.
