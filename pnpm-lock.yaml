@@ -179,6 +179,37 @@ importers:
         specifier: 'catalog:'
         version: 4.4.3
 
+  packages/next:
+    dependencies:
+      next:
+        specifier: '>=16.0.0'
+        version: 16.2.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+    devDependencies:
+      tsup:
+        specifier: 'catalog:'
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.26)(typescript@6.0.3)(yaml@2.9.0)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@25.9.2)(vite@8.2.1(@types/node@25.9.2)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.9.0))
+
+  packages/store-fs:
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.9.2
+      tsup:
+        specifier: 'catalog:'
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.26)(typescript@6.0.3)(yaml@2.9.0)
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@25.9.2)(vite@8.2.1(@types/node@25.9.2)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.9.0))
+
 packages:
 
   '@alloc/quick-lru@5.2.0':
