@@ -35,7 +35,7 @@ them was internally plausible, which is why nothing caught them.
 
 A design document that has stopped changing has a job to do: move its conclusion into
 `decisions.md` and leave a link. Two documents describing one decision is how they diverge.
-**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence. Advisory until [#186](https://github.com/effekt/nubbin/issues/186): its budget equals what the corpus already duplicates, so blocking would stop the next commit that adds prose rather than the next one that copies a claim.
+**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence. The budget is zero: a non-zero allowance would silently grow as the corpus duplicates itself, catching whoever next adds prose rather than catching the duplication.
 
 ## Rules
 

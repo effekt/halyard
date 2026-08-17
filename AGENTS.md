@@ -145,14 +145,13 @@ One exception is deliberate and recorded in `check-gate-table.mjs` so it cannot 
 oversight: `check-release-tag.mjs` runs only on the release path — every local version is a
 prerelease, so including it in `verify` would fail every run on every machine.
 
-**Two gates are advisory** and run with `continue-on-error` in CI, so neither can block.
-`check-stale-docs.mjs` flags a document that trails something it links to, which is worth
-re-reading and not worth failing a build over. `check-prose-dupes.mjs` reports duplicated
-claims. Its budget is a word count rather than a share, and a budget set to what a corpus
-already contains leaves nothing spare — so the next document to restate a claim trips it
-whether or not that claim was worth catching. It reports on every run and blocks nothing
-until the claims it already finds have a home —
-[#186](https://github.com/effekt/nubbin/issues/186).
+**`check-stale-docs.mjs` is advisory** and runs with `continue-on-error` in CI, so it is the
+one entry here that cannot block. It flags a document that trails something it links to, which
+is worth re-reading and not worth failing a build over.
+
+`check-prose-dupes.mjs` blocks, at a budget of zero because a budget above zero grows quietly as
+an allowance and fails whoever next adds prose rather than whoever copies a claim. Every claim
+has one home, so a second copy is a defect rather than a backlog item.
 
 `pnpm publishable` is the release subset — the gates that read the artifact a consumer would
 install rather than the source. Run it before publishing anything; `verify` includes it.

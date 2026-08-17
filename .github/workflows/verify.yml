@@ -52,11 +52,8 @@ jobs:
       - name: Prose
         run: node scripts/check-prose.mjs --check
 
-      # Advisory: the corpus sits at its measured budget with no headroom, so any new
-      # document trips it. Reported on every run; #186 fixes the claims it already finds.
       - name: Prose duplication
-        run: node scripts/check-prose-dupes.mjs
-        continue-on-error: true
+        run: node scripts/check-prose-dupes.mjs --check
 
       - name: Accessibility
         run: node scripts/check-a11y.mjs --check
