@@ -27,5 +27,8 @@
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@nubbin/core": "workspace:*"
   }
 }
