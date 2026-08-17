@@ -1,5 +1,8 @@
 import type { ArtifactStore } from "@nubbin/core";
-import { revalidatePath } from "next/cache";
+// `next/cache.js`, not `next/cache`: Next ships no `exports` map, and ESM does not do
+// extension resolution, so the bare subpath resolves only through a bundler. A publish
+// script run with plain node is a legitimate consumer of this function.
+import { revalidatePath } from "next/cache.js";
 
 /**
  * Pointer first, invalidation second. The reverse order re-caches the outgoing page during

@@ -1,9 +1,9 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from "next/cache.js";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { stubStore } from "./testing/stubStore";
 import { unpublishRoute } from "./unpublishRoute";
 
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
+vi.mock("next/cache.js", () => ({ revalidatePath: vi.fn() }));
 
 describe("unpublishRoute", () => {
   beforeEach(() => vi.mocked(revalidatePath).mockClear());
