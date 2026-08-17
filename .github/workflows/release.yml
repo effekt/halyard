@@ -130,20 +130,47 @@ jobs:
 
       # changesets publishes a package with no prior *normal* release to `latest`, not to the
       # prerelease tag — its own notice says so. So a prerelease becomes the default install and
-      # the tag consumers are told to use stays where it was. Report it rather than leaving the
-      # operator to notice; moving a tag needs an OTP and cannot be automated here.
-      - name: Report dist-tag drift
-        if: always()
+      # the tag consumers are told to use stays where it was.
+      #
+      # Moving it by hand needs a second factor, and npm has retired TOTP for security keys, so
+      # there is no code to pass to `--otp`. This attempts the move with the same OIDC credential
+      # the publish used. Whether npm honours a trusted-publisher token for `dist-tag` is not
+      # documented either way, so the step reports rather than fails: a release that published
+      # correctly must not go red because a tag could not be moved.
+      - name: Move the dist-tag to the version just published
+        if: success()
+        continue-on-error: true
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          moved=0
+          failed=0
           for dir in packages/*/; do
             [ -f "$dir/package.json" ] || continue
             name=$(node -p "require('./$dir/package.json').name")
             version=$(node -p "require('./$dir/package.json').version")
-            tagged=$(npm view "$name" "dist-tags.$TAG" 2>/dev/null || echo "")
-            if [ "$tagged" != "$version" ]; then
-              echo "::warning::$name dist-tag '$TAG' is '$tagged', not the version just published ($version). Run: npm dist-tag add $name@$version $TAG --otp=<code>"
+            current=$(npm view "$name" "dist-tags.$TAG" 2>/dev/null || echo "")
+            if [ "$current" = "$version" ]; then
+              echo "$name: '$TAG' already at $version"
+              continue
+            fi
+            if npm dist-tag add "$name@$version" "$TAG" 2>/dev/null; then
+              echo "$name: '$TAG' moved $current -> $version"
+              moved=$((moved + 1))
+            else
+              echo "::warning::$name: could not move '$TAG' from '$current' to $version. Run: npm dist-tag add $name@$version $TAG"
+              failed=$((failed + 1))
             fi
           done
+          {
+            echo "### dist-tag \`$TAG\`"
+            echo ""
+            echo "moved: $moved · could not move: $failed"
+            if [ "$failed" -gt 0 ]; then
+              echo ""
+              echo "npm did not accept the OIDC credential for \`dist-tag\`. Uncheck"
+              echo "**Require two-factor authentication for write actions** on npmjs.com, move the"
+              echo "tags by hand, and re-check it — publishing is unaffected either way."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
         env:
           TAG: ${{ inputs.tag }}
