@@ -62,7 +62,11 @@ module.exports = {
       // The capture group is what makes this a *cross*-package rule. Without it the pattern
       // matches a package importing its own modules, which every package with more than one
       // file does — so the rule failed everything the moment real code existed.
-      from: { path: "^(?:packages|apps)/([^/]+)/" },
+      //
+      // `examples` is in the list because the example app is the only consumer of a package
+      // that exists here. Leaving it out scoped the rule to callers that do not yet exist,
+      // so a deep import from the demo cruised clean.
+      from: { path: "^(?:packages|apps|examples)/([^/]+)/" },
       to: {
         path: "^packages/[^/]+/src/",
         pathNot: ["^packages/[^/]+/src/index\\.tsx?$", "^packages/$1/"],
@@ -84,8 +88,10 @@ module.exports = {
     },
     {
       name: "no-orphans",
-      severity: "warn",
-      comment: "An orphan module is unreachable — either wire it up or delete it.",
+      severity: "error",
+      comment:
+        "An orphan module is unreachable — either wire it up or delete it. Error, not warn: " +
+        "depcruise exits 0 on warnings, so `pnpm boundaries` reported orphans and passed.",
       from: { orphan: true, pathNot: "\\.d\\.ts$|\\.config\\.[cm]?[jt]s$" },
       to: {},
     },

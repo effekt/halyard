@@ -26,6 +26,8 @@ const SCAN_ROOTS = [
   "CONTRIBUTING.md",
   "SECURITY.md",
   "CODE_OF_CONDUCT.md",
+  // The example app carries a README whose links were never resolved.
+  "examples",
 ];
 const INDEX = join(ROOT, "docs/README.md");
 const INDEXED_DIR = join(ROOT, "docs");

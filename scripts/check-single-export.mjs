@@ -68,7 +68,9 @@ const EXEMPT_PATTERNS = [
   /\.d\.ts$/,
   /\.config\./,
   /\/generated\//,
-  /\/app\//,
+  // Next route files only. The bare `/app/` this replaces exempted every file under any
+  // directory named `app`, including ordinary components that happen to live there.
+  /\/app\/(?:.*\/)?(?:page|layout|route|template|loading|error|not-found|default|global-error)\.tsx?$/,
 ];
 
 const isExempt = (file) => EXEMPT_PATTERNS.some((pattern) => pattern.test(file));

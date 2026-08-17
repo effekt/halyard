@@ -34,7 +34,18 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = ["docs", ".claude/rules", ".claude/skills", ".claude/agents", "examples"];
+// `.changeset` holds contributor-written prose that ships verbatim into the public
+// CHANGELOG, and `.github` holds templates every contributor reads. Both were outside
+// every prose root, so neither was checked.
+const SCAN_ROOTS = [
+  "docs",
+  ".claude/rules",
+  ".claude/skills",
+  ".claude/agents",
+  "examples",
+  ".changeset",
+  ".github",
+];
 const EXEMPT_LINE = /<!--\s*prose-ok\s*-->/;
 
 /**
