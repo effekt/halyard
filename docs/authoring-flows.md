@@ -17,8 +17,8 @@ failure modes are open questions rather than settled behavior, and are marked as
 
 **Steps:** choose a route (a literal path, e.g. `/promotions/summer`); pick a layout (a
 `Document` with `kind: "layout"`) or none; optionally start from a preset instead of blank.
-"Preset" is the working name here — the stored enum value is still `kind: "template"`, and
-renaming it to avoid colliding with Atomic Design's meaning of "template" is an open question
+A preset is stored as `kind: "preset"`. Why it is not called a template is
+[in the decisions](decisions.md#a-copy-once-document-is-a-preset-not-a-template)
 ([#7](https://github.com/effekt/nubbin/issues/7)).
 
 **System:**
@@ -145,7 +145,7 @@ set, so firing cannot fail on a surprise validation error.
 
 ## 6. Layouts vs presets
 
-| Behaviour | Layout | Preset (`kind: "template"`) |
+| Behaviour | Layout | Preset (`kind: "preset"`) |
 |---|---|---|
 | Editing it | Propagates to every page that references it — in principle | Affects nothing already created; no ongoing link after clone |
 | Used at | Every render of a page that references it | Once, at page creation (flow 1) |

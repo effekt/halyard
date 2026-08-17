@@ -41,8 +41,8 @@ erDiagram
     }
     DOCUMENT {
         string id PK
-        string kind "page, layout or template"
-        string route "null for layouts and templates"
+        string kind "page, layout or preset"
+        string route "null for layouts and presets"
         string layoutId FK
         int head
     }
@@ -72,7 +72,7 @@ erDiagram
 ```
 
 `NODE ||--o{ NODE` is the slot tree the compiler recurses over; `DOCUMENT }o--o| DOCUMENT` is
-a page pointing at its layout. That edge is why layouts and templates share one table despite
+a page pointing at its layout. That edge is why layouts and presets share one table despite
 behaving oppositely.
 
 ## Contract layer
@@ -159,8 +159,8 @@ cannot drift.
 ```ts
 interface Document {
   id: string;
-  kind: "page" | "layout" | "template";
-  route: string | null;      // pages have one; layouts and templates do not
+  kind: "page" | "layout" | "preset";
+  route: string | null;      // pages have one; layouts and presets do not
   layoutId: string | null;   // the layout a page renders inside
   head: number;              // the version currently considered current
 }
@@ -273,18 +273,18 @@ Every clone path (copy/paste, duplicate page, instantiating from a preset) must 
 whole subtree to fresh ids**, via one shared utility in `core` — explicit in the flat shape,
 where a deep object copy could silently share ids by accident.
 
-### Layout and Template
+### Layout and Preset
 
-| Behaviour | Layout | Template |
+| Behaviour | Layout | Preset |
 |---|---|---|
 | Relationship | Referenced by pages | Copied into a new page |
 | Editing it | Referenced by every page using it; propagation to published pages is unresolved ([#13](https://github.com/effekt/nubbin/issues/13)) | Affects nothing already created |
-| Stored as | `Document` with `kind: "layout"` | `Document` with `kind: "template"` |
+| Stored as | `Document` with `kind: "layout"` | `Document` with `kind: "preset"` |
 | Composition | Page tree fills the layout's named slots | Page starts as a clone of the tree |
 
-Naming these apart early is cheap; separating them later is a data migration. The
-studio-facing name for `kind: "template"` is under discussion
-([#7](https://github.com/effekt/nubbin/issues/7)).
+Naming these apart early is cheap; separating them later is a data migration. `preset` rather
+than `template` because Atomic Design's template is this model's Layout — see
+[the decision](decisions.md#a-copy-once-document-is-a-preset-not-a-template).
 
 ## Output layer
 
