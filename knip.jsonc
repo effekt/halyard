@@ -17,9 +17,14 @@
       "entry": ["scripts/**/*.mjs"],
       "project": ["scripts/**/*.mjs"]
     },
+    // `fixtures/` and `scripts/` sit outside `src/`, so knip cannot see them at all without
+    // being told — and a file it cannot see is one it can neither report nor count as the
+    // reason another file is reachable. Entries stay as they were: knip finds the publish
+    // script through the `fixtures:publish` package script and the suites through
+    // `vitest.config.ts`, and naming either again is reported as a redundant pattern.
     "examples/*": {
       "entry": ["src/app/**/{page,layout,not-found,error,loading,route}.{ts,tsx}"],
-      "project": ["src/**/*.{ts,tsx}"]
+      "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "fixtures/**/*.ts"]
     },
     "packages/*": {
       "entry": ["src/index.ts"],

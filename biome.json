@@ -141,7 +141,7 @@
       }
     },
     {
-      "includes": ["**/*.types.ts", "**/*.constants.ts"],
+      "includes": ["**/*.types.ts", "**/*.constants.ts", "**/*.block.ts"],
       "linter": {
         "rules": {
           "style": {
