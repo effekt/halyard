@@ -175,8 +175,8 @@ hide_site_header: true
     deploy, no second source of truth.
   </p>
   <p class="hy-status">
-    Design, not software. There is no implementation yet, deliberately — the architecture is
-    being settled in the open, before anything expensive is built on top of it.
+    The contract is built; the adapters and the studio are not. The architecture was settled
+    in the open first, before anything expensive was built on top of it.
   </p>
   <p class="hy-actions">
     <a class="hy-btn-primary" href="{{ '/domain-model.html' | relative_url }}">Read the design record</a>
@@ -333,16 +333,22 @@ second and third are judgments about what this project is.
   </div>
 </div>
 
-## Design, not software
+## Where it stands
 
-What exists is the architecture, the decisions and the alternatives each one beat, and the
-tooling that will hold an implementation to them. It has been through one adversarial review
+`@nubbin/core` implements `defineBlock`, `defineCatalog`, `createRegistry`, `compile` and
+`checkRollback`, tested against real schemas rather than mocks. A build gate fails on any
+`node:` or framework import inside it, so the claim that it runs anywhere is checked rather
+than asserted. The React binding, the Next adapter, the storage adapter and the studio are
+sequenced and unwritten.
+
+The architecture came first, with the decisions and the alternatives each one beat, and the
+tooling that holds the implementation to them. It has been through one adversarial review
 that falsified its live postMessage preview and its single-manifest publish — a reason to trust it more than an unreviewed
 design, and not a reason to treat it as finished.
 
-The [roadmap](https://github.com/effekt/nubbin/issues/14) sequences the build. Its first
-milestone is deliberately not a feature: it exists to falsify the project's own thesis, by
-authoring real pages against real blocks with no editor at all, before anything expensive is
+The [roadmap](https://github.com/effekt/nubbin/issues/14) sequences the build, and one of its
+early milestones is deliberately not a feature: it exists to falsify the project's own thesis,
+by authoring real pages against real blocks with no editor at all, before anything expensive is
 built on that assumption.
 
 The [open design questions](https://github.com/effekt/nubbin/issues/15) are the parts known
