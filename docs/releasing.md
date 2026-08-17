@@ -42,17 +42,45 @@ tag is applied as asked and `latest` is applied as well. Publishing a stable ver
 moves `latest` to it; there is nothing to undo in the meantime, and removing `latest` leaves
 plain `npm install` behaving inconsistently across tooling.
 
-## Authentication
+## Publishing from CI
 
-Publishing requires a one-time password. `pnpm release:rc` prompts for it, which needs a real
-terminal — with stdin closed it fails `EOTP`. Passing the code avoids the prompt entirely:
+The `release` workflow is the way to publish. It is `workflow_dispatch` with a dist-tag
+choice, so someone picks `rc` or `latest` deliberately — a tag push would publish whatever the
+tag happened to point at. It runs in the `npm` GitHub environment, which is where a required
+reviewer or a branch rule hangs if one is wanted.
+
+No npm token is stored. `id-token: write` lets npm exchange an OIDC claim for a short-lived
+credential scoped to that one workflow, which cannot be extracted or reused.
+
+**pnpm packs and npm publishes.** Neither tool does both halves: pnpm rewrites `catalog:` and
+`workspace:*` into real versions, and npm performs the OIDC exchange and signs provenance.
+
+A version already on the registry is skipped rather than failing, so a re-run after a partial
+failure finishes the remaining packages instead of stopping on the ones that succeeded.
+
+The last step reads the registry back, because the publish output is not evidence that a
+package landed — an `npm view` of the version a consumer would resolve is.
+
+### Before the first CI release
+
+Two things live outside this repository and are set up once:
+
+| Where | What |
+|---|---|
+| GitHub → Settings → Environments | An environment named `npm` |
+| npmjs.com → each package → Settings | A trusted publisher naming this repository and `release.yml` |
+
+Until a package has its trusted publisher, that package's publish step fails authentication.
+
+## Publishing by hand
+
+Still possible, and how `0.1.0-rc.0` went out. It requires a one-time password: `pnpm
+release:rc` prompts for it, which needs a real terminal — with stdin closed it fails `EOTP`.
+Passing the code avoids the prompt entirely:
 
 ```bash
 pnpm --filter "./packages/*" publish --tag rc --no-git-checks --otp=123456
 ```
-
-Automating this so a laptop and a phone are not on the critical path is
-[#111](https://github.com/effekt/nubbin/issues/111).
 
 ## After publishing
 
