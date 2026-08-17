@@ -110,6 +110,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-peer-deps.mjs` | no package declares a peer dependency nothing in it imports |
 | `check-package-metadata.mjs` | every publishable package has a README, a licence file and field, a description and a repository |
 | `check-docs.mjs` | links and anchors resolve; every document is in the index |
+| `check-file-refs.mjs` | a repository file named inside a code span exists, or is gitignored on purpose |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 | `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree by name and by content hash |
