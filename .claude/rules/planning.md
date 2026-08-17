@@ -95,7 +95,8 @@ it cannot collide. The rule is about agents that edit repository files.
 ### Audit the ticket before implementing it
 
 A ticket is a claim about work, written before the code existed. Read it against the code that
-exists now and report what does not hold **before** writing anything. Five have failed this way:
+exists now and report what does not hold **before** writing anything. Every ticket audited so far
+has failed this way, and the audit has never once come back empty:
 
 | Ticket | What it said | What was true |
 |---|---|---|
@@ -104,6 +105,9 @@ exists now and report what does not hold **before** writing anything. Five have 
 | #63 and #53 | the same four paths | different meanings for the same filename (#90) |
 | #81 | client blocks render, without live update | the renderer cannot invoke a client reference at all |
 | #48 | a `HoleSpec` type, and a regex for its own message | the type does not exist; the regex does not match |
+| #55 | `compile(…, blockRegistry, …)` | `compile` wants the compile-side `Registry`; `blockRegistry` has no `fingerprint()` — #90 for the third time |
+| #56 | a marker `className` #53 "already gives" `SectionStack` | the component has no `className`, and two other blocks share one literal, so the markers collide |
+| #57 | four new dependency-cruiser rules | two already exist under those exact names, and a third bans an import the shipped render path depends on |
 
 None was caught by review. Every one was found by an implementer, and only because they read
 before typing. **The naming is where it goes wrong most** — a ticket names a file, a type or a
