@@ -1,1 +1,1 @@
-export { encodeRouteKey } from "./encodeRouteKey";
+export { createFsArtifactStore } from "./createFsArtifactStore";
