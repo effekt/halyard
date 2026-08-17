@@ -22,6 +22,7 @@ A gate that passes because it scanned zero files reads exactly like one that pas
 | `core-imports-no-framework` | matched a resolved `node_modules` path that never occurs, so the rule guarding the central invariant had never fired |
 | `publint`, `attw` | installed, documented as gates, wired to nothing |
 | `check-skills-lock` | compared names and ignored the content hash it stores |
+| `check-docs` inside `verify` | invoked as `pnpm docs`, which the package manager claims — it opened a homepage and exited 0 |
 
 None was carelessness. Each looked right and printed a tick.
 
@@ -43,6 +44,17 @@ pnpm boundaries          # ✔ clean again
 Both directions matter. A gate narrowed to remove a false positive must still fire on the true one, and a gate widened must still pass on a clean tree.
 
 **Gate:** none — this is judgment. The pull request template carries it as a checklist item.
+
+### A clean exit is not a result
+
+`pnpm <name>` reaches your script only while the package manager has no command of that name.
+`pnpm docs` opened a package homepage, printed nothing and exited 0, so `verify` skipped the
+documentation gate entirely and every local pass was made without it. Use `pnpm run <name>` —
+unambiguous whatever the tool adds later. **Gate:** `check-script-invocations.mjs`.
+
+Read the same way anywhere a gate is quiet: a gate that found nothing and a gate that ran
+nothing produce identical output. Make it say what it checked — a file count, a rule count, a
+package count — so silence becomes visible.
 
 ### Seed every form of the thing, not the convenient one
 
