@@ -131,6 +131,9 @@ importers:
       '@nubbin/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@nubbin/next':
+        specifier: workspace:*
+        version: link:../../packages/next
       '@nubbin/react':
         specifier: workspace:*
         version: link:../../packages/react
