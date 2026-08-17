@@ -1,6 +1,6 @@
 {
   "name": "@nubbin/core",
-  "version": "0.1.0-rc.1",
+  "version": "0.1.0-rc.2",
   "description": "The Nubbin contract: define blocks, split catalog from registry, and compile a page document into an immutable artifact.",
   "keywords": [
     "nubbin",
