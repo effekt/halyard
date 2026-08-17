@@ -89,7 +89,7 @@ reference back to it. Nubbin is needed to change a page, not to serve one.
 | `@nubbin/next` | Read and write paths — resolve, prebuild params, publish and unpublish |
 | `@nubbin/react` | The renderer, the block registry, and hole resolution |
 
-All four are on npm at `0.1.0-rc.0` under the `rc` tag. Everything is tested against real
+All four are on npm under the `rc` tag; `npm view @nubbin/core dist-tags` is the current answer. Everything is tested against real
 schemas rather than mocks, and a build gate fails on any `node:` or framework import inside
 `core`, so the claim that it runs anywhere is checked rather than asserted.
 

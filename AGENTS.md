@@ -194,7 +194,8 @@ A `PostToolUse` hook reviews added comments on every edit.
 
 ## Status
 
-**Four packages exist and are published at `0.1.0-rc.0` under the `rc` tag.**
+**Four packages exist and are published under the `rc` tag.** The version in prose would be a
+copy of the registry, and the copy is the one that rots — `npm view @nubbin/core dist-tags`.
 
 | Package | Surface |
 |---|---|
