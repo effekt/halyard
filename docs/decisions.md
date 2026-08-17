@@ -194,6 +194,38 @@ a convention nobody can check is how they diverged.
 blocks, catalog, both registries, the publish script and the catch-all to demonstrate its own
 thesis, so ownership cannot move to Phase 3 without blocking the earlier phase on the later one.
 
+## One root element per block, enforced at render
+
+The renderer invokes a block and clones the returned element to stamp `data-nubbin-node`, so a
+Fragment root leaves nothing to clone. `invokeBlock` throws when the returned value is not a
+clonable element, naming the block and the node.
+
+Static analysis was the alternative — reading each component's return paths from the TypeScript
+AST, which the repository already does elsewhere. It was rejected as redundant rather than
+wrong: the render-time check catches every case including the conditional and array returns
+static analysis cannot prove, and a second mechanism catching a subset of the same class earlier
+buys less than it costs to maintain.
+
+The original argument for a gate was that the failure would be silent — a node carrying no
+attribute, discovered in the studio phases later. That stopped being true when the renderer
+shipped: it throws on first render, in development, naming the block.
+
+## Blocks are server components
+
+A block is invoked and its root cloned. A client reference cannot be invoked on the server, so a
+client block does not render at all — React throws `Attempted to call X() from the server`, which
+`invokeBlock` lets through untouched because the block's own failure is more informative than
+anything the renderer could substitute.
+
+Supporting client blocks would need a second render path emitting `createElement(component, …)`
+without invoking, which makes `data-nubbin-node` part of every block's public prop contract and
+requires each client block to spread rest props onto its root. That is a contract no gate can
+check, failing silently as an unselectable region, in exchange for a case no consumer has asked
+for.
+
+The alternative was a wrapper element around each block, which stamps reliably. It was rejected
+because it changes the consumer's layout, and Nubbin holds no opinion about styling.
+
 ## `core` depends on nothing
 
 It has to run in a browser (the studio validates drafts client-side), a worker, and a CI
