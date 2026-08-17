@@ -62,7 +62,7 @@ declaration greys out an invalid drop target during drag
 | Mode | Consequence |
 |---|---|
 | `slot.min` violated by a delete | The current design does not block it in the editor. Surfaces at publish as a `CompileError` with a node path. |
-| `allow` names a typo'd or renamed block | Silently blocks that slot forever — `allow` has no referential integrity against the registry. Reads as an author-facing bug, not a config error. |
+| `allow` names a typo'd or renamed block | `createRegistry()` throws, naming every unresolvable entry with its block and slot, so the slot never reaches an author. |
 | A pasted/cloned subtree creates a cycle | Not reachable through normal drag; possible via direct API writes. The flat shape makes it detectable — a cycle can't flatten into a tree, so compile fails rather than looping. |
 | Cross-document composition (copy a node from one open page into another) | Undesigned. The canvas is one iframe over one document at a time ([`studio.md`](studio.md)). |
 

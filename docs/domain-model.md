@@ -96,7 +96,7 @@ interface Block<Schema, Component> {
 }
 
 interface SlotConstraint {
-  allow?: readonly string[];   // block names permitted here; omitted means any registered block
+  allow?: readonly string[];   // block names permitted here, each resolved at registration; omitted means any registered block
   min?: number;
   max?: number;
 }
