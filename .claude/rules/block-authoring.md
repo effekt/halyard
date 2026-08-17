@@ -81,7 +81,7 @@ slots: { items: {} }
 slots: { items: { allow: ["Testimonial"], min: 1, max: 6 } }
 ```
 
-An unconstrained slot means the studio can't grey out invalid drop targets, and the compiler can't reject a bad composition. **Gate:** `compile()` rejects a child the list forbids. The list itself is unchecked, so a name matching no registered block silently rejects everything instead — [#97](https://github.com/effekt/nubbin/issues/97).
+An unconstrained slot means the studio can't grey out invalid drop targets, and the compiler can't reject a bad composition. **Gate:** `compile()` rejects a child the list forbids, and `createRegistry()` refuses to register a block whose `allow` names nothing in the registry, reporting every unresolvable entry with its block and slot. The list resolves once the whole array is ingested, so a block may name a sibling declared after it.
 
 ### Rich text needs an explicitly marked type
 

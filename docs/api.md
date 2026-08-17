@@ -234,6 +234,8 @@ export const marketingLayout = defineBlock({
 
 The compiler enforces these, so a violation is a publish-time error, not a layout that renders
 wrong; the studio reads the same constraints to grey out invalid drop targets during a drag.
+`createRegistry` resolves every `allow` entry against the blocks it holds and throws on one that
+matches none, because a slot allowing only a name nothing answers to rejects every drop instead.
 Reading a slot's live occupancy needs no dedicated API: the constraint is
 `registry.get(block).slots[name]` and the count is `elements[id].slots[name].length`.
 

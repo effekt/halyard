@@ -13,7 +13,7 @@ export type UnknownProps = Record<string, unknown>;
 export type InferProps<Schema extends StandardSchemaV1> = StandardSchemaV1.InferOutput<Schema>;
 
 export interface SlotConstraint {
-  /** Block names permitted here. Omitted means any registered block. */
+  /** Block names permitted here, each resolved at registration. Omitted means any registered block. */
   allow?: readonly string[];
   min?: number;
   max?: number;
