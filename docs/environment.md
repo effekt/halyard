@@ -77,7 +77,7 @@ Committed, and loaded automatically:
 | `.claude/rules/*` | Judgment no gate encodes. Auto-load by path glob, so only the relevant ones cost context |
 | `.claude/skills/decision` | Recording a decision so it survives — cause, reason, decision, and what it beat |
 | `.claude/agents/*` | Named agents with a fixed model: `builder`, `adversary`, `scout` |
-| `.claude/settings.json` | Five `PostToolUse` reviewers judging what the gates cannot |
+| `.claude/settings.json` | The `PostToolUse` chain — `hook-check-file.mjs`, which runs the gates that read one file, then prompt reviewers judging what no gate can encode |
 
 The reviewers are read when a session starts. A session that began before they existed runs
 without them, and no reload command reaches them — restart to pick them up.
