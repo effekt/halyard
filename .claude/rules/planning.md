@@ -71,10 +71,17 @@ error on either side.
 # WRONG — the agent shares a tree with the driver and with every other agent
 "Work on a branch off main called fix/thing."
 
-# CORRECT — its own checkout, which nothing else can reach
-git worktree add -b fix/thing /path/to/scratchpad/thing-wt main
-"Work in /path/to/scratchpad/thing-wt, on branch fix/thing, and nowhere else."
+# WRONG — outside the repository, where a temp sweep can take uncommitted work with it
+git worktree add -b fix/thing /tmp/some-scratchpad/thing-wt main
+
+# CORRECT — inside the repository, in the gitignored `.worktrees/`
+git worktree add -b fix/thing .worktrees/thing origin/main
+"Work in .worktrees/thing, on branch fix/thing, and nowhere else. Install first."
 ```
+
+`.worktrees/` is gitignored, so a checkout there is invisible to `git status` in the main tree
+while still living on the same disk as the work it belongs to. Branch from `origin/main` rather
+than `main`: the local ref may be behind, or checked out by someone else.
 
 This has happened here. An agent was given a branch and no worktree, the driver ran
 `git reset --hard` twice in that tree while it worked, and the agent spent time
@@ -84,6 +91,27 @@ trusting that it was applied.
 
 An agent that only writes issues, or only writes to a scratchpad, needs no worktree —
 it cannot collide. The rule is about agents that edit repository files.
+
+### Audit the ticket before implementing it
+
+A ticket is a claim about work, written before the code existed. Read it against the code that
+exists now and report what does not hold **before** writing anything. Five have failed this way:
+
+| Ticket | What it said | What was true |
+|---|---|---|
+| #45 | `(props: Record<string, unknown>)` | admits no real block component; parameters are contravariant (#88) |
+| #53 | `blockRegistry.ts`, `registry.ts` | each named after the other type's name (#90) |
+| #63 and #53 | the same four paths | different meanings for the same filename (#90) |
+| #81 | client blocks render, without live update | the renderer cannot invoke a client reference at all |
+| #48 | a `HoleSpec` type, and a regex for its own message | the type does not exist; the regex does not match |
+
+None was caught by review. Every one was found by an implementer, and only because they read
+before typing. **The naming is where it goes wrong most** — a ticket names a file, a type or a
+field, and the name has since moved or was never right.
+
+Report variances as findings, not as a shrug: what the ticket says, what is true, what you did,
+and whether the ticket needs editing. A deviation nobody wrote down becomes the next ticket's
+premise.
 
 ### A plan that produced no measurement produced nothing
 
@@ -96,3 +124,5 @@ Where a phase exists to answer a question rather than to ship a feature, the pla
 - [ ] Each task issue is executable without reading this conversation
 - [ ] Design and interface prompts link the artifact rather than restating it
 - [ ] A phase that exists to answer a question says what would stop the work
+- [ ] The ticket was read against the current code, and every variance is reported
+- [ ] A file-editing agent was given a worktree under `.worktrees/`, not a shared tree

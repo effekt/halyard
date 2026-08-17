@@ -29,3 +29,7 @@ scripts/vendor-terms.txt
 /.agents/
 /.claude/skills/*
 !/.claude/skills/decision/
+
+# Agent worktrees. Inside the repository so a stray `rm -rf /tmp` cannot take uncommitted
+# work with it, and ignored because a worktree is a checkout, not content.
+.worktrees/
