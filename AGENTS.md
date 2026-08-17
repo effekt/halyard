@@ -260,7 +260,7 @@ copy of the registry, and the copy is the one that rots — `npm view @nubbin/co
 
 | Package | Surface |
 |---|---|
-| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback`, `parseMatchKind` |
+| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `CompileError`, `checkRollback`, `parseMatchKind` |
 | `@nubbin/store-fs` | `createFsArtifactStore`, proven against the shared `ArtifactStore` contract |
 | `@nubbin/next` | `resolveArtifact`, `staticRouteParams`, `holeFetchOptions`, `routeFromSlug`, `publishRoute`, `unpublishRoute` |
 | `@nubbin/react` | `Renderer`, `defineRegistry`, `loadBlocks`, and the block, hole and renderer types |
