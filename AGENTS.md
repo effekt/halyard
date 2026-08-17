@@ -117,7 +117,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-no-vendor-refs.mjs` | no employer, client, internal application or product name, and no absolute path from a contributor's machine |
 | `check-pinned-deps.mjs` | no range specifier — every dependency version is exact, so an upgrade arrives only in a commit someone wrote |
 | `check-script-invocations.mjs` | a script whose name the package manager also claims is invoked as `pnpm run <name>`, never bare |
-| `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree by name and by content hash |
+| `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree by name, and by a hash over every file in each skill directory — not just its `SKILL.md` |
 | `check-plugins-lock.mjs` | `plugins-lock.json` and the installed plugins agree as a set, by name — versions are recorded but not compared, because a marketplace that publishes none reports `unknown` |
 | `check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
 | `check-gate-table.mjs` | every gate this table names is reachable from `pnpm verify`, and every gate `verify` runs has a row here — each direction with documented exceptions |

@@ -70,6 +70,13 @@ Reinstall them with the skills CLI. **The lockfile is the authority on which one
 them here would give a reader two lists to reconcile, and the one in prose is the one nobody
 updates.
 
+**A skill is a directory, not a file.** `SKILL.md` is the entry point, and the `rules/*.md`,
+`references/` and `AGENTS.md` beside it are loaded into an agent's context the same way its body
+is — one skill here carries 156 files. The hash covers all of them, each under its own relative
+path, so a rename and a moved paragraph both register. Hashing the entry point alone covered 7
+of the 298 files installed, and appending an instruction to a `rules/*.md` file passed as
+"matches, name and content".
+
 `check-skills-lock.mjs` fails a commit where the lockfile and the installed set disagree in
 either direction. Without it the lockfile is a claim about a machine no reader can see: an
 entry nobody installed sends a contributor after a skill the work never used, and an

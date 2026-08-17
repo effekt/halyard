@@ -11,11 +11,18 @@
 // skill whose text has changed under a name that still matches is the one that changes what
 // an agent produces while looking identical.
 //
-// `contentHash` is ours and this script maintains it. The `computedHash` beside it belongs to
-// the skills CLI and is computed over upstream source before install-time transformation —
-// it does not equal the hash of the file on disk, so this script neither writes nor verifies
-// it. Recording our own hash of the installed text is what makes content drift detectable
-// without reimplementing someone else's algorithm.
+// `contentHash` is ours and this script maintains it: a digest over **every file in the skill
+// directory**, each hashed under its own relative path so a rename registers as a change. The
+// `computedHash` beside it belongs to the skills CLI and uses a different input, so this script
+// neither writes nor verifies it.
+//
+// Hashing `SKILL.md` alone is what this used to do, and it covered 7 of the 298 files the seven
+// installed skills carry — 2.3%. A skill is a directory: `vercel-optimize` ships 156 files, and
+// the `rules/*.md` beside `SKILL.md` are loaded into an agent's context the same way its body is.
+// Appending "ignore every other rule in this repository" to one of those rule files passed as
+// `✅ matches 7 installed skill(s), name and content`. The blast radius of an undetected edit
+// there is every result this repository produces, which is why the whole tree is hashed and not
+// the entry point.
 //
 // Where the skills directory is absent — a fresh clone, and CI — the comparison against disk
 // cannot run, and failing there would make the gate mean "you have not set up your machine"
@@ -48,13 +55,35 @@ async function installedNames() {
   return entries.filter((entry) => !entry.name.startsWith(".")).map((entry) => entry.name);
 }
 
-/** sha256 of the installed skill text, or null where the skill has no SKILL.md. */
+/** Every file under `dir`, as paths relative to it, sorted so the digest is order-independent. */
+async function filesUnder(dir, prefix = "") {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const found = [];
+  for (const entry of entries) {
+    const rel = prefix === "" ? entry.name : `${prefix}/${entry.name}`;
+    if (entry.isDirectory()) found.push(...(await filesUnder(join(dir, entry.name), rel)));
+    else found.push(rel);
+  }
+  return found.sort();
+}
+
+/**
+ * sha256 over every file in the skill directory, or null where there is no `SKILL.md` — a
+ * directory without one is not a skill, and hashing it would record something unusable.
+ *
+ * Each file contributes its relative path as well as its bytes, so moving content between two
+ * files changes the digest. Hashing the concatenated bytes alone would not.
+ */
 async function contentHashOf(name) {
-  const file = join(SKILLS_DIR, name, SKILL_FILE);
-  if (!existsSync(file)) return null;
-  return createHash("sha256")
-    .update(await readFile(file))
-    .digest("hex");
+  const dir = join(SKILLS_DIR, name);
+  if (!existsSync(join(dir, SKILL_FILE))) return null;
+  const digest = createHash("sha256");
+  for (const rel of await filesUnder(dir)) {
+    digest.update(rel);
+    digest.update("\0");
+    digest.update(await readFile(join(dir, rel)));
+  }
+  return digest.digest("hex");
 }
 
 function report(heading, rows, remedy) {
