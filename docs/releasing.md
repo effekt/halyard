@@ -9,12 +9,38 @@ status: stable
 Four packages publish from this repository: `@nubbin/core`, `@nubbin/react`, `@nubbin/next` and
 `@nubbin/store-fs`. They share a version.
 
+## Versions are generated, never edited
+
+A change that should ship carries a changeset:
+
+```bash
+pnpm changeset          # pick the packages and the bump, describe the change
+```
+
+The `version` workflow turns accumulated changesets into a "Version Packages" pull request
+that bumps every manifest and writes the changelogs. Merging that pull request is what makes a
+version real. Nothing else edits a `version` field.
+
+The four packages are `fixed` in `.changeset/config.json`, so they move together — one version
+across the set, and a changeset naming any of them bumps all of them.
+
+**The repository is in prerelease mode**, recorded in `.changeset/pre.json`. While it is,
+versions come out as `0.1.0-rc.N`. Leaving it is deliberate:
+
+```bash
+pnpm changeset pre exit     # next version is 0.1.0, not another rc
+```
+
+Without pre mode, `changeset version` graduates a prerelease straight to stable — from
+`0.1.0-rc.0` it produces `0.1.0`, not `0.1.0-rc.1`.
+
 ## The commands
 
 | Command | Does |
 |---|---|
+| `pnpm changeset` | Records a change, so the next version bump knows about it |
 | `pnpm publishable` | Builds, then runs the three gates that read the artifact a consumer installs rather than the source — `publint`, `attw`, `check-tarball` |
-| `pnpm release:rc` | `publishable`, then publishes every package with `--tag rc` |
+| `pnpm release:rc` | `publishable`, then publishes with `--tag rc` |
 | `pnpm release` | `publishable`, then refuses if any version is a prerelease, then `changeset publish` |
 
 `pnpm verify` includes `publishable`, so a pull request already proves the packages are
@@ -52,11 +78,10 @@ reviewer or a branch rule hangs if one is wanted.
 No npm token is stored. `id-token: write` lets npm exchange an OIDC claim for a short-lived
 credential scoped to that one workflow, which cannot be extracted or reused.
 
-**pnpm packs and npm publishes.** Neither tool does both halves: pnpm rewrites `catalog:` and
-`workspace:*` into real versions, and npm performs the OIDC exchange and signs provenance.
-
-A version already on the registry is skipped rather than failing, so a re-run after a partial
-failure finishes the remaining packages instead of stopping on the ones that succeeded.
+It publishes with `changeset publish`, which already skips a version that is on the registry —
+so a re-run after a partial failure finishes the rest instead of stopping on what succeeded.
+That call shells out to `pnpm publish`, which is what rewrites `catalog:` and `workspace:*`
+into versions a registry understands; npm cannot do that itself.
 
 The last step reads the registry back, because the publish output is not evidence that a
 package landed — an `npm view` of the version a consumer would resolve is.
