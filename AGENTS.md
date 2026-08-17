@@ -103,6 +103,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-tarball.mjs` | no `catalog:`, `workspace:` or `link:` specifier survives into a packed manifest |
 | `check-installable.mjs` | every package installs from its own tarball into an empty project and imports |
 | `check-peer-deps.mjs` | no package declares a peer dependency nothing in it imports |
+| `check-package-metadata.mjs` | every publishable package has a README, a licence file and field, a description and a repository |
 | `check-docs.mjs` | links and anchors resolve; every document is in the index |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
