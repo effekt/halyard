@@ -46,6 +46,12 @@ pre-commit:
       glob: "**/package.json"
       run: node scripts/check-pinned-deps.mjs --check {staged_files}
 
+    # Corpus-wide: whether a peer is used depends on source files, not on the manifest that
+    # declares it, so a staged-manifest run would answer the wrong question.
+    peer-deps:
+      glob: "**/package.json"
+      run: pnpm peer-deps
+
     # Public repo, contributors from private ones.
     vendor-refs:
       glob: "*.{md,ts,tsx,mjs,json,jsonc,yml,yaml}"
