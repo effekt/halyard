@@ -68,6 +68,14 @@ No deep imports. If a consumer needs something, export it from `src/index.ts`; i
 shouldn't be public, it shouldn't be reachable. Deep-import paths become a de-facto API
 that semver can't protect.
 
+## Gates
+
+`dependency-cruiser` is the whole of it: `core` importing a framework or a `node:` builtin fails
+the build, as does an adapter importing another adapter, or anything reaching past a package's
+entry point. **Gate:** none for a self-contained reimplementation — a module that copies `core`'s
+hashing rather than importing it passes every structural check, which is why
+[`adapters.md`](adapters.md) states that separately.
+
 ## Checklist
 
 - [ ] `packages/core/src/**` imports only `@standard-schema/spec` and its own modules

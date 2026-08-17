@@ -59,6 +59,14 @@ A test that snapshots an artifact's full JSON fails on every unrelated field add
 catches nothing. Assert the properties that matter: this route resolves, this hash is
 stable, this issue path points at the offending node.
 
+## Gates
+
+`vitest` runs the suite and `check-installable.mjs` proves each package imports from its own
+tarball. **Gate:** none for the colocated-test requirement itself — nothing asserts that a unit
+has a test beside it, and most units currently do not.
+[#96](https://github.com/effekt/nubbin/issues/96) is what closing that would take, and why it is
+not simply a coverage threshold.
+
 ## Checklist
 
 - [ ] A sibling `*.test.ts` exists and imports the unit directly

@@ -75,6 +75,13 @@ and delete it once the version clears the gate on its own.
 npm's ability to take a package down. Do not add a direct dependency from those sources
 either.
 
+## Gates
+
+`check-pinned-deps.mjs` rejects a range where an exact version belongs and a duplicate of
+something the catalog already pins. **Gate:** none for the three-day minimum age — `pnpm`'s
+`minimumReleaseAge` enforces it at install time, so nothing in this repository re-checks a
+lockfile that already satisfied it.
+
 ## Checklist
 
 - [ ] No `^`, `~`, `*`, `>=`, or `x` outside `peerDependencies`

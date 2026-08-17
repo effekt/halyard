@@ -52,6 +52,14 @@ If a gate enforces part of the rule, name the gate. If nothing does — as with
 `single-concern.md` — say that explicitly, because it tells the reader the rule is the
 only thing standing between them and the mistake.
 
+## Gates
+
+`check-rules.mjs` enforces this file against every rule: frontmatter keys, a non-empty `paths`
+glob, the 150-line cap, a closing checklist, and that each rule declares its own gate status.
+That last one exists because six rules said nothing at all, and a rule that never says whether
+it is enforced reads as enforced. **Gate:** none for whether a rule traces to a real failure —
+no check can tell a rule earned by an incident from one written on a hunch.
+
 ## Checklist
 
 - [ ] `paths:` frontmatter present and scoped
