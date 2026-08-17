@@ -52,7 +52,7 @@ without changing a caller.
 
 ### Framework packages depend on `core`, never on each other
 
-`@effekt/nubbin-react` and `@effekt/nubbin-next` both depend on `@effekt/nubbin`.
+`nubbin-react` and `nubbin-next` both depend on `nubbin`.
 `next` may depend on `react`. Nothing depends upward, and no adapter depends on another
 adapter.
 

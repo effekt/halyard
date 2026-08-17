@@ -15,17 +15,26 @@ status: stable
 
 Write `xSchema`, then `type XProps = InferProps<typeof xSchema>`. Full rule and example in [`block-schemas.md`](block-schemas.md#props-are-inferred-never-declared) — a hand-written `interface` beside the schema is invariant 1, and everything below depends on getting this right first.
 
-### `defaults` is required, not optional
+### `defaults` is required, and belongs in the catalog entry
 
 ```ts
-// WRONG — nothing for the palette preview to render; a dropped block starts with `tone` unset
-export const heroBlock = defineBlock({ name: "Hero", schema: heroSchema, component: Hero });
-// CORRECT — every required field has a value before an author ever touches it
+// WRONG — defaults on the block ties data the studio needs to the component-bearing half
 export const heroBlock = defineBlock({
   name: "Hero", schema: heroSchema, component: Hero,
-  defaults: { title: "Headline", tone: "light", cta: { label: "Learn more", href: "/" }, bullets: [] },
+  defaults: { title: "Headline", tone: "light" },
+});
+
+// CORRECT — the catalog is the serializable half, and defaults are serializable data
+export const catalog = defineCatalog({
+  Hero: { schema: heroSchema, ui: heroUi, defaults: heroDefaults, docs: heroDocs },
 });
 ```
+
+`defaults` is what a freshly dropped block renders with, so the **studio** is what needs it —
+and the studio fetches the catalog precisely because the catalog carries no components. Putting
+defaults on the block would make the studio load a component to learn a default, which is the
+coupling [the catalog/registry split](../../docs/decisions.md#catalog-and-registry-are-separate)
+exists to prevent.
 
 `defaults` must pass the schema's own `validate()`. **Gate:** none — not enforced in `defineBlock`'s type, so caught only at review.
 
