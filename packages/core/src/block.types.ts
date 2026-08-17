@@ -2,6 +2,16 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
 
 export type UnknownProps = Record<string, unknown>;
 
+/**
+ * A block's props, derived from its schema. The whole of invariant 1 in one type: there is no
+ * second definition of a block's shape, so nothing can drift from it.
+ *
+ * `InferOutput` rather than `InferInput` because a component receives what `validate()`
+ * returned — compile freezes the validated value, so a field a transform reshaped reaches the
+ * component in its output form, not as the author typed it.
+ */
+export type InferProps<Schema extends StandardSchemaV1> = StandardSchemaV1.InferOutput<Schema>;
+
 export interface SlotConstraint {
   /** Block names permitted here. Omitted means any registered block. */
   allow?: readonly string[];

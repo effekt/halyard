@@ -43,8 +43,9 @@ zod is a devDependency because tests must run against a real implementation.
 ## Props inferred from the schema, never declared
 
 A hand-written props interface beside a schema is a second definition of one contract, free
-to drift. `InferProps<typeof xSchema>` makes drift impossible rather than merely
-discouraged.
+to drift. `InferProps<typeof xSchema>`, exported by `core`, makes drift impossible rather
+than merely discouraged. It resolves to Standard Schema's `InferOutput`, so a component sees
+what `validate()` returned rather than what the author typed.
 
 ## Artifacts are immutable and content-addressed
 
