@@ -19,10 +19,10 @@ package lands in the right place rather than wherever it was convenient. See `##
 
 ```
 packages/
-  core/       nubbin             — defineBlock, registry, compile, artifact types
-  react/      nubbin-react       — render an artifact tree with a block registry
-  next/       nubbin-next        — catch-all route, preview route, draft resolution
-  store-fs/   nubbin-store-fs    — reference storage adapter
+  core/       @nubbin/core       — defineBlock, registry, compile, artifact types
+  react/      @nubbin/react      — render an artifact tree with a block registry
+  next/       @nubbin/next       — catch-all route, preview route, draft resolution
+  store-fs/   @nubbin/store-fs   — reference storage adapter
 apps/
   studio/     the editor — pulled and run alongside your app, never a hosted service
 ```
