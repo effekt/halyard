@@ -20,8 +20,13 @@ const MARKUP_GATES = [["node", ["scripts/check-a11y.mjs", "--check"]]];
 /** Prose carries vendor references as readily as code, so docs are checked too. */
 const UNIVERSAL_GATES = [["node", ["scripts/check-no-vendor-refs.mjs", "--check"]]];
 
-/** Judged against the file alone, so it runs per-file and reports the exact line. */
-const PER_FILE_PROSE_GATES = [["node", ["scripts/check-prose.mjs", "--check"]]];
+/** Judged against the file alone, so these run per-file and report the exact line. */
+const PER_FILE_PROSE_GATES = [
+  ["node", ["scripts/check-prose.mjs", "--check"]],
+  // A filename either resolves against the filesystem or it does not — no other document is
+  // involved, so this belongs at the edit rather than waiting for the commit.
+  ["node", ["scripts/check-file-refs.mjs", "--check"]],
+];
 
 /**
  * A link is only broken relative to every other document, so this one takes no file argument
