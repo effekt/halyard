@@ -1,0 +1,42 @@
+name: version
+
+# Opens and maintains a "Version Packages" pull request. Versions and changelogs are generated
+# from the changeset files a contributor writes, never edited by hand — a hand-set version is
+# how `0.1.0-rc.0` shipped with no changelog and no record of what changed.
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: version
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # No `publish` input: publishing stays a deliberate dispatch in release.yml, so merging
+      # this PR bumps versions without shipping anything.
+      - uses: changesets/action@v1
+        with:
+          version: pnpm changeset version
+          title: "chore(repo): version packages"
+          commit: "chore(repo): version packages"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

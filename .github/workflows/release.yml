@@ -58,36 +58,18 @@ jobs:
       - name: Build and prove the artifacts are publishable
         run: pnpm publishable
 
-      # pnpm packs, npm publishes. pnpm is what rewrites `catalog:` and `workspace:*` into real
-      # versions — npm does not, and a manifest carrying either fails on install for every
-      # consumer. npm is what performs the OIDC exchange and signs provenance. Neither tool
-      # does both, so each does the half it owns.
+      # `changeset publish` rather than a hand-rolled loop: it already skips a version
+      # already on the registry, reads the dist-tag from prerelease mode, and is what
+      # `.changeset/config.json` was configured for. It shells out to `pnpm publish`, so the
+      # `catalog:` and `workspace:*` rewriting still happens — npm cannot do that itself.
       #
-      # An already-published version is skipped rather than failing, so a re-run after a
-      # partial failure finishes the job instead of stopping on the packages that succeeded.
+      # NPM_CONFIG_PROVENANCE reaches npm through both layers of delegation, which is the one
+      # part of this path not yet observed in a real run.
       - name: Publish
-        run: |
-          set -euo pipefail
-          published=0
-          skipped=0
-          for dir in packages/*/; do
-            [ -f "$dir/package.json" ] || continue
-            name=$(node -p "require('./$dir/package.json').name")
-            version=$(node -p "require('./$dir/package.json').version")
-            if npm view "$name@$version" version >/dev/null 2>&1; then
-              echo "skip    $name@$version — already on the registry"
-              skipped=$((skipped + 1))
-              continue
-            fi
-            out=$(mktemp -d)
-            pnpm -C "$dir" pack --pack-destination "$out" >/dev/null
-            npm publish "$out"/*.tgz --tag "$TAG" --provenance
-            echo "publish $name@$version → $TAG"
-            published=$((published + 1))
-          done
-          echo "published=$published skipped=$skipped" >> "$GITHUB_STEP_SUMMARY"
+        run: pnpm changeset publish --tag "$TAG"
         env:
           TAG: ${{ inputs.tag }}
+          NPM_CONFIG_PROVENANCE: "true"
 
       # The publish output is not the evidence — the registry is. This reads back what a
       # consumer would resolve, and fails the run if a package did not land.
