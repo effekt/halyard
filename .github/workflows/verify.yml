@@ -122,7 +122,8 @@ jobs:
       - name: Publishable
         run: pnpm publishable
 
-      # Passes on a clean checkout, where no skills are installed. It is here to catch a
-      # commit that edits the lockfile into disagreeing with itself.
-      - name: Skills lockfile
+      # A runner has no skills installed, so the comparison against disk cannot run here. What
+      # this catches is a commit that edits the lockfile into something nothing can reinstall
+      # from — it parses, and every entry carries the fields a reinstall reads.
+      - name: Skills lockfile is usable
         run: pnpm skills-lock

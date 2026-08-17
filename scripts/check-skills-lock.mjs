@@ -17,9 +17,14 @@
 // it. Recording our own hash of the installed text is what makes content drift detectable
 // without reimplementing someone else's algorithm.
 //
-// Skips silently where the skills directory is absent. A fresh clone and CI both run without
-// skills installed, and failing there would make the gate mean "you have not set up your
-// machine" rather than "the record is wrong".
+// Where the skills directory is absent — a fresh clone, and CI — the comparison against disk
+// cannot run, and failing there would make the gate mean "you have not set up your machine"
+// rather than "the record is wrong". What still runs is the half that needs no disk: the
+// lockfile has to parse, and every entry has to carry the fields a reinstall reads.
+//
+// That half was missing, and the early exit returned before even reading the file. A
+// `skills-lock.json` replaced with `{ this is not valid json` exited 0 on every CI run, under a
+// comment claiming the step existed to catch a lockfile that disagreed with itself.
 //
 // Usage: node scripts/check-skills-lock.mjs [--check] [--write]
 
@@ -59,9 +64,38 @@ function report(heading, rows, remedy) {
   console.log(`        → ${remedy}\n`);
 }
 
+/** The fields a reinstall reads. An entry missing one records a skill nobody can fetch. */
+const REQUIRED_FIELDS = ["source", "sourceType", "skillPath", "contentHash"];
+
+/** What can be judged from the lockfile alone, with nothing installed to compare against. */
+function lockfileProblems(lock) {
+  const skills = lock?.skills;
+  if (skills === undefined || typeof skills !== "object") return ["no `skills` object"];
+  const problems = [];
+  for (const [name, entry] of Object.entries(skills)) {
+    if (name.trim() === "") problems.push("an entry with a blank name");
+    const absent = REQUIRED_FIELDS.filter((field) => entry?.[field] === undefined);
+    if (absent.length > 0) problems.push(`${name} — missing ${absent.join(", ")}`);
+  }
+  return problems;
+}
+
 if (!existsSync(SKILLS_DIR)) {
-  console.log("✅ No skills installed — nothing to compare against skills-lock.json.");
-  process.exit(0);
+  const problems = await readLock().then(lockfileProblems, (error) => [`unreadable — ${error}`]);
+  if (problems.length === 0) {
+    const { skills } = await readLock();
+    console.log(
+      `✅ No skills installed, so nothing to compare on disk — ${Object.keys(skills).length} lockfile entry/entries are well-formed.`,
+    );
+    process.exit(0);
+  }
+  console.log("❌ skills-lock.json is not usable.\n");
+  report(
+    "Cannot be reinstalled from:",
+    problems,
+    "fix the entry, or run --write on a machine with the skills installed",
+  );
+  process.exit(process.argv.includes("--check") ? 1 : 0);
 }
 
 const lock = await readLock();

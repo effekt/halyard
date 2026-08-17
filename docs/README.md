@@ -6,8 +6,9 @@ status: stable
 
 # Documentation
 
-Everything here describes a system that **has not been built yet**. That is deliberate — the
-design is meant to survive review before code is written against it.
+The design here is written to survive review before code is written against it. **What is
+built is recorded in [`AGENTS.md`](../AGENTS.md), never here** — a status line in this file
+would be a second copy of that, and the copy is the one that rots.
 
 These documents hold the parts an implementer works from: the contracts, the settled
 decisions, and the alternatives each one beat. They do not hold the deliberation that
