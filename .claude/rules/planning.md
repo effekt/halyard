@@ -68,29 +68,29 @@ The main working tree belongs to whoever is driving the session. An agent told t
 error on either side.
 
 ```bash
-# WRONG — the agent shares a tree with the driver and with every other agent
+# WRONG — shares a tree with the driver and with every other agent
 "Work on a branch off main called fix/thing."
 
-# WRONG — outside the repository, where a temp sweep can take uncommitted work with it
+# WRONG — outside the repository, where a temp sweep takes uncommitted work with it
 git worktree add -b fix/thing /tmp/some-scratchpad/thing-wt main
 
-# CORRECT — inside the repository, in the gitignored `.worktrees/`
-git worktree add -b fix/thing .worktrees/thing origin/main
-"Work in .worktrees/thing, on branch fix/thing, and nowhere else. Install first."
+# CORRECT — the `worktree` skill does this and confirms the gates run afterwards
+git worktree add -b fix/thing .worktrees/thing origin/main && \
+  cd .worktrees/thing && pnpm install
 ```
 
 `.worktrees/` is gitignored, so a checkout there is invisible to `git status` in the main tree
-while still living on the same disk as the work it belongs to. Branch from `origin/main` rather
-than `main`: the local ref may be behind, or checked out by someone else.
+while living on the same disk as the work. Branch from `origin/main`: the local ref may be
+behind, or checked out elsewhere. The install belongs in that same command — hooks live in the
+common directory and fire in a fresh worktree, but their runner does not. **Gate:**
+`check-worktree.mjs` refuses an edit to the primary worktree, which the driver may reset without
+warning, and to a worktree whose gates cannot run, where a violation lands unseen.
 
-This has happened here. An agent was given a branch and no worktree, the driver ran
-`git reset --hard` twice in that tree while it worked, and the agent spent time
-investigating a hook that did not exist. **A reverted edit and an edit never made look
-identical afterwards**, so recovery means re-verifying every earlier change rather than
-trusting that it was applied.
+This has happened here: an agent given a branch and no worktree, the driver running
+`git reset --hard` in that tree twice while it worked. **A reverted edit and an edit never made
+look identical afterwards**, so recovery means re-verifying every earlier change.
 
-An agent that only writes issues, or only writes to a scratchpad, needs no worktree —
-it cannot collide. The rule is about agents that edit repository files.
+An agent that only writes issues or a scratchpad needs no worktree — it cannot collide.
 
 ### Audit the ticket before implementing it
 

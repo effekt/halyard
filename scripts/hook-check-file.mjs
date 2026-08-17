@@ -5,7 +5,26 @@
 // Reads the hook payload on stdin, extracts `tool_input.file_path`, and delegates.
 // Exit 2 blocks and returns stderr to the agent.
 
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
+import { dirname } from "node:path";
+
+/**
+ * The gates resolve their arguments against the working directory, and a hook inherits the
+ * session's — which is the primary checkout even when the edit landed in a worktree. Running
+ * them there reported every new file in a worktree as missing. Derive the root from the edited
+ * file instead, so the gate reads the tree the edit is actually in.
+ */
+function rootOf(filePath) {
+  try {
+    return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      cwd: dirname(filePath),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return process.cwd();
+  }
+}
 
 const CODE_GATES = [
   ["node", ["scripts/check-single-export.mjs", "--check"]],
@@ -79,12 +98,14 @@ const perFile = [
 
 if (perFile.length === 0 && !isProse) process.exit(0);
 
+const cwd = rootOf(filePath);
+
 const failures = [
   ...perFile.map(([command, args]) =>
-    spawnSync(command, [...args, filePath], { encoding: "utf8" }),
+    spawnSync(command, [...args, filePath], { encoding: "utf8", cwd }),
   ),
   ...(isProse
-    ? PROSE_GATES.map(([command, args]) => spawnSync(command, args, { encoding: "utf8" }))
+    ? PROSE_GATES.map(([command, args]) => spawnSync(command, args, { encoding: "utf8", cwd }))
     : []),
 ].filter((result) => result.status !== 0);
 
