@@ -70,18 +70,27 @@ interface SchemaAdapter {
 }
 ```
 
-Resolution order:
+**There is one door.** The adapter reads a schema through the Standard JSON Schema converter
+the schema itself exposes — `schema["~standard"].jsonSchema.input(options)`, specified by
+Standard Schema 1.1. A schema that does not expose it is rejected at registration.
 
-1. **`toJSONSchema()`** where the validator offers it — a specified, stable output. Handle
-   its `unrepresentable` option explicitly; the default throws, which would fail block
-   registration mid-build.
-2. **Internal traversal** (e.g. `._zod.def` on zod v4) only for types JSON Schema cannot
-   express. Documented but not stability-guaranteed — zod's v3 `._def` was renamed once
-   already, breaking dependents.
+That the converter hangs off the *instance* is the whole point: `core` calls no validator
+function and imports no validator, which is what keeps invariant 2 true. A validator's own
+top-level converter would have to be imported to be called, and the boundary gate fails the
+build on exactly that import.
 
-Both paths stay behind one adapter module, version-pinned and tested, so the renderer never
-touches a validator's internals. zod is the reference implementation; other validators follow
-with explicit capability-gating rather than silent degradation.
+**Unrepresentable types throw, deliberately.** The converter is called with
+`unrepresentable: "throw"`, so a field JSON Schema cannot express fails block registration
+rather than degrading into a string field that looks fine in the studio and silently loses
+its type. Registration is a build step; failing there is cheap and visible.
+
+**Chosen over internal traversal.** Reading a validator's internals — `._zod.def` on zod v4,
+`._def` before it — would cover the types JSON Schema cannot express. It is rejected on two
+counts: it requires `core` to know a specific validator, and those fields carry no stability
+guarantee, having already been renamed once in a way that broke dependents. No fallback path
+exists, so there is nothing to silently degrade to.
+
+zod is the reference implementation; any validator exposing the converter works unchanged.
 
 A parallel `ui` structure risks silent drift: a key that no longer refers to a real property.
 Every path is resolved against the schema at `createRegistry()`, so an unresolvable key fails
@@ -234,10 +243,10 @@ Field-level cannot catch cross-field constraints — a `.refine()` on the object
 whole node — which is why node-level exists rather than being folded in.
 
 **Validate against the real schema, never against the JSON Schema projection.**
-Introspection uses `toJSONSchema()` to *describe* fields for control resolution, but that
-projection silently drops `.refine()` / `.superRefine()` / `.transform()`. Standard Schema's
-`validate()` runs anywhere and sees everything, so introspection and correctness deliberately
-use different paths.
+Introspection projects the schema to JSON Schema to *describe* fields for control resolution,
+and that projection silently drops `.refine()` / `.superRefine()` / `.transform()`. Standard
+Schema's `validate()` runs anywhere and sees everything, so introspection and correctness
+deliberately use different paths.
 
 A draft may hold invalid values indefinitely — blocking a save mid-edit is hostile, since an
 author is often part-way through a change. `head` may point at content that will not compile;
