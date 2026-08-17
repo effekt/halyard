@@ -111,7 +111,7 @@ an already-validated artifact.
 | Mode | Consequence |
 |---|---|
 | A node with a `data: "request"` field previewed at extremes | Only the static-declared props vary; the fetched half renders real, unrelated live data next to a synthetic extreme — no static-only preview mode exists. |
-| Schema shapes `toJSONSchema()` can't represent | bigint, `Date`, branded types, discriminated unions (which emit `oneOf`, not `if/then/else`) — extreme-value generation for these needs the same explicit-control escape hatch editing needs, and it isn't designed for stress-content generation specifically. |
+| Schema shapes the JSON Schema projection can't represent | bigint, `Date`, branded types, discriminated unions (which emit `oneOf`, not `if/then/else`) — extreme-value generation for these needs the same explicit-control escape hatch editing needs, and it isn't designed for stress-content generation specifically. |
 | Consumer doesn't expose its breakpoint config discoverably | Viewport presets have no defined fallback — falls back to inventing sizes, the exact thing this design was meant to avoid. |
 | Preview environment unreachable | No client-only degraded mode — the live postMessage path was removed entirely, so preview fails outright rather than degrading. |
 
