@@ -274,3 +274,30 @@ written down in `.claude/rules/` and reviewed by a hook, because no gate can enc
 
 The `logMessage` case is the proof: a function that formats its own timestamp inline is one
 declaration, eight lines, complexity 1. Every gate passes it. It is still wrong.
+
+## The design site runs Docusaurus
+
+Every defect the site's audits found was the theme's, never the documents': syntax
+highlighting below WCAG AA, tables restyled until they lost table semantics, a second `h1`
+on every page from the masthead, mermaid patched in through a CDN script in a layout
+override, and no search — the full list, with scale, is
+[#71](https://github.com/effekt/nubbin/issues/71).
+
+So the site is a workspace, `apps/docs`, running Docusaurus over `docs/` on `main` as its
+content root — the documents live once, and
+[generated output still goes only to `gh-pages`](#generated-documents-live-only-on-gh-pages).
+Mermaid is an official plugin rather than a patched-in script; a broken link fails the
+build, and upstream maintains that check; and the site is React, which is what Nubbin
+renders — the strongest demo this project can have is a page on this site built from real
+Nubbin blocks, and a static generator forecloses it. That argument is the deciding one; the
+rest is quality of life.
+
+Rejected: staying on a static generator and accepting a patch per theme defect. Right while
+the site was a handful of documents nobody styled; the defect list is what ended it.
+
+The dependency surface is not an exception to
+[the pinning discipline](#pinned-versions-and-a-3-day-cooldown). `check-pinned-deps.mjs`
+reads the manifests under `packages/`, `apps/` and `examples/` plus the workspace catalog,
+and never walks the transitive tree — so exactly pinning the site's direct dependencies
+satisfies it in full, and the transitive tree answers to the lockfile,
+`blockExoticSubdeps` and `minimumReleaseAge` the same way every other dependency's does.
