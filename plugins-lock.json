@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "marketplaces": {
+    "accesslint": "accesslint/claude-marketplace",
+    "bencium-marketplace": "bencium/bencium-marketplace",
+    "claude-plugins-official": "anthropics/claude-plugins-official"
+  },
+  "plugins": {
+    "accesslint@accesslint": {
+      "version": "0.10.2",
+      "commit": "3b7590189580f0ebb41ad1455d99c74dd20c8fb2"
+    },
+    "adaptive-communication@bencium-marketplace": {
+      "version": "1.0.0",
+      "commit": "bda4647bd6e9070a666a7b6e41c8ad5ab64e13fc"
+    },
+    "bencium-innovative-ux-designer@bencium-marketplace": {
+      "version": "2.0.0",
+      "commit": "bda4647bd6e9070a666a7b6e41c8ad5ab64e13fc"
+    },
+    "claude-md-management@claude-plugins-official": {
+      "version": "1.0.0",
+      "commit": null
+    },
+    "code-review@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "code-simplifier@claude-plugins-official": {
+      "version": "1.0.0",
+      "commit": null
+    },
+    "commit-commands@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "context7@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "feature-dev@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "frontend-design@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "github@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "playwright@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "plugin-dev@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "renaissance-architecture@bencium-marketplace": {
+      "version": "1.0.0",
+      "commit": "bda4647bd6e9070a666a7b6e41c8ad5ab64e13fc"
+    },
+    "security-guidance@claude-plugins-official": {
+      "version": "2.0.7",
+      "commit": null
+    },
+    "skill-creator@claude-plugins-official": {
+      "version": "unknown",
+      "commit": null
+    },
+    "superpowers@claude-plugins-official": {
+      "version": "6.3.0",
+      "commit": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797"
+    },
+    "typography@bencium-marketplace": {
+      "version": "1.0.0",
+      "commit": "bda4647bd6e9070a666a7b6e41c8ad5ab64e13fc"
+    },
+    "vanity-engineering-review@bencium-marketplace": {
+      "version": "1.0.0",
+      "commit": "bda4647bd6e9070a666a7b6e41c8ad5ab64e13fc"
+    },
+    "vercel@claude-plugins-official": {
+      "version": "0.45.1",
+      "commit": "19606ac163fef2f8f967fa14ae13522d68efeccd"
+    }
+  }
+}

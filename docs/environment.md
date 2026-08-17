@@ -16,8 +16,8 @@ Two things are tracked separately, for the same reason `pnpm-lock.yaml` is commi
 
 | Layer | Tracked | Why |
 |---|---|---|
-| **References** — what to install, from where, at what hash | `skills-lock.json`, and this file | Small, ours to publish, and enough to rebuild the set |
-| **Content** — the skills and plugins themselves | Ignored (`.agents/`, `.claude/skills/*`) | Third-party work. Not ours to redistribute, and it arrives as symlinks git would follow |
+| **References** — what to install, from where, at what version | `skills-lock.json`, `plugins-lock.json`, and this file | Small, ours to publish, and enough to rebuild the set |
+| **Content** — the skills and plugins themselves | Ignored (`.agents/`, `.claude/skills/*`), or outside the repository entirely (`~/.claude/plugins`) | Third-party work. Not ours to redistribute, and skills arrive as symlinks git would follow |
 
 ## Language toolchain
 
@@ -35,20 +35,32 @@ shell rather than missing.
 
 ## Plugins
 
-Installed with `claude plugin install <name>@<marketplace>`. The ones that change output rather
-than convenience:
+Installed with `claude plugin install <name>@<marketplace>`. **`plugins-lock.json` is the
+authority on which ones**, and on which marketplaces they come from — a table here would be a
+second list, and the one in prose is the one nobody updates.
 
-| Plugin | What it changes |
-|---|---|
-| `accesslint` | Runs a WCAG 2.2 engine against a live page over CDP — it finds contrast failures and missing landmarks that human review reads past |
-| `superpowers` | Test-driven development, systematic debugging, adversarial review, plan writing |
-| `playwright` | Drives a real browser, which is what makes the accessibility scans possible |
-| `context7` | Fetches current library documentation instead of relying on training data |
-| `vercel` | React and Next.js guidance, used by `examples/demo` |
-| `feature-dev`, `code-review`, `code-simplifier` | Review and architecture agents |
-| `security-guidance`, `skill-creator`, `plugin-dev`, `frontend-design`, `github`, `commit-commands`, `claude-md-management` | Supporting |
+```bash
+pnpm plugins-lock --write     # record the installed set
+pnpm plugins-lock             # check the record against it
+```
 
-Marketplaces: `claude-plugins-official` (`anthropics/claude-plugins-official`) and `accesslint`.
+What the lockfile cannot tell you is why any of it is there, so: three of these change what an
+agent *produces*, and the rest change how fast it gets there. A browser driver and an
+accessibility engine mean contrast failures and missing landmarks get found rather than
+shipped. A documentation fetcher means library APIs come from the library instead of from
+training data. Design and writing skills change the shape of what gets written — a page built
+with one does not resemble the same page built without it, and that difference is why the set
+is recorded rather than left to whoever is at the keyboard.
+
+`check-plugins-lock.mjs` compares by name only. The plugin manifest records a version of
+`"unknown"` for anything installed from a marketplace that does not publish one, so a gate
+comparing versions would fail for a reason a contributor cannot act on; version and commit are
+recorded beside each entry as evidence, not as assertions. It skips where no manifest exists,
+so a fresh clone and CI both pass.
+
+A marketplace being present is not the same as a plugin being installed from it. Browsing a
+marketplace repository shows skills that will not load until the plugin carrying them is
+installed.
 
 ## Skills
 
@@ -87,10 +99,14 @@ without them, and no reload command reaches them — restart to pick them up.
 ```bash
 nvm install && nvm use
 corepack enable pnpm && pnpm install
-claude plugin install accesslint@accesslint
-claude plugin install superpowers@claude-plugins-official
-claude plugin install playwright@claude-plugins-official
-# remaining plugins as listed above
+
+# every marketplace the lockfile names, then every plugin in it
+node -p 'Object.values(require("./plugins-lock.json").marketplaces).join("\n")' |
+  xargs -I{} claude plugin marketplace add {}
+node -p 'Object.keys(require("./plugins-lock.json").plugins).join("\n")' |
+  xargs -I{} claude plugin install {}
+
+pnpm plugins-lock             # confirms the record and your machine agree
 ```
 
 Then install the skills in `skills-lock.json` and restart the session so the hooks load.
