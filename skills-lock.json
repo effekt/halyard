@@ -6,49 +6,49 @@
       "sourceType": "github",
       "skillPath": "skills/composition-patterns/SKILL.md",
       "computedHash": "575757e3e25761c8c562d6e395d29f0b76c98b1273c0bd72d88e6ab1bc9c7d42",
-      "contentHash": "e38e0eaa609316b10423a9a138ed95e35099accd3f735585295c8a8f165c28a3"
+      "contentHash": "c6aaad55158db0168858a3f9cc8ddb4a3484346cec7f452a2fc25470ff640968"
     },
     "vercel-optimize": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/vercel-optimize/SKILL.md",
       "computedHash": "ad0ef9c5c980f824e2ec19cba5c45426aba923a17e71fbaf6d1830574b62cc44",
-      "contentHash": "95ae2683b30d892d165af92a350c5628b68106f395a59b448857b654e306ed91"
+      "contentHash": "5c049c783ce7e05f2a8b3e0dfa906c996cc37c78215a3138f64b4fa0411f4920"
     },
     "vercel-react-best-practices": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/react-best-practices/SKILL.md",
       "computedHash": "ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212",
-      "contentHash": "71ed7794962fa6e803ee83030517b5b93a9f70fbfeb431ec4535c5480a8d8355"
+      "contentHash": "06c92a29e848b85ceb9b0367d4384f67c51c20b0013dd29679a3d5163e8a34b7"
     },
     "vercel-react-native-skills": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/react-native-skills/SKILL.md",
       "computedHash": "41d24eafa7c3d82e270439808f7cfbc4d51aeb2d14f2809a2267c16275784d06",
-      "contentHash": "4012750a5ccbe064ca04af3835d5d1b011979d2d09d9b6df1c8128fac58e0a66"
+      "contentHash": "47ac16425c958dfeb931571caa27c96b09aaaa0e3ce650eaf9acc343a0e12f0f"
     },
     "vercel-react-view-transitions": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/react-view-transitions/SKILL.md",
       "computedHash": "b1be40dfc6e714612020c7583b574cc4c92a1b5bc185a7dd3eea5c0123653d1c",
-      "contentHash": "d596c05e53b96a3475a9ab303a7a23f13f1153cb169c1d1b3b882094f58570bc"
+      "contentHash": "8148c2cf6791b4a33325d927872de964c0a308feb5f9559638733395a40983f9"
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/web-design-guidelines/SKILL.md",
       "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474",
-      "contentHash": "f4647ca866a3accf763777f83e7682954f0187cd6bea7eea0399796652414e8f"
+      "contentHash": "d5cb29ea15d5ceeb4ef0802e75c17ef4287c6f60ff8aa05e46c6080f615178bc"
     },
     "writing-guidelines": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/writing-guidelines/SKILL.md",
       "computedHash": "25aa3a33a97bddbcb1847ce4a6169106ec25e5b19b15b99c66e75ab383866ef2",
-      "contentHash": "89a5f581193289b80af58b980090aeed535047c8df2b55ccbaae0de40283a99d"
+      "contentHash": "fac9281407badfb11a6a32df734ee93ef45283273e28e857d01891e9132c1843"
     }
   }
 }
