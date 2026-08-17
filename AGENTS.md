@@ -108,6 +108,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-tarball.mjs` | no `catalog:`, `workspace:` or `link:` specifier survives into a packed manifest |
 | `check-installable.mjs` | every package installs from its own tarball into an empty project and imports |
 | `check-peer-deps.mjs` | no package declares a peer dependency nothing in it imports |
+| `sync-core-version.mjs` | `NUBBIN_VERSION`, stamped into every artifact, matches the published version |
 | `check-package-metadata.mjs` | every publishable package has a README, a licence file and field, a description and a repository |
 | `check-docs.mjs` | links and anchors resolve; every document is in the index |
 | `check-file-refs.mjs` | a repository file named inside a code span exists, or is gitignored on purpose |

@@ -27,7 +27,12 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    environment: npm
+    # The `npm` environment restricts deploys to `main` and records each publish under the
+    # repository's Environments tab, so a release is announced rather than buried in a job log.
+    # A required reviewer hangs here too, if one is ever wanted.
+    environment:
+      name: npm
+      url: https://www.npmjs.com/org/nubbin
     permissions:
       # OIDC. Trusted publishing exchanges this for a short-lived credential scoped to this
       # workflow, so no npm token is stored anywhere. Also what --provenance signs with.

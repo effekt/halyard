@@ -100,10 +100,10 @@ The `version` workflow found this the first time it tried to push a Version Pack
 
 Two things live outside this repository and are set up once:
 
-| Where | What |
-|---|---|
-| GitHub → Settings → Environments | An environment named `npm` |
-| npmjs.com → each package → Settings | A trusted publisher naming this repository and `release.yml` |
+| Where | What | State |
+|---|---|---|
+| GitHub → Settings → Environments | An environment named `npm`, restricted to `main` | done |
+| npmjs.com → each package → Settings | A trusted publisher naming this repository and `release.yml` | outstanding |
 
 Until a package has its trusted publisher, that package's publish step fails authentication.
 
