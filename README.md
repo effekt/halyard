@@ -7,9 +7,8 @@ non-developers compose pages from them. The composition is data, the contract is
 publishing compiles a document into an immutable artifact — no bundler, no deploy, no second
 source of truth.
 
-There is no package to install yet — see [Status](#status) — but the split is settled and
-the block shape below is close. A block declares its schema once, and each field decides for
-itself whether it freezes at publish or stays live:
+The contract is built and the rest is sequenced — see [Status](#status). A block declares its
+schema once, and each field decides for itself whether it freezes at publish or stays live:
 
 ```ts
 // hero.schema.ts — sub-schemas are extracted so blocks can share them
@@ -67,17 +66,21 @@ a cache to survive a round trip on every render.
 
 ## Status
 
-**Design, not software.** There is no implementation yet — deliberately.
+**The contract is built; everything around it is not.**
 
-What exists is the architecture, the decisions and the alternatives each one beat, and the
-tooling that will hold an implementation to them. It has been through one adversarial review,
-which falsified the live postMessage preview and the single-manifest publish; both were
-redesigned. That is a reason to trust the design more than an unreviewed one, not a reason to
-treat it as finished — [the open
+`@nubbin/core` implements `defineBlock`, `defineCatalog`, `createRegistry`, `compile` and
+`checkRollback`, tested against real schemas rather than mocks. A build gate fails on any
+`node:` or framework import inside it, so the claim that it runs anywhere is checked rather
+than asserted. The React binding, the Next adapter, the storage adapter and the studio are
+sequenced and unwritten.
+
+The architecture came first, with the decisions and the alternatives each one beat. It has
+been through one adversarial review, which falsified the live postMessage preview and the
+single-manifest publish; both were redesigned. That is a reason to trust the design more than
+an unreviewed one, not a reason to treat it as finished — [the open
 questions](https://github.com/effekt/nubbin/issues/15) are the parts known to still be wrong.
 
-The gates that check documentation, prose, and dependency pinning run on every commit. The
-ones that check code are waiting for code.
+Every gate now runs on every commit, including the ones that read code.
 
 The [roadmap](https://github.com/effekt/nubbin/issues/14) sequences the build. Its first
 milestone is deliberately not a feature — it exists to falsify the project's own thesis, by
