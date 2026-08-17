@@ -345,14 +345,15 @@ second and third are judgments about what this project is.
 
 ## Where it stands
 
-Four packages are on npm at `0.1.0-rc.0` under the `rc` tag:
+`0.1.0-rc.0` is the published prerelease, under the `rc` tag. The surface below is what `main`
+carries, which is ahead of it.
 
 | Package | State |
 |---|---|
-| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback` |
+| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback`, `parseMatchKind` — and a slot's `allow` list is resolved against the registry at registration |
 | `@nubbin/store-fs` | A pointer-per-route store, passing a contract suite a third-party adapter can run |
 | `@nubbin/next` | Read and write paths — resolve, prebuild params, publish and unpublish |
-| `@nubbin/react` | Hole resolution only; the renderer is still open |
+| `@nubbin/react` | `Renderer`, `defineRegistry`, `loadBlocks`, and hole resolution. The renderer invokes a block and clones its root to stamp `data-nubbin-node`, which is why a block returns exactly one root element |
 
 Everything is tested against real schemas rather than mocks, and a build gate fails on any
 `node:` or framework import inside `core`, so the claim that it runs anywhere is checked
