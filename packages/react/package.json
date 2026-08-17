@@ -1,6 +1,22 @@
 {
   "name": "@nubbin/react",
   "version": "0.1.0-rc.2",
+  "description": "The React render path for Nubbin: resolve the data holes a compiled artifact declares.",
+  "keywords": [
+    "nubbin",
+    "react",
+    "page-builder",
+    "cms",
+    "server-components"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effekt/nubbin.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://effekt.github.io/nubbin/",
+  "bugs": "https://github.com/effekt/nubbin/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {

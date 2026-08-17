@@ -1,6 +1,22 @@
 {
   "name": "@nubbin/store-fs",
   "version": "0.1.0-rc.2",
+  "description": "The reference artifact store for Nubbin: one file per artifact, one pointer file per route, and no aggregate to lose a write.",
+  "keywords": [
+    "nubbin",
+    "storage",
+    "page-builder",
+    "cms",
+    "filesystem"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effekt/nubbin.git",
+    "directory": "packages/store-fs"
+  },
+  "homepage": "https://effekt.github.io/nubbin/",
+  "bugs": "https://github.com/effekt/nubbin/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {

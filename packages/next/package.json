@@ -1,6 +1,22 @@
 {
   "name": "@nubbin/next",
   "version": "0.1.0-rc.2",
+  "description": "The Next.js binding for Nubbin: resolve a published artifact for a route, prebuild the ones that exist, and publish or unpublish a single route.",
+  "keywords": [
+    "nubbin",
+    "nextjs",
+    "page-builder",
+    "cms",
+    "isr"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effekt/nubbin.git",
+    "directory": "packages/next"
+  },
+  "homepage": "https://effekt.github.io/nubbin/",
+  "bugs": "https://github.com/effekt/nubbin/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {
