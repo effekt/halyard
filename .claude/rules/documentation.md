@@ -74,6 +74,14 @@ Publishing is synchronous. Scheduling it is [#8](https://github.com/effekt/nubbi
 **Gate:** `check-prose.mjs` rejects `TODO` and the phrasings that promise unowned future
 work. <!-- prose-ok -->
 
+### Never restate what a config enforces
+
+A list in prose beside a list a tool enforces is a copy, and the copy is the one nobody updates. Write "a scope `commitlint.config.js` allows", not the scopes.
+
+That list was written in three places and stale in two, so a contributor writing a correct `feat(core):` commit would have checked the guide and concluded they had it wrong. A skills count, an issue count and a count of this repository's own review hooks drifted the same way — the last inside the document arguing against counting in prose.
+
+The same holds for a claim about project state. "There is no implementation yet" outlived its truth in the README, the published site and the contributing guide. **Correcting one is not correcting it:** grep the repository and the site for the old phrasing. `pnpm stale-docs` cannot help — each of those documents was newer than what it misdescribed. **Gate:** none.
+
 ### Sweep the neighbours
 
 The gates catch broken links and the phrasings above. They cannot catch a paragraph that is merely
