@@ -14,7 +14,7 @@ Guidance for working in this repo. Loaded automatically by coding agents.
 blocks in code; non-developers compose pages from them. The composition is data, the
 contract is code, and publishing compiles a document into an immutable artifact.
 
-`core` is built; the rest of this layout is settled and unbuilt. See `## Status`.
+The four packages are built; the studio is settled and unbuilt. See `## Status`.
 
 ```
 packages/
@@ -195,13 +195,12 @@ A `PostToolUse` hook reviews added comments on every edit.
 | `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback`, `parseMatchKind` |
 | `@nubbin/store-fs` | `createFsArtifactStore`, proven against the shared `ArtifactStore` contract |
 | `@nubbin/next` | `resolveArtifact`, `staticRouteParams`, `holeFetchOptions`, `routeFromSlug`, `publishRoute`, `unpublishRoute` |
-| `@nubbin/react` | `defineRegistry`, `resolveNodeHoles`, `setAtPath`, and the block and hole types |
+| `@nubbin/react` | `Renderer`, `defineRegistry`, `loadBlocks`, and the block, hole and renderer types |
 
 Everything is tested against real zod schemas; dependency-cruiser fails the build on any
 `node:` or framework import inside `core`, and on a framework import inside either adapter.
 
-**Unbuilt:** the renderer in `packages/react`, which is
-[#48](https://github.com/effekt/nubbin/issues/48), and the studio.
+**Unbuilt:** the studio.
 
 Read `docs/architecture.md` for the model and `docs/decisions.md` for what has already been
 settled and why, and treat the open issues labelled `design-question` as the list of things

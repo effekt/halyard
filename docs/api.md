@@ -283,8 +283,7 @@ emits a chunk per block and the route resolves only what the artifact names.
 
 ```tsx
 const artifact = await resolveArtifact(store, params.slug);
-const used = await loadBlocks(registry, artifact.blockVersions);  // only these
-return <Renderer artifact={artifact} blocks={used} />;
+return <Renderer artifact={artifact} registry={registry} />;  // loads only what it names
 ```
 
 See [Catalog and registry are separate](decisions.md#catalog-and-registry-are-separate) for
@@ -318,10 +317,14 @@ Same `ArtifactStore` interface used by the output layer — see
 export default async function Page({ params }) {
   const artifact = await resolveArtifact(store, params.slug);
   if (!artifact) notFound();          // unpublished has no artifact — a real server 404
-  const blocks = await loadBlocks(registry, artifact.blockVersions);
-  return <Renderer artifact={artifact} blocks={blocks} />;
+  return <Renderer artifact={artifact} registry={registry} />;
 }
 ```
+
+`Renderer` is an async server component. It loads the blocks `blockVersions` names, fills each
+node's holes, and stamps `data-nubbin-node` on the root element the block returns — so a block
+is a server component with exactly one root, and nothing wraps it. A route whose artifact
+declares holes passes a `resolveHole` resolver; a fully static one needs none.
 
 ## Package boundary this implies
 

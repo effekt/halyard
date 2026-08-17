@@ -1,7 +1,7 @@
 {
   "name": "@nubbin/react",
   "version": "0.1.0-rc.4",
-  "description": "The React render path for Nubbin: resolve the data holes a compiled artifact declares.",
+  "description": "The React render path for Nubbin: render a compiled artifact against a block registry.",
   "keywords": [
     "nubbin",
     "react",
@@ -44,7 +44,9 @@
   },
   "devDependencies": {
     "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "react": "catalog:",
+    "react-dom": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

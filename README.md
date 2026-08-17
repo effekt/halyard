@@ -80,14 +80,14 @@ reference back to it. Nubbin is needed to change a page, not to serve one.
 
 ## Status
 
-**Three packages are complete, one is partial, and the studio is not started.**
+**Four packages are complete and the studio is not started.**
 
 | Package | State |
 |---|---|
 | `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback` |
 | `@nubbin/store-fs` | A pointer-per-route store, passing a contract suite a third-party adapter can run |
 | `@nubbin/next` | Read and write paths — resolve, prebuild params, publish and unpublish |
-| `@nubbin/react` | Hole resolution and the block registry. The renderer is [#48](https://github.com/effekt/nubbin/issues/48) |
+| `@nubbin/react` | The renderer, the block registry, and hole resolution |
 
 All four are on npm at `0.1.0-rc.0` under the `rc` tag. Everything is tested against real
 schemas rather than mocks, and a build gate fails on any `node:` or framework import inside
