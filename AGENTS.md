@@ -216,6 +216,14 @@ that should have been split — extract it, export it, name the file after it, t
 Adapters are tested against an in-memory implementation; `core` is tested with real
 schemas (zod), never mocks. No `as any` or `as unknown as` in tests.
 
+## Findings at exit
+
+A report ends with a `## Findings` section whose every bullet is tagged `[rule]`, `[issue]`,
+`[memory]` or `[task-local]`. A `SubagentStop` hook reads that section, routes each finding to the
+surface its tag names, and prints what it routed; an untagged bullet is reported as unrouted and
+written nowhere. The tags, the routing and the rule that a memory is deleted once it becomes a
+repo rule are in `.claude/rules/subagent-findings.md`.
+
 ## Documentation & comments
 
 Comment the non-obvious WHY, not the what. Describe what exists now and how to use it.

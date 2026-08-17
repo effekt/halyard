@@ -14,6 +14,10 @@ If the question is ambiguous, answer the most likely reading and say what else i
 meant. If the answer is "it does not exist", say that plainly rather than offering the nearest
 thing as though it were a match.
 
+Where the search taught you something that outlives the question, end with a `## Findings`
+section, one bullet per finding, each tagged `[rule]`, `[issue]`, `[memory]` or `[task-local]`.
+Untagged, it is not captured — see `.claude/rules/subagent-findings.md`.
+
 Two facts about this repository that will otherwise cost you time:
 
 - `packages/` and `apps/` are empty. Code lives in `examples/demo` and `scripts/`.

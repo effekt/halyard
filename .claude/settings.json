@@ -41,6 +41,18 @@
           }
         ]
       }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/hook-capture-findings.mjs",
+            "timeout": 60,
+            "statusMessage": "Capturing findings"
+          }
+        ]
+      }
     ]
   }
 }
