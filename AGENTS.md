@@ -59,6 +59,11 @@ These are the reason the project exists. Breaking one is a design change, not a 
 
 - `pnpm build` — build all packages (tsup → `dist/`)
 - `pnpm test` — Vitest across packages
+
+**Run `pnpm test`, not `pnpm --filter <pkg> test`.** `turbo.json` makes `test` depend on
+`^build`, so the workspace form builds a package's dependencies first. The filtered form
+bypasses turbo and runs against whatever is in `dist/` — which produces failures like
+`parseMatchKind is not a function` for a function that exists in the source.
 - `pnpm typecheck` — `tsc --noEmit` across packages
 - `pnpm check` — Biome lint + format, writing fixes
 - `pnpm map` — regenerate the repomix codebase map (gitignored, see below)

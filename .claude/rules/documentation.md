@@ -76,7 +76,7 @@ work. <!-- prose-ok -->
 
 ### Never restate what a config enforces
 
-A list in prose beside a list a tool enforces is a copy, and the copy is the one nobody updates. Write "a scope `commitlint.config.js` allows", not the scopes.
+A list in prose beside a list a tool enforces is a copy, and the copy is the one nobody updates. Write "a scope `commitlint.config.mjs` allows", not the scopes.
 
 That list was written in three places and stale in two, so a contributor writing a correct `feat(core):` commit would have checked the guide and concluded they had it wrong. A skills count, an issue count and a count of this repository's own review hooks drifted the same way — the last inside the document arguing against counting in prose.
 
