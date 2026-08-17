@@ -52,10 +52,16 @@ Marketplaces: `claude-plugins-official` (`anthropics/claude-plugins-official`) a
 
 ## Skills
 
-9, from `vercel-labs/agent-skills`, recorded in `skills-lock.json` with a content hash each.
-Reinstall them with the skills CLI; the lockfile is what makes the set reproducible, and it
-is the authority on which ones — a count written in prose drifts the moment somebody installs
-another.
+From `vercel-labs/agent-skills`, recorded in `skills-lock.json` with a content hash each.
+Reinstall them with the skills CLI. **The lockfile is the authority on which ones** — naming
+them here would give a reader two lists to reconcile, and the one in prose is the one nobody
+updates.
+
+`check-skills-lock.mjs` fails a commit where the lockfile and the installed set disagree in
+either direction. Without it the lockfile is a claim about a machine no reader can see: an
+entry nobody installed sends a contributor after a skill the work never used, and an
+installed skill missing from the lockfile is a result nobody else can reproduce. The gate
+skips where no skills are installed, so a fresh clone and CI both pass.
 
 **They install into the project directory** — content under `.agents/skills/`, symlinked from
 `.claude/skills/`. Both are ignored. Check `git status` after installing one: three hundred

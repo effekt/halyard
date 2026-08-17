@@ -88,3 +88,7 @@ pre-push:
       run: pnpm stale-docs
     type-coverage:
       run: pnpm type-coverage
+    # Pre-push, not pre-commit: installing a skill and forgetting to record it stages
+    # nothing, so there is no file the commit hook could glob on.
+    skills-lock:
+      run: pnpm skills-lock
