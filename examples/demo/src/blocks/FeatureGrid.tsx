@@ -30,7 +30,7 @@ const ICON_PATHS: Record<FeatureGridProps["items"][number]["icon"], string> = {
 export function FeatureGrid({ heading, tone, items }: FeatureGridProps) {
   const styles = TONE_STYLES[tone];
   return (
-    <section className={`${styles.section} px-6 py-24`}>
+    <section data-nubbin-block="FeatureGrid" className={`${styles.section} px-6 py-24`}>
       <div className="mx-auto max-w-6xl">
         <h2 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight">{heading}</h2>
         <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

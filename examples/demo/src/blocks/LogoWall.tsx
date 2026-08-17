@@ -12,7 +12,7 @@ const TONE_STYLES = {
 export function LogoWall({ heading, tone, logos }: LogoWallProps) {
   const styles = TONE_STYLES[tone];
   return (
-    <section className={`${styles.section} px-6 py-16`}>
+    <section data-nubbin-block="LogoWall" className={`${styles.section} px-6 py-16`}>
       <div className="mx-auto max-w-6xl">
         <h2
           className={`text-center text-sm font-semibold uppercase tracking-wide ${styles.heading}`}

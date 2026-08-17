@@ -12,7 +12,7 @@ const TONE_STYLES = {
 export function StatBand({ tone, stats }: StatBandProps) {
   const styles = TONE_STYLES[tone];
   return (
-    <section className={`${styles.section} px-6 py-16`}>
+    <section data-nubbin-block="StatBand" className={`${styles.section} px-6 py-16`}>
       <ul className="mx-auto grid max-w-5xl gap-10 text-center sm:grid-cols-3">
         {stats.map((stat) => (
           <li key={stat.label}>
