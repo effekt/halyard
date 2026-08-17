@@ -68,7 +68,8 @@
     "plugins-lock": "node scripts/check-plugins-lock.mjs",
     "script-invocations": "node scripts/check-script-invocations.mjs --check",
     "gate-table": "node scripts/check-gate-table.mjs --check",
-    "skills:install": "node scripts/installAgentSkills.mjs"
+    "skills:install": "node scripts/installAgentSkills.mjs",
+    "issue-scaffold": "node scripts/scaffold-issue.mjs"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",

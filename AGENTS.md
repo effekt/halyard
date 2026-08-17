@@ -160,6 +160,30 @@ declaration, eight lines, complexity 1 — every gate passes and it is still wro
 judgment lives in `.claude/rules/single-concern.md`, and a `PostToolUse` hook reviews for
 it. Rules auto-load by path; read the matching one before writing code.
 
+## Opening an issue
+
+Issues are opened through `scripts/scaffold-issue.mjs`, which searches the open set for one
+already covering the ground and checks the draft carries cause, reason, decision, choice and a
+close condition:
+
+```bash
+pnpm run --silent issue-scaffold --template > /tmp/draft.md
+pnpm run issue-scaffold --body-file /tmp/draft.md --title "…" --label enhancement
+```
+
+`--silent` on the first line keeps pnpm's own banner out of the redirected draft. Redirected
+without it, the banner opens the draft and puts an absolute path from a contributor's machine
+into a public issue body. Every run passes an explicit
+`--limit`, prints the size of the set it read before anything else, refuses a list that came back exactly full, and corroborates that size against a second
+count taken through the search index. `gh issue list` returns its first page with no warning
+when no limit is passed, and a duplicate search over the newest half of a tracker reports
+"nothing similar" in the same words a complete one uses. `--open` creates the issue, once the
+search and the validation have both passed.
+
+It runs at the moment an issue is opened rather than over the tree, which is why `pnpm verify`
+and the gate table above — both of which read the working tree — leave it out. The authoring
+half is the `issue` skill in `.claude/skills/`.
+
 ## This repository is public
 
 Contributors work in other codebases, most of them closed. Nothing from those belongs here —
