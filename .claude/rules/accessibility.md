@@ -90,34 +90,35 @@ that control flattens into text.
 
 **Gate:** none — nothing static can tell which of two class strings is a state's only signal.
 
-### Contrast: four values are settled, two of them as failures
+### Contrast: the settled pairs, failures included
 
 | Pair | Ratio | Use |
 |---|---|---|
 | White on `#E4572E` (`orange`) | 3.68:1 | Fails AA — decorative wash only, never behind text |
 | `#0E5A6B` (`teal`) on `#0B2B33` (`marine`) | 1.91:1 | Fails AA — no teal text on the dark ground |
+| White on `#4FB3C7` (`teal-light`) | 2.44:1 | Fails AA — `teal-light` is an ink, never a button fill under white |
+| `#E4572E` (`orange`) on `#0B2B33` (`marine`) | 4.05:1 | Fails AA — lighten to `#F0714B` (5.09:1) for accent *text* |
 | White on `#BF411D` (`orange-deep`) | 5.26:1 | The accessible twin of `orange`; buttons use it |
 | `#4FB3C7` (`teal-light`) on `#0B2B33` | 6.11:1 | The accessible twin of `teal` on dark |
+| `#04141A` (`ink`) on `#4FB3C7` | 7.68:1 | Text on a `teal-light` fill — the ground, not white |
 
 A new pair is computed before its token is committed. **Gate:** none.
 
+**A pair is accessible only on the ground it actually lands on.** Two rows above were added after
+a dark theme shipped white on a `teal-light` fill (2.44:1) and `orange` as text on `marine`
+(4.05:1) — both reasoned against `--bg` while the element sat on a fill or `--panel`. Read the
+composited background off the rendered DOM, never the token it inherits from.
+
 ### Interactive elements are `button` or `a`, never a `div` with a handler
 
-`<button>` performs an action and `<a href>` goes somewhere; both are focusable, keyboard-operable
-and announced with a role for free. A `div` with `role` and `tabIndex` re-implements Enter, Space,
-and the disabled state, and usually gets two of the three.
+A `div` with `role` and `tabIndex` re-implements Enter, Space and the disabled state, and usually
+gets two of the three. `<button>` performs an action, `<a href>` goes somewhere, and both are
+focusable, keyboard-operable and announced with a role for free.
 
-```tsx
-{/* WRONG — no keyboard, no role, no focus; and a link doing an action's job */}
-<div className="cursor-pointer" onClick={openPlan}>Compare plans</div>
-<a onClick={submitForm}>Start trial</a>
-
-{/* CORRECT — the element that already means what the control does */}
-<button type="button" onClick={submitForm}>Start trial</button>
-<a href="/pricing">Compare plans</a>
-```
-
-**Gate:** `check-a11y.mjs` rejects `onClick` on a plain element and an `<a>` with no `href`.
+**Gate:** Biome's `a11y` group, seeded and confirmed — `noStaticElementInteractions`,
+`useKeyWithClickEvents`, `useValidAnchor`, `noPositiveTabindex`, `useAltText`. `check-a11y.mjs`
+adds only what Biome cannot see: an `alt` that is a filename, the generic words outside
+`noRedundantAlt`'s set (`logo`, `icon`, `graphic`), and a focus outline dropped in CSS.
 
 ### Motion respects `prefers-reduced-motion`
 
