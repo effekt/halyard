@@ -174,13 +174,17 @@ hide_site_header: true
     code, and publishing compiles a document into an immutable artifact — no bundler, no
     deploy, no second source of truth.
   </p>
+  <p class="hy-lede">
+    Nubbin is deliberately not a general-purpose CMS. It answers one question: how does someone
+    who does not write code publish pages from components your application already owns?
+  </p>
   <p class="hy-status">
     Four packages are published as release candidates; the studio is not built yet. The
     architecture was settled in the open first, before anything expensive was built on top of it.
   </p>
   <p class="hy-actions">
-    <a class="hy-btn-primary" href="{{ '/domain-model.html' | relative_url }}">Read the design record</a>
-    <a class="hy-btn-quiet" href="https://github.com/effekt/nubbin/issues/15">Open design questions ↗</a>
+    <a class="hy-btn-primary" href="https://github.com/effekt/nubbin#readme">Get started ↗</a>
+    <a class="hy-btn-quiet" href="{{ '/domain-model.html' | relative_url }}">Read the design record</a>
   </p>
   <svg class="hy-rope" viewBox="0 0 800 48" aria-hidden="true" focusable="false">
     <path d="M0 38 H300 C420 38 440 6 356 6 C292 6 296 38 400 38 H800"
@@ -283,7 +287,13 @@ never carries the schema, only the outcome of validating against it:
 | **Immutable artifacts** | Content-addressed, cached forever, rolled back by pointer. Nothing to invalidate. |
 | **No deploy to publish** | Compiling validates and serializes. Only a *code* change needs a build. |
 | **Precise code-splitting** | An artifact names the blocks a page uses, so the hundredth block costs other pages nothing. |
-| **Bring your own everything** | Storage, auth, and validation are adapters. The core depends on nothing but Standard Schema. |
+| **Not in your render path** | Publishing produces an artifact your application serves on its own. A Nubbin outage cannot take down a page that is already published. |
+| **Bring your own storage** | Storage, auth and validation are adapters. Artifacts live where you put them. |
+| **Portable core** | `@nubbin/core` depends on nothing but Standard Schema, and runs in a browser, a worker, a server or a CI step. |
+
+Published pages do not call Nubbin. The application reads immutable artifacts from storage you
+chose, and the artifact holds the *result* of validating against the schema rather than a
+reference back to it. Nubbin is needed to change a page, not to serve one.
 
 ## What it refuses
 
