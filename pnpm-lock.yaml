@@ -184,10 +184,10 @@ importers:
       '@nubbin/core':
         specifier: workspace:*
         version: link:../core
-      next:
-        specifier: '>=16.0.0'
-        version: 16.2.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
     devDependencies:
+      next:
+        specifier: 'catalog:'
+        version: 16.2.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       tsup:
         specifier: 'catalog:'
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.26)(typescript@6.0.3)(yaml@2.9.0)
