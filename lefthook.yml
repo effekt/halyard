@@ -63,6 +63,11 @@ pre-commit:
       glob: "*.md"
       run: node scripts/check-docs.mjs --check
 
+    # Corpus-wide like docs: a filename in one document may name a file another commit moved.
+    file-refs:
+      glob: "*.md"
+      run: node scripts/check-file-refs.mjs --check
+
     # Per-file, unlike the two above: an unciteable measurement or a filler phrase is
     # wrong on its own line, with no reference to the rest of the corpus.
     prose:
