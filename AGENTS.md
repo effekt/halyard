@@ -128,9 +128,14 @@ document that trails something it links to, which is worth re-reading and not wo
 build over, so CI runs it with `continue-on-error` and it is the one entry here that cannot
 block.
 
-`pnpm publishable` is the release subset — build, then the three gates that read the artifact a
-consumer would install rather than the source. Run it before publishing anything; `verify`
-includes it.
+`pnpm publishable` is the release subset — the gates that read the artifact a consumer would
+install rather than the source. Run it before publishing anything; `verify` includes it.
+
+`core-version` runs **first**, ahead of the build, because `NUBBIN_VERSION` is compiled into
+`dist/` and stamped into every artifact as `compiledWith`. It is the one gate here that reads
+source, and it is on this list because the release workflow runs `publishable` and not `verify`:
+without it a version bump can publish artifacts that misreport what produced them, and no gate
+on the release path notices.
 
 **The gates cannot catch everything.** A function that formats a date inline is one
 declaration, eight lines, complexity 1 — every gate passes and it is still wrong. That
