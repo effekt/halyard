@@ -5,5 +5,5 @@ import type { ReactNode } from "react";
  * Slot children arrive already rendered, so this places them and adds nothing of its own.
  */
 export function SectionStack({ sections }: { sections?: ReactNode }) {
-  return <main>{sections}</main>;
+  return <main data-nubbin-block="SectionStack">{sections}</main>;
 }

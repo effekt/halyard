@@ -12,7 +12,10 @@ const TONE_STYLES = {
 export function SiteFooter({ tagline, tone, columns, legal }: SiteFooterProps) {
   const styles = TONE_STYLES[tone];
   return (
-    <footer className={`${styles.section} border-brass/30 border-t px-6 py-16`}>
+    <footer
+      data-nubbin-block="SiteFooter"
+      className={`${styles.section} border-brass/30 border-t px-6 py-16`}
+    >
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr]">
           <p className="max-w-xs text-sm">{tagline}</p>

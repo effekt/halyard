@@ -17,7 +17,7 @@ const TONE_STYLES = {
 export function Hero({ eyebrow, headline, body, tone, cta, image }: HeroProps) {
   const styles = TONE_STYLES[tone];
   return (
-    <section className={`${styles.section} relative overflow-hidden`}>
+    <section data-nubbin-block="Hero" className={`${styles.section} relative overflow-hidden`}>
       <div
         aria-hidden="true"
         className="-top-24 -right-24 pointer-events-none absolute h-96 w-96 rounded-full bg-orange opacity-20 blur-3xl"
