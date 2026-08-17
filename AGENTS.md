@@ -14,8 +14,7 @@ Guidance for working in this repo. Loaded automatically by coding agents.
 blocks in code; non-developers compose pages from them. The composition is data, the
 contract is code, and publishing compiles a document into an immutable artifact.
 
-**None of the following exists yet.** It is the settled layout, recorded so that the first
-package lands in the right place rather than wherever it was convenient. See `## Status`.
+`core` is built; the rest of this layout is settled and unbuilt. See `## Status`.
 
 ```
 packages/
@@ -81,8 +80,8 @@ generated file. Generate when you need the whole picture; otherwise read the tre
 
 No rule here is a suggestion — each is enforced by a gate that runs on every agent edit
 (`.claude/settings.json`), at pre-commit (`lefthook.yml`), or at pre-push. The gates that
-read prose have been checking it since the first commit; the ones that read code are wired
-and idle until there is code, which is the order that keeps them honest.
+read prose check every document; the ones that read code check everything under
+`packages/`.
 
 | Gate | Enforces |
 |---|---|
@@ -101,9 +100,10 @@ and idle until there is code, which is the order that keeps them honest.
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 | `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; `onClick` on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 
-`pnpm verify` runs every gate above and needs a full install. CI runs only the subset that
-works against a bare checkout — the documentation, prose, and accessibility gates — because the
-rest need `node_modules`. Both are real; neither is a superset of the other until a package exists.
+`pnpm verify` runs every gate above and needs a full install. CI splits the same set in two:
+one job runs the documentation, prose, and accessibility gates against a bare checkout, and a
+second installs the workspace to run lint, typecheck, tests, build, boundaries, duplication,
+and dead-code detection.
 
 **The gates cannot catch everything.** A function that formats a date inline is one
 declaration, eight lines, complexity 1 — every gate passes and it is still wrong. That
@@ -156,10 +156,12 @@ A `PostToolUse` hook reviews added comments on every edit.
 
 ## Status
 
-**Design, not software.** No package has been written yet. What is in place is the workspace,
-the governance, the gates above, and an architecture that has survived an adversarial review.
+**`@nubbin/core` exists.** `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, and
+`checkRollback` are implemented, tested against real zod schemas, and exported as the
+package's whole runtime surface; dependency-cruiser fails the build on any `node:` or
+framework import inside it. The React binding (`packages/react`), the Next adapter
+(`packages/next`), the store adapter (`packages/store-fs`), and the studio remain unbuilt.
 
-That makes the invariants unusually cheap to honour and unusually easy to lose — there is no
-existing code pulling the first commit toward the right shape. Read `docs/architecture.md`
-for the model and `docs/decisions.md` for what has already been settled and why, and treat
-the open issues labelled `design-question` as the list of things you may not silently decide.
+Read `docs/architecture.md` for the model and `docs/decisions.md` for what has already been
+settled and why, and treat the open issues labelled `design-question` as the list of things
+you may not silently decide.

@@ -25,7 +25,10 @@ module.exports = {
         "core is framework-agnostic. Component types reach it as a generic parameter, never " +
         "as an import. See .claude/rules/package-boundaries.md.",
       from: { path: "^packages/core/src" },
-      to: { path: "node_modules/(react|react-dom|next)/" },
+      // Matches the bare specifier as well as a resolved node_modules path: with no framework
+      // installed the import stays unresolved as "react", and a resolved-path-only pattern
+      // lets exactly the import this rule exists to reject pass unflagged.
+      to: { path: "(^|/)node_modules/(react|react-dom|next)(/|$)|^(react|react-dom|next)(/|$)" },
     },
     {
       name: "core-depends-on-nothing-local",
