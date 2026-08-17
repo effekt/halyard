@@ -313,13 +313,26 @@ Same `ArtifactStore` interface used by the output layer — see
 ## Next wiring
 
 ```tsx
-// app/[[...slug]]/page.tsx
-export default async function Page({ params }) {
-  const artifact = await resolveArtifact(store, params.slug);
+// app/[...slug]/page.tsx
+export default async function Page({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
+  const artifact = await resolveArtifact(store, slug);
   if (!artifact) notFound();          // unpublished has no artifact — a real server 404
-  return <Renderer artifact={artifact} registry={registry} />;
+  return <Renderer artifact={artifact} registry={blockRegistry} resolveHole={resolveHole} />;
 }
 ```
+
+**`registry` is the prop name; `blockRegistry` is what goes in it.** `RendererProps.registry` is
+typed `BlockRegistry` — the render-side map of `() => Promise<BlockComponent>` from
+`defineRegistry`. The compile-side `Registry` from `createRegistry` is a different type with
+`get`, `names` and `fingerprint`, and it is what `compile` validates against. Passing it here, or
+passing the render-side map to `compile`, is the same mistake in two directions, and it has
+reached four separate tickets — see
+[registry file naming](decisions.md#each-registry-file-is-named-after-the-type-it-holds).
+
+**`[...slug]`, not `[[...slug]]`**, wherever the application also has a hand-written `app/page.tsx`:
+the optional form claims `/` as well, and Next rejects two owners of one path. An application with
+no coded home page doubles the brackets, and `routeFromSlug` maps an absent slug to `/`.
 
 `Renderer` is an async server component. It loads the blocks `blockVersions` names, fills each
 node's holes, and stamps `data-nubbin-node` on the root element the block returns — so a block
