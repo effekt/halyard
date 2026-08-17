@@ -1,0 +1,43 @@
+/**
+ * The palette is the colour system artifact, which carries the measured contrast for
+ * every pair used here — values are transcribed from it, never chosen here:
+ * https://claude.ai/code/artifact/93952615-c490-4fa2-9427-ab6b92cac765
+ */
+:root {
+  /* Nubbin Teal carries the interface; the shade ramp stays within its hue. */
+  --ifm-color-primary: #0e5a6b;
+  --ifm-color-primary-dark: #0d515f;
+  --ifm-color-primary-darker: #0c4c5a;
+  --ifm-color-primary-darkest: #0a3f4a;
+  --ifm-color-primary-light: #106377;
+  --ifm-color-primary-lighter: #10687c;
+  --ifm-color-primary-lightest: #137591;
+  /* Canvas ground, Deep Marine ink, and the light text-dim. */
+  --ifm-background-color: #f1f4f3;
+  --ifm-font-color-base: #0b2b33;
+  --ifm-color-content-secondary: #55696e;
+}
+
+html[data-theme="dark"] {
+  /* Teal Light is Nubbin Teal's functional twin on dark grounds. */
+  --ifm-color-primary: #4fb3c7;
+  --ifm-color-primary-dark: #3aaabf;
+  --ifm-color-primary-darker: #37a1b5;
+  --ifm-color-primary-darkest: #2d8595;
+  --ifm-color-primary-light: #64bccd;
+  --ifm-color-primary-lighter: #6fc0d0;
+  --ifm-color-primary-lightest: #8fcedb;
+  /* The artifact's dark ground and surface, with its dark text-dim. */
+  --ifm-background-color: #071f25;
+  --ifm-background-surface-color: #0b2b33;
+  /* Inline code sits on the surface colour: Teal Light measures 6.11 on it, where the
+     default translucent chip lightened the ground below AA for link-coloured code. */
+  --ifm-code-background: #0b2b33;
+  --ifm-font-color-base: #f1f4f3;
+  --ifm-color-content-secondary: #9db4b9;
+}
+
+/* A link in running text is marked by more than colour alone (WCAG 1.4.1). */
+article a {
+  text-decoration: underline;
+}

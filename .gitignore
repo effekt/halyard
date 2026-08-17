@@ -34,3 +34,6 @@ scripts/vendor-terms.txt
 # Agent worktrees. Inside the repository so a stray `rm -rf /tmp` cannot take uncommitted
 # work with it, and ignored because a worktree is a checkout, not content.
 .worktrees/
+
+# Docusaurus generated state (apps/docs)
+.docusaurus/

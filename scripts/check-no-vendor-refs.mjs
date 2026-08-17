@@ -37,7 +37,15 @@ const SCAN_ROOTS = [
   ".changeset",
 ];
 const SCANNED_EXT = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/;
-const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", ".repomix"]);
+// All generated and gitignored; `.docusaurus` stamps builder-machine paths into its state.
+const EXCLUDED_DIRS = new Set([
+  "node_modules",
+  "dist",
+  ".next",
+  ".turbo",
+  ".repomix",
+  ".docusaurus",
+]);
 
 /** Home-directory paths leak a machine layout and are always wrong in a public repo. */
 const ALWAYS_DENIED = [/\/Users\/[a-z]/i, /\/home\/[a-z]/i, /C:\\Users\\/i];

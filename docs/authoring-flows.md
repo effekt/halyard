@@ -140,7 +140,7 @@ set, so firing cannot fail on a surprise validation error.
 | Route ownership | Unpublish a route, let another `Document` claim it, republish the first — the second is silently evicted. Nothing enforces uniqueness of route → documentId, so the eviction is silent ([#12](https://github.com/effekt/nubbin/issues/12)). |
 | Concurrent publishes | **Resolved:** route pointers are independently-writable records, one per route, so two publishes to different routes cannot interfere. |
 | `Document.publishedVersion` disagreeing with what is live | **Resolved:** `publishedVersion` is derived on read from the route pointer rather than stored, so there is no second copy to diverge. |
-| Artifact pruning | Rollback depends on the target artifact still existing. Retention must respect a stated rollback window, and `publish()` must reject a missing hash rather than wiring a dead pointer — see [`adapters.md`](../.claude/rules/adapters.md). No policy is set yet ([#13](https://github.com/effekt/nubbin/issues/13)). |
+| Artifact pruning | Rollback depends on the target artifact still existing. Retention must respect a stated rollback window, and `publish()` must reject a missing hash rather than wiring a dead pointer — see [`adapters.md`](https://github.com/effekt/nubbin/blob/main/.claude/rules/adapters.md). No policy is set yet ([#13](https://github.com/effekt/nubbin/issues/13)). |
 
 ## 6. Layouts vs presets
 

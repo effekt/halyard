@@ -7,7 +7,7 @@ status: stable
 # Documentation
 
 The design here is written to survive review before code is written against it. **What is
-built is recorded in [`AGENTS.md`](../AGENTS.md), never here** — a status line in this file
+built is recorded in [`AGENTS.md`](https://github.com/effekt/nubbin/blob/main/AGENTS.md), never here** — a status line in this file
 would be a second copy of that, and the copy is the one that rots.
 
 These documents hold the parts an implementer works from: the contracts, the settled
@@ -50,6 +50,6 @@ resolve, no claim rests on a corpus a reader cannot open, nothing reaches back f
 no longer exists, no reference identifies a codebase that is not this one, one claim lives in
 one document, and a document that trails something it links to gets flagged for re-reading.
 
-[`.claude/rules/documentation.md`](../.claude/rules/documentation.md) holds why that is worth
+[`.claude/rules/documentation.md`](https://github.com/effekt/nubbin/blob/main/.claude/rules/documentation.md) holds why that is worth
 the machinery, and what the gates cannot reach: which document holds what, and the rule that a
 decision changes prose in *every* document describing it, in the same commit.
