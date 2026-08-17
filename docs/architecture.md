@@ -31,7 +31,7 @@ caching tier to survive the round trip.
  catalog           registry              data the studio reads  ·  lazy imports the app resolves
    │                 │
    ▼                 ▼
- studio          compile(version, catalog)
+ studio          compile(version, catalog, registry, route)
  (compose)             │  validate every node against its block schema
    │                   │  resolve the flat graph into a tree, freeze static values
    │                   ▼
