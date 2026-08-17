@@ -13,9 +13,14 @@ up, and what's actually worth contributing right now.
 ## Setup
 
 ```bash
-pnpm install
-pnpm verify      # every gate
+nvm install && nvm use     # reads .nvmrc
+corepack enable pnpm       # activates the pinned pnpm
+pnpm install               # installs the git hooks via `prepare`
+pnpm verify                # every gate
 ```
+
+If a git hook later reports `pnpm: command not found`, the toolchain is missing from that
+shell's PATH rather than from the machine — the hooks shell out to `pnpm` directly.
 
 The prose gates are plain Node and need no install, which is why CI runs them against a
 bare checkout:
@@ -31,8 +36,9 @@ pins the exact pnpm version.
 
 ## What's worth contributing right now
 
-There is no implementation yet — deliberately (see [`README.md`](README.md#status)). That
-changes what's valuable:
+`@nubbin/core` is built; the adapters and the studio are not, and the milestone that could
+invalidate the approach has not run (see [`README.md`](README.md#status)). That shapes what is
+worth doing:
 
 **Disagreement about the design is the most valuable contribution there is.** The
 architecture has already been through one adversarial review, which falsified the live
@@ -60,10 +66,14 @@ leaves no trace of the old name.
 ## Commits
 
 [Conventional Commits](https://www.conventionalcommits.org/), checked by commitlint on every
-PR. Scope is one of `docs`, `repo`, `deps`.
+PR. Scope is one of `docs`, `repo`, `deps`, `core`, `examples` — the list `commitlint.config.js`
+enforces, which grows as packages land.
 
-## Once there's code
+## Code
 
 `AGENTS.md`'s invariants and gates apply in full: one unit per file, every dependency pinned,
 `pnpm verify` green before review. If a gate seems to make correct code impossible to write,
 that's worth raising — as an issue, not a workaround.
+
+`pnpm verify` needs a full install. The prose gates above do not, so a documentation-only
+change can be checked without one.
