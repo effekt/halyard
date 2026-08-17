@@ -10,7 +10,9 @@
     "start": "next start",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "fixtures:publish": "tsx scripts/publishFixtures.ts"
+    "fixtures:publish": "tsx scripts/publishFixtures.ts",
+    "serve:verify": "node scripts/verifyServing.mjs",
+    "publish:live": "tsx scripts/publishLive.ts"
   },
   "dependencies": {
     "@nubbin/core": "workspace:*",
