@@ -96,6 +96,12 @@ describe("validateStructure", () => {
     ).toContain("slot-not-allowed:n2");
   });
 
+  test("reports a required slot the node leaves unfilled, not only one filled below min", () => {
+    expect(codes(doc({ n1: { id: "n1", block: "Hero", props: { title: "T" } } }))).toContain(
+      "slot-min:n1",
+    );
+  });
+
   test("reports a slot below min and a slot above max", () => {
     expect(
       codes(
