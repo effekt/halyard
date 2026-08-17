@@ -35,7 +35,7 @@ them was internally plausible, which is why nothing caught them.
 
 A design document that has stopped changing has a job to do: move its conclusion into
 `decisions.md` and leave a link. Two documents describing one decision is how they diverge.
-**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence.
+**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence. Advisory until [#186](https://github.com/effekt/nubbin/issues/186): its budget equals what the corpus already duplicates, so blocking would stop the next commit that adds prose rather than the next one that copies a claim.
 
 ## Rules
 
@@ -79,9 +79,9 @@ work. <!-- prose-ok -->
 
 A list in prose beside a list a tool enforces is a copy, and the copy is the one nobody updates. Write "a scope `commitlint.config.mjs` allows", not the scopes.
 
-That list was written in three places and stale in two, so a contributor writing a correct `feat(core):` commit would have checked the guide and concluded they had it wrong. A skills count, an issue count and a count of this repository's own review hooks drifted the same way — the last inside the document arguing against counting in prose.
+A count in prose drifts the same way, including a count of this repository's own review hooks written inside the document arguing against counting in prose.
 
-The same holds for a claim about project state. "There is no implementation yet" outlived its truth in the README, the published site and the contributing guide. <!-- prose-ok --> **Correcting one is not correcting it:** grep the repository and the site for the old phrasing. `pnpm stale-docs` cannot help — each of those documents was newer than what it misdescribed. **Gate:** none.
+The same holds for a claim about project state. "There is no implementation yet" outlived its truth in the README, the published site and the contributing guide. <!-- prose-ok --> **Correcting one is not correcting it:** grep the repository and the site for the old phrasing. `pnpm stale-docs` cannot help — each of those documents was newer than what it misdescribed. **Gate:** none — `check-prose-dupes.mjs` catches the copy, never the staleness, so a tool cannot flag what only a reader can notice.
 
 ### Sweep the neighbours
 

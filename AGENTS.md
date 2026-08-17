@@ -138,13 +138,18 @@ path — it exited 0 on every CI run it was ever wired into, which is the same s
 in [`gates.md`](.claude/rules/gates.md) that passed while checking nothing. They belong to the
 contributor's machine, where the comparison is real.
 
-Two exceptions, both deliberate and both recorded in `check-gate-table.mjs` so they cannot pass
-as oversights. `check-release-tag.mjs` runs only on the release path — every local version is a
-prerelease, so including it in `verify` would fail every run on every machine. And
-`check-stale-docs.mjs` is **advisory**. It flags a
-document that trails something it links to, which is worth re-reading and not worth failing a
-build over, so CI runs it with `continue-on-error` and it is the one entry here that cannot
-block.
+One exception is deliberate and recorded in `check-gate-table.mjs` so it cannot pass as an
+oversight: `check-release-tag.mjs` runs only on the release path — every local version is a
+prerelease, so including it in `verify` would fail every run on every machine.
+
+**Two gates are advisory** and run with `continue-on-error` in CI, so neither can block.
+`check-stale-docs.mjs` flags a document that trails something it links to, which is worth
+re-reading and not worth failing a build over. `check-prose-dupes.mjs` reports duplicated
+claims. Its budget is a word count rather than a share, and a budget set to what a corpus
+already contains leaves nothing spare — so the next document to restate a claim trips it
+whether or not that claim was worth catching. It reports on every run and blocks nothing
+until the claims it already finds have a home —
+[#186](https://github.com/effekt/nubbin/issues/186).
 
 `pnpm publishable` is the release subset — the gates that read the artifact a consumer would
 install rather than the source. Run it before publishing anything; `verify` includes it.

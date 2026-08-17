@@ -42,7 +42,7 @@
     "docs": "node scripts/check-docs.mjs --check",
     "file-refs": "node scripts/check-file-refs.mjs --check",
     "prose": "node scripts/check-prose.mjs --check",
-    "prose-dupes": "node scripts/check-prose-dupes.mjs --check",
+    "prose-dupes": "node scripts/check-prose-dupes.mjs",
     "a11y": "node scripts/check-a11y.mjs --check",
     "stale-docs": "node scripts/check-stale-docs.mjs",
     "catalog": "node scripts/docs-catalog.mjs",
