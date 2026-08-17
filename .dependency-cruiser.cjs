@@ -54,6 +54,37 @@ module.exports = {
       to: { path: "^packages/(next|store-fs)/" },
     },
     {
+      name: "react-imports-no-node-builtins",
+      severity: "error",
+      comment:
+        "@nubbin/react renders in any React server environment, including ones with no node " +
+        "builtins. IO belongs in an adapter. See .claude/rules/package-boundaries.md.",
+      from: { path: "^packages/react/src" },
+      // `dependencyTypes`, not a path: dependency-cruiser classifies builtins by type, and a
+      // `^node:` path pattern matches none of them. Verified by seeding the import.
+      to: { dependencyTypes: ["core"] },
+    },
+    {
+      name: "react-package-portable",
+      severity: "error",
+      comment:
+        "@nubbin/react must not depend on Next — the dependency runs the other way. " +
+        "See .claude/rules/package-boundaries.md.",
+      from: { path: "^packages/react/src" },
+      // Bare specifier as well as a resolved path: `next` is not installed here, so a
+      // resolved-path-only pattern lets exactly the import this rule rejects pass unflagged.
+      to: { path: "(^|/)node_modules/next(/|$)|^next(/|$)" },
+    },
+    {
+      name: "store-fs-imports-no-framework",
+      severity: "error",
+      comment:
+        "A storage adapter is IO around core's types; a react or next import is a category " +
+        "error. See .claude/rules/adapters.md.",
+      from: { path: "^packages/store-fs/src" },
+      to: { path: "(^|/)node_modules/(react|react-dom|next)(/|$)|^(react|react-dom|next)(/|$)" },
+    },
+    {
       name: "no-deep-package-imports",
       severity: "error",
       comment:
