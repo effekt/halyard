@@ -1,5 +1,20 @@
 # @nubbin/next
 
+## 0.1.0-rc.3
+
+### Patch Changes
+
+- b19d23e: Every package now carries a README, a licence and repository metadata. Their npm pages showed
+  "ERROR: No README data found!", and three of the four declared no licence at all on an MIT
+  project.
+- Updated dependencies [8a01bab]
+- Updated dependencies [3495902]
+- Updated dependencies [cb596fa]
+- Updated dependencies [d42f112]
+- Updated dependencies [3c65495]
+- Updated dependencies [b19d23e]
+  - @nubbin/core@0.1.0-rc.3
+
 ## 0.1.0-rc.2
 
 ### Patch Changes
