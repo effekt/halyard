@@ -175,8 +175,8 @@ hide_site_header: true
     deploy, no second source of truth.
   </p>
   <p class="hy-status">
-    The contract is built; the adapters and the studio are not. The architecture was settled
-    in the open first, before anything expensive was built on top of it.
+    Four packages are published as release candidates; the studio is not built yet. The
+    architecture was settled in the open first, before anything expensive was built on top of it.
   </p>
   <p class="hy-actions">
     <a class="hy-btn-primary" href="{{ '/domain-model.html' | relative_url }}">Read the design record</a>
@@ -335,11 +335,19 @@ second and third are judgments about what this project is.
 
 ## Where it stands
 
-`@nubbin/core` implements `defineBlock`, `defineCatalog`, `createRegistry`, `compile` and
-`checkRollback`, tested against real schemas rather than mocks. A build gate fails on any
-`node:` or framework import inside it, so the claim that it runs anywhere is checked rather
-than asserted. The React binding, the Next adapter, the storage adapter and the studio are
-sequenced and unwritten.
+Four packages are on npm at `0.1.0-rc.0` under the `rc` tag:
+
+| Package | State |
+|---|---|
+| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback` |
+| `@nubbin/store-fs` | A pointer-per-route store, passing a contract suite a third-party adapter can run |
+| `@nubbin/next` | Read and write paths — resolve, prebuild params, publish and unpublish |
+| `@nubbin/react` | Hole resolution only; the renderer is still open |
+
+Everything is tested against real schemas rather than mocks, and a build gate fails on any
+`node:` or framework import inside `core`, so the claim that it runs anywhere is checked
+rather than asserted. The studio is unbuilt, and the milestone that could invalidate the
+approach has not run.
 
 The architecture came first, with the decisions and the alternatives each one beat, and the
 tooling that holds the implementation to them. It has been through one adversarial review
