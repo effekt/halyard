@@ -181,6 +181,9 @@ importers:
 
   packages/next:
     dependencies:
+      '@nubbin/core':
+        specifier: workspace:*
+        version: link:../core
       next:
         specifier: '>=16.0.0'
         version: 16.2.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
