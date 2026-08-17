@@ -29,10 +29,13 @@ const PER_FILE_PROSE_GATES = [
 ];
 
 /**
- * A link is only broken relative to every other document, so this one takes no file argument
- * and runs against the whole corpus.
+ * A link is only broken relative to every other document, and a claim is only duplicated
+ * relative to where else it appears, so these take no file argument and read the whole corpus.
  */
-const PROSE_GATES = [["node", ["scripts/check-docs.mjs", "--check"]]];
+const PROSE_GATES = [
+  ["node", ["scripts/check-docs.mjs", "--check"]],
+  ["node", ["scripts/check-prose-dupes.mjs", "--check"]],
+];
 
 const payload = await new Promise((resolve) => {
   let raw = "";
