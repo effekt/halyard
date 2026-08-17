@@ -7,6 +7,9 @@ non-developers compose pages from them. The composition is data, the contract is
 publishing compiles a document into an immutable artifact — no bundler, no deploy, no second
 source of truth.
 
+Nubbin is deliberately not a general-purpose CMS. It answers one question: how does someone who
+does not write code publish pages from components your application already owns?
+
 ```bash
 npm install @nubbin/core@rc
 ```
@@ -67,7 +70,13 @@ a cache to survive a round trip on every render.
 | **Immutable artifacts** | Content-addressed, cached forever, rolled back by pointer. Nothing to invalidate at the store; the page cache drops one route on publish. |
 | **No deploy to publish** | Compiling validates and serializes. Only a *code* change needs a build. |
 | **Precise code-splitting** | An artifact names the blocks a page uses, so the hundredth block costs other pages nothing. |
-| **Bring your own everything** | Storage, auth, and validation are adapters. The core depends on nothing but Standard Schema. |
+| **Not in your render path** | Publishing produces an artifact your application serves on its own. A Nubbin outage cannot take down a page that is already published. |
+| **Bring your own storage** | Storage, auth and validation are adapters. Artifacts live where you put them — object storage, a database, your deployment output. |
+| **Portable core** | `@nubbin/core` depends on nothing but Standard Schema, and runs in a browser, a worker, a server or a CI step. |
+
+Published pages do not call Nubbin. The application reads immutable artifacts from storage you
+chose, and the artifact holds the *result* of validating against the schema rather than a
+reference back to it. Nubbin is needed to change a page, not to serve one.
 
 ## Status
 
@@ -91,9 +100,11 @@ The architecture came first, with the decisions and the alternatives each one be
 been through one adversarial review, which falsified the live postMessage preview and the
 single-manifest publish; both were redesigned. That is a reason to trust the design more than
 an unreviewed one, not a reason to treat it as finished — [the open
-questions](https://github.com/effekt/nubbin/issues/15) are the parts known to still be wrong.
+questions](https://github.com/effekt/nubbin/issues/15) are the parts known not to be settled.
 
-Every gate now runs on every commit, including the ones that read code.
+Every gate runs on every commit, including the ones that inspect the codebase rather than
+trusting a declared convention — package boundaries, dead code, type coverage, and whether a
+published package actually installs.
 
 The [roadmap](https://github.com/effekt/nubbin/issues/14) sequences the build. Its first
 milestone is deliberately not a feature — it exists to falsify the project's own thesis, by
@@ -128,4 +139,8 @@ Governed by the [Contributor Covenant](CODE_OF_CONDUCT.md). Report vulnerabiliti
 
 ## License
 
-MIT
+MIT.
+
+**`@nubbin/core` is MIT and will stay MIT.** Commercial Nubbin products may charge for hosted
+infrastructure and operational convenience; the contract and the compiler will not move behind
+a commercial licence. Pay to have it operated, not for permission to use it.
