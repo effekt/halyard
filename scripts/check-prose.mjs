@@ -92,6 +92,32 @@ const FUTURE = [
   [/\bplanned for (?:v?\d|later|a later)\b/i, "open an issue"],
 ];
 
+/**
+ * Prose that is a copy of something the repository already derives, or a claim about absence.
+ * Both rot without ever looking wrong.
+ *
+ * A prerelease literal in prose copies a registry dist-tag. `0.1.0-rc.0` sat in README.md and
+ * AGENTS.md while `latest` moved ahead of it and `rc` fell behind, so both were wrong in two
+ * directions at once. `npm view <pkg> dist-tags` cannot go stale because it is not a copy.
+ * CHANGELOGs and changesets are exempt: recording which version carried a change is their job.
+ *
+ * An absence claim ages the moment the thing arrives, and nothing marks the moment.
+ * "Nubbin has no implementation yet" outlived its truth in five files across two rounds of
+ * correcting it, including in SECURITY.md, where it scoped reports away from every shipped
+ * package. Say what the system does today; absence is what an empty section already conveys.
+ */
+const STALE_BY_CONSTRUCTION = [
+  [
+    /\b\d+\.\d+\.\d+-(?:rc|alpha|beta|next|canary)\.\d+\b/,
+    "a prerelease literal is a copy of a dist-tag — point at `npm view <pkg> dist-tags`",
+  ],
+  [/\bno implementation yet\b/i, "say what the system does today"],
+  [/\bthere is no \w+ yet\b/i, "say what the system does today"],
+  [/\b(?:does|do) not exist yet\b/i, "say what the system does today"],
+  [/\bnothing (?:ships|exists) yet\b/i, "say what the system does today"],
+  [/\buntil (?:a|the) \w+ ships\b/i, "say what the system does today"],
+];
+
 /** Filler that signals confidence instead of supplying it. */
 const FILLER = [
   [/\bin order to\b/i, "in order to → to"],
@@ -139,7 +165,10 @@ async function collectTargets(explicit) {
 const args = process.argv.slice(2);
 const targets = await collectTargets(args.filter((arg) => !arg.startsWith("--")));
 
-const ALL_PATTERNS = [...UNVERIFIABLE, ...HISTORICAL, ...FUTURE, ...FILLER];
+const ALL_PATTERNS = [...UNVERIFIABLE, ...HISTORICAL, ...FUTURE, ...STALE_BY_CONSTRUCTION, ...FILLER];
+
+/** Recording which release carried a change is the whole point of these files. */
+const VERSION_EXEMPT = /(?:CHANGELOG\.md$|^\.changeset\/)/;
 
 /** Body lines, frontmatter dropped. Numbers are the file's own, so reports stay navigable. */
 function* numberedBodyLines(text) {
@@ -163,9 +192,17 @@ function* proseLines(text) {
 }
 
 /** The first pattern a line trips, or null. One report per line keeps the output readable. */
-function firstOffence(line) {
+function firstOffence(line, rel) {
   const text = proseOnly(line);
+  const exemptVersions = VERSION_EXEMPT.test(rel);
   for (const [pattern, why] of ALL_PATTERNS) {
+    if (exemptVersions && why.startsWith("a prerelease literal")) continue;
+    // A version is written as `0.1.0-rc.0`, and `proseOnly` strips code spans — so the version
+    // pattern has to read the raw line or it can never match the only form it is looking for.
+    const target = why.startsWith("a prerelease literal") ? line : text;
+    const hit = pattern.exec(target);
+    if (hit) return { why, quote: hit[0].trim() };
+    continue;
     const match = pattern.exec(text);
     if (match) return { why, quote: match[0].trim() };
   }
@@ -175,10 +212,11 @@ function firstOffence(line) {
 const hits = [];
 for (const file of targets) {
   const text = await readFile(file, "utf8");
+  const rel = relative(ROOT, file);
   for (const [lineNumber, line] of proseLines(text)) {
-    const offence = firstOffence(line);
+    const offence = firstOffence(line, rel);
     if (offence) {
-      hits.push(`${relative(ROOT, file)}:${lineNumber}  ${offence.why}\n      ${offence.quote}`);
+      hits.push(`${rel}:${lineNumber}  ${offence.why}\n      ${offence.quote}`);
     }
   }
 }

@@ -50,6 +50,19 @@ Present tense, no narrative. State the system, then compress the rejection to it
 Never narrate the drafts that came before. <!-- prose-ok --> Write "Y, because Z. X was
 rejected: it breaks W."
 
+## 3b. Changing a decision that already has an entry
+
+Edit the entry. Do not add a second one beside it, and do not narrate the change in the prose
+that describes the system — the system is what is true now, and the rejected alternative is what
+stops it being re-proposed. Nothing else survives.
+
+**The Choice part changes too.** The new decision beat something different from what the old one
+beat, and leaving the old alternative in place argues against a position nobody now holds.
+
+Where the original choice was never recorded, there are two honest options: add an entry, or say
+nothing. A paragraph describing a change with no decision behind it leaves a reader unable to
+tell which reading is current, and no gate can tell them apart.
+
 ## 4. Sweep every document that argued the old position
 
 **This is the step that fails.** Do not skip it, and do not trust memory for it.
@@ -94,6 +107,8 @@ node scripts/check-prose.mjs --check  # no unciteable claims, no old names, no f
 ## Before finishing
 
 - [ ] All four parts are present, and Choice names a real alternative
+- [ ] A changed decision edited its entry rather than gaining a second one, and Choice was
+      re-checked against what the new decision actually beat
 - [ ] The decision lives in exactly one place; everywhere else links to it
 - [ ] Step 4's grep was actually run, and every hit was read
 - [ ] Tables, diagram labels, and "still open" phrasing were checked, not just paragraphs
