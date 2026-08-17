@@ -20,15 +20,16 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@nubbin/core": "workspace:*"
+  },
   "peerDependencies": {
     "next": ">=16.0.0"
   },
   "devDependencies": {
+    "next": "catalog:",
     "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
-  },
-  "dependencies": {
-    "@nubbin/core": "workspace:*"
   }
 }
