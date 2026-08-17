@@ -75,10 +75,26 @@ jobs:
       # `.changeset/config.json` was configured for. It shells out to `pnpm publish`, so the
       # `catalog:` and `workspace:*` rewriting still happens — npm cannot do that itself.
       #
+      # Reading the tag from prerelease mode is exactly why `--tag` must not be passed while
+      # that mode is active: changesets treats the two as a conflict and exits 1 with
+      # "Releasing under custom tag is not allowed in pre mode!". So the input is checked
+      # against `.changeset/pre.json` and then dropped, rather than forwarded.
+      #
       # NPM_CONFIG_PROVENANCE reaches npm through both layers of delegation, which is the one
       # part of this path not yet observed in a real run.
       - name: Publish
-        run: pnpm changeset publish --tag "$TAG"
+        run: |
+          set -euo pipefail
+          if [ -f .changeset/pre.json ]; then
+            pre_tag=$(node -p "require('./.changeset/pre.json').tag")
+            if [ "$pre_tag" != "$TAG" ]; then
+              echo "::error::Pre mode publishes under '$pre_tag', but this run asked for '$TAG'. Dispatch with tag=$pre_tag, or leave pre mode first with 'pnpm changeset pre exit'." >&2
+              exit 1
+            fi
+            pnpm changeset publish
+          else
+            pnpm changeset publish --tag "$TAG"
+          fi
         env:
           TAG: ${{ inputs.tag }}
           NPM_CONFIG_PROVENANCE: "true"
