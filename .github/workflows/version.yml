@@ -23,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - uses: actions/checkout@v7
         with:
@@ -38,12 +37,31 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # No `publish` input: publishing stays a deliberate dispatch in release.yml, so merging
-      # this PR bumps versions without shipping anything.
-      - uses: changesets/action@v1
-        with:
-          version: pnpm changeset version
-          title: "chore(repo): version packages"
-          commit: "chore(repo): version packages"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply changesets
+        run: pnpm changeset version
+
+      # Plain git rather than changesets/action. In prerelease mode that action reads
+      # `.changeset/pre/changes.md`, which changesets does not write — every run failed with
+      # ENOENT. Its other job, opening the pull request, is blocked by a repository setting
+      # anyway, so what remains is a branch push that git does directly.
+      - name: Push the version branch
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "No changesets to apply." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B changeset-release/main
+          git add -A
+          git commit -m "chore(repo): version packages"
+          git push --force origin changeset-release/main
+          {
+            echo "Pushed \`changeset-release/main\`. Open a pull request from it to apply:"
+            echo ""
+            for dir in packages/*/; do
+              [ -f "$dir/package.json" ] || continue
+              node -p "const m=require('./$dir/package.json'); \`- \${m.name} → \${m.version}\`"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
