@@ -11,17 +11,11 @@ concurrency:
 
 jobs:
   # Every gate here is plain Node with no dependencies, so it runs against a bare
-  # checkout with no install step and no lockfile. They are also the only gates with
-  # anything to check until the first package lands — see the Status section in README.md.
+  # checkout with no install step and no lockfile.
   #
   # check-schema-depth and check-single-export are absent despite also being scripts:
   # both import `typescript`, so they run in the code job below alongside the gates
   # that need node_modules.
-  #
-  # The code gates (biome, typecheck, test, boundaries) join this file in the commit that
-  # adds the first package, together with the lockfile they need. They are deliberately
-  # absent rather than skipped: a job that cannot run is better left unwritten than
-  # written and disabled.
   prose:
     runs-on: ubuntu-latest
     steps:
@@ -69,9 +63,8 @@ jobs:
         run: node scripts/check-stale-docs.mjs
         continue-on-error: true
 
-  # Everything needing an install. Absent while no package existed; a lockfile, a demo
-  # application that builds, and TypeScript that typechecks all arrived without this
-  # job arriving with them, so main could have broken while CI stayed green.
+  # Everything needing an install: lint, typecheck, tests, build, structure gates,
+  # package boundaries, duplication, and dead code.
   code:
     runs-on: ubuntu-latest
     steps:
