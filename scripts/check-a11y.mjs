@@ -7,7 +7,7 @@
 // report back. That asymmetry is why these belong in a gate rather than in review: the reviewer
 // who would have caught them is the one who never sees the page.
 //
-// Five failures qualify. An `<img>` with no `alt` attribute at all leaves a screen reader
+// Six failures qualify. An `<img>` with no `alt` attribute at all leaves a screen reader
 // announcing the file path — an empty `alt=""` is the correct, deliberate marking for a
 // decorative image and is never flagged. An `alt` that is a filename or names the medium
 // ("image", "logo") occupies the slot without filling it, which is worse than absent because
