@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { featureGridSchema } from "./FeatureGrid.schema";
 import { TONE_ACCENT, TONE_SURFACE } from "./tone.constants";
 
-type FeatureGridProps = z.infer<typeof featureGridSchema>;
+type FeatureGridProps = InferProps<typeof featureGridSchema>;
 
 const TONE_STYLES = {
   light: {

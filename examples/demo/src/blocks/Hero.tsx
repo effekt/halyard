@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { heroSchema } from "./Hero.schema";
 import { TONE_ACCENT, TONE_SURFACE } from "./tone.constants";
 
-type HeroProps = z.infer<typeof heroSchema>;
+type HeroProps = InferProps<typeof heroSchema>;
 
 const TONE_STYLES = {
   light: { section: TONE_SURFACE.light, eyebrow: TONE_ACCENT.light, body: "text-marine/70" },

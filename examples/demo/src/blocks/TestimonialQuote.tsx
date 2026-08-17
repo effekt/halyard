@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { testimonialQuoteSchema } from "./TestimonialQuote.schema";
 import { TONE_SURFACE } from "./tone.constants";
 
-type TestimonialQuoteProps = z.infer<typeof testimonialQuoteSchema>;
+type TestimonialQuoteProps = InferProps<typeof testimonialQuoteSchema>;
 
 const TONE_STYLES = {
   light: { section: TONE_SURFACE.light, role: "text-marine/60" },

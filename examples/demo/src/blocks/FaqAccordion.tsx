@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { faqAccordionSchema } from "./FaqAccordion.schema";
 import { TONE_SURFACE } from "./tone.constants";
 
-type FaqAccordionProps = z.infer<typeof faqAccordionSchema>;
+type FaqAccordionProps = InferProps<typeof faqAccordionSchema>;
 
 const TONE_STYLES = {
   light: { section: TONE_SURFACE.light, item: "border-brass/30" },

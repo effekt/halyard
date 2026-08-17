@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { statBandSchema } from "./StatBand.schema";
 import { TONE_ACCENT, TONE_SURFACE } from "./tone.constants";
 
-type StatBandProps = z.infer<typeof statBandSchema>;
+type StatBandProps = InferProps<typeof statBandSchema>;
 
 const TONE_STYLES = {
   light: { section: TONE_SURFACE.light, value: TONE_ACCENT.light, label: "text-marine/60" },

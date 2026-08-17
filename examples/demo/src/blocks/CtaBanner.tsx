@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { ctaBannerSchema } from "./CtaBanner.schema";
 import { TONE_SURFACE } from "./tone.constants";
 
-type CtaBannerProps = z.infer<typeof ctaBannerSchema>;
+type CtaBannerProps = InferProps<typeof ctaBannerSchema>;
 
 const TONE_STYLES = {
   light: {
