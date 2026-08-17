@@ -189,6 +189,14 @@ Do not write:
   migration history, or speculative future integrations
 - comments that restate what the code already says
 - verbose prose where a short clause suffices
+- a comment for code the same change removed — deleting a function and leaving the paragraph
+  that explained it sends a reader hunting for something that does not exist. Where the reason
+  still holds, move it onto what remains rather than leaving it above nothing.
+
+Before writing a sentence about the system, ask what would falsify it and how soon. A sentence a
+plausible next commit makes wrong should state the durable thing instead, or not exist. Three
+forms recurred often enough to be gated — a version literal, an absence claim, and an unowned
+promise; `check-prose.mjs` has them, and the judgment is everything it cannot pattern-match.
 
 A `PostToolUse` hook reviews added comments on every edit.
 

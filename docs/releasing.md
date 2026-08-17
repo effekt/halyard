@@ -35,7 +35,7 @@ pnpm changeset pre exit     # next version is 0.1.0, not another rc
 ```
 
 Without pre mode, `changeset version` graduates a prerelease straight to stable — from
-`0.1.0-rc.0` it produces `0.1.0`, not `0.1.0-rc.1`.
+`X.Y.Z-rc.N` it produces `X.Y.Z`, not the next prerelease.
 
 ## The commands
 
@@ -109,7 +109,7 @@ Until a package has its trusted publisher, that package's publish step fails aut
 
 ## Publishing by hand
 
-Still possible, and how `0.1.0-rc.0` went out. It requires a one-time password: `pnpm
+Still possible, and how the first prerelease went out. It requires a one-time password: `pnpm
 release:rc` prompts for it, which needs a real terminal — with stdin closed it fails `EOTP`.
 Passing the code avoids the prompt entirely:
 

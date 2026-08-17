@@ -80,7 +80,7 @@ A list in prose beside a list a tool enforces is a copy, and the copy is the one
 
 That list was written in three places and stale in two, so a contributor writing a correct `feat(core):` commit would have checked the guide and concluded they had it wrong. A skills count, an issue count and a count of this repository's own review hooks drifted the same way — the last inside the document arguing against counting in prose.
 
-The same holds for a claim about project state. "There is no implementation yet" outlived its truth in the README, the published site and the contributing guide. **Correcting one is not correcting it:** grep the repository and the site for the old phrasing. `pnpm stale-docs` cannot help — each of those documents was newer than what it misdescribed. **Gate:** none.
+The same holds for a claim about project state. "There is no implementation yet" outlived its truth in the README, the published site and the contributing guide. <!-- prose-ok --> **Correcting one is not correcting it:** grep the repository and the site for the old phrasing. `pnpm stale-docs` cannot help — each of those documents was newer than what it misdescribed. **Gate:** none.
 
 ### Sweep the neighbours
 
