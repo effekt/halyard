@@ -1,0 +1,1 @@
+export { routeFromSlug } from "./routeFromSlug";
