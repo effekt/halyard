@@ -52,6 +52,9 @@ jobs:
       - name: Prose
         run: node scripts/check-prose.mjs --check
 
+      - name: Prose duplication
+        run: node scripts/check-prose-dupes.mjs --check
+
       - name: Accessibility
         run: node scripts/check-a11y.mjs --check
 

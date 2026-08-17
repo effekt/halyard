@@ -35,6 +35,7 @@ them was internally plausible, which is why nothing caught them.
 
 A design document that has stopped changing has a job to do: move its conclusion into
 `decisions.md` and leave a link. Two documents describing one decision is how they diverge.
+**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence.
 
 ## Rules
 

@@ -114,6 +114,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-file-refs.mjs` | a repository file named inside a code span exists, or is gitignored on purpose |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
+| `check-prose-dupes.mjs` | one claim, one home — a run of 12 words written into two documents, measured after fences, comments and tables are stripped out |
 | `check-no-vendor-refs.mjs` | no employer, client, internal application or product name, and no absolute path from a contributor's machine |
 | `check-pinned-deps.mjs` | no range specifier — every dependency version is exact, so an upgrade arrives only in a commit someone wrote |
 | `check-script-invocations.mjs` | a script whose name the package manager also claims is invoked as `pnpm run <name>`, never bare |

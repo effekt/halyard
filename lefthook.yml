@@ -74,6 +74,12 @@ pre-commit:
       glob: "*.md"
       run: node scripts/check-prose.mjs --check {staged_files}
 
+    # Corpus-wide, like docs: a claim is a duplicate only relative to where else it is
+    # written, and the second copy is as often in the file nobody staged.
+    prose-dupes:
+      glob: "*.md"
+      run: pnpm run prose-dupes
+
     # A rule file is re-read on every matching edit, so its length is a running cost.
     rule-files:
       glob: ".claude/rules/*.md"
