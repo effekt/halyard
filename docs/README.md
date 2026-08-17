@@ -17,6 +17,7 @@ produced them.
 |---|---|---|
 | [`architecture.md`](architecture.md) | How the contract/content/output split and the compile-at-publish pipeline fit together. **Start here.** | stable |
 | [`environment.md`](environment.md) | The plugins, skills and toolchain this repository is worked on with, and how to reproduce them | stable |
+| [`releasing.md`](releasing.md) | How a version reaches npm, which tool must do it, and the two behaviours that surprise people | stable |
 | [`decisions.md`](decisions.md) | Settled choices and the reasoning behind them, so they are not re-litigated | stable |
 | [`domain-model.md`](domain-model.md) | Every entity, what owns it, and where it lives across the three layers | draft |
 | [`api.md`](api.md) | The shape of `defineBlock` through compile and render, and where UI hints live | draft |
