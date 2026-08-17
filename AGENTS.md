@@ -78,10 +78,15 @@ generated file. Generate when you need the whole picture; otherwise read the tre
 
 ## Quality gates
 
-No rule here is a suggestion — each is enforced by a gate that runs on every agent edit
+Every row in the table below is enforced by a gate that runs on every agent edit
 (`.claude/settings.json`), at pre-commit (`lefthook.yml`), or at pre-push. The gates that
-read prose check every document; the ones that read code check everything under
-`packages/`.
+read prose check every document; the ones that read code check `packages/`, `apps/` and
+`examples/`.
+
+**Not every rule in `.claude/rules/` has one.** Where a rule states a gate, that gate exists
+and has been seen to fail on a violation. Where it says *Gate: none*, the rule is judgment a
+reviewer applies — the colocated-test requirement is the largest of these, and what a gate for
+it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 
 | Gate | Enforces |
 |---|---|
