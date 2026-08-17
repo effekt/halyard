@@ -165,7 +165,13 @@ async function collectTargets(explicit) {
 const args = process.argv.slice(2);
 const targets = await collectTargets(args.filter((arg) => !arg.startsWith("--")));
 
-const ALL_PATTERNS = [...UNVERIFIABLE, ...HISTORICAL, ...FUTURE, ...STALE_BY_CONSTRUCTION, ...FILLER];
+const ALL_PATTERNS = [
+  ...UNVERIFIABLE,
+  ...HISTORICAL,
+  ...FUTURE,
+  ...STALE_BY_CONSTRUCTION,
+  ...FILLER,
+];
 
 /** Recording which release carried a change is the whole point of these files. */
 const VERSION_EXEMPT = /(?:CHANGELOG\.md$|^\.changeset\/)/;
@@ -191,19 +197,17 @@ function* proseLines(text) {
   }
 }
 
+/** A version is always written as `0.1.0-rc.0`, and `proseOnly` strips code spans. */
+const READS_RAW_LINE = "a prerelease literal";
+
 /** The first pattern a line trips, or null. One report per line keeps the output readable. */
 function firstOffence(line, rel) {
   const text = proseOnly(line);
   const exemptVersions = VERSION_EXEMPT.test(rel);
   for (const [pattern, why] of ALL_PATTERNS) {
-    if (exemptVersions && why.startsWith("a prerelease literal")) continue;
-    // A version is written as `0.1.0-rc.0`, and `proseOnly` strips code spans — so the version
-    // pattern has to read the raw line or it can never match the only form it is looking for.
-    const target = why.startsWith("a prerelease literal") ? line : text;
-    const hit = pattern.exec(target);
-    if (hit) return { why, quote: hit[0].trim() };
-    continue;
-    const match = pattern.exec(text);
+    const readsRawLine = why.startsWith(READS_RAW_LINE);
+    if (exemptVersions && readsRawLine) continue;
+    const match = pattern.exec(readsRawLine ? line : text);
     if (match) return { why, quote: match[0].trim() };
   }
   return null;
