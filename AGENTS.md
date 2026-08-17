@@ -94,7 +94,8 @@ read prose check every document; the ones that read code check everything under
 | `knip` | no unused files, exports, or dependencies |
 | `dependency-cruiser` | package boundaries — `core` stays portable |
 | `type-coverage` | ≥99% typed |
-| `publint` · `attw` | the published package resolves correctly |
+| `publint` · `attw` | the published package resolves correctly — `attw` runs the `esm-only` profile, because these packages are ESM-only by choice |
+| `check-tarball.mjs` | no `catalog:`, `workspace:` or `link:` specifier survives into a packed manifest |
 | `check-docs.mjs` | links and anchors resolve; every document is in the index |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
@@ -105,6 +106,10 @@ read prose check every document; the ones that read code check everything under
 one job runs the documentation, prose, and accessibility gates against a bare checkout, and a
 second installs the workspace to run lint, typecheck, tests, build, boundaries, duplication,
 and dead-code detection.
+
+`pnpm publishable` is the release subset — build, then the three gates that read the artifact a
+consumer would install rather than the source. Run it before publishing anything; `verify`
+includes it.
 
 **The gates cannot catch everything.** A function that formats a date inline is one
 declaration, eight lines, complexity 1 — every gate passes and it is still wrong. That

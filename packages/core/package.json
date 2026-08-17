@@ -1,6 +1,22 @@
 {
   "name": "@nubbin/core",
-  "version": "0.0.0",
+  "version": "0.1.0-rc.0",
+  "description": "The Nubbin contract: define blocks, split catalog from registry, and compile a page document into an immutable artifact.",
+  "keywords": [
+    "nubbin",
+    "page-builder",
+    "cms",
+    "standard-schema",
+    "content"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/effekt/nubbin.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://effekt.github.io/nubbin/",
+  "bugs": "https://github.com/effekt/nubbin/issues",
   "type": "module",
   "sideEffects": false,
   "exports": {
@@ -12,6 +28,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
