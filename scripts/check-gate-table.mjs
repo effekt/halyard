@@ -58,22 +58,41 @@ function captures(text, pattern) {
   return [...text.matchAll(pattern)].map((match) => match[1]);
 }
 
-/** Every `scripts/*.mjs` and every script name `verify` reaches, at any depth. */
+/** Every name a command invokes, whether or not a script of that name exists. */
+function invokedNames(cmd) {
+  return [...captures(cmd, PNPM_CALL), ...captures(cmd, DIRECT_BINARY)];
+}
+
+/**
+ * Records one command's script files and the names it invokes, and returns the script bodies
+ * it newly reaches. Split out because the nesting, not the logic, is what carries the
+ * complexity — the whole walk in one function scores past the cap.
+ */
+function stepOnce(cmd, scripts, files, names) {
+  for (const file of captures(cmd, SCRIPT_FILE)) files.add(file);
+  const reached = [];
+  for (const name of invokedNames(cmd)) {
+    if (names.has(name)) continue;
+    names.add(name);
+    if (scripts[name]) reached.push(scripts[name]);
+  }
+  return reached;
+}
+
+/**
+ * Every `scripts/*.mjs` and every script name `verify` reaches, at any depth.
+ *
+ * A queue rather than recursion, and no depth guard: `names` already admits each script once,
+ * which is what bounds the walk.
+ */
 function reachableFromVerify(scripts) {
   const files = new Set();
   const names = new Set();
-  const walk = (cmd, depth) => {
-    if (depth > 8 || !cmd) return;
-    for (const file of captures(cmd, SCRIPT_FILE)) files.add(file);
-    for (const binary of captures(cmd, DIRECT_BINARY)) names.add(binary);
-    for (const name of captures(cmd, PNPM_CALL)) {
-      if (names.has(name) && !scripts[name]) continue;
-      const unseen = !names.has(name);
-      names.add(name);
-      if (unseen && scripts[name]) walk(scripts[name], depth + 1);
-    }
-  };
-  walk(scripts.verify, 0);
+  const pending = [scripts.verify];
+  while (pending.length > 0) {
+    const cmd = pending.pop();
+    if (cmd) pending.push(...stepOnce(cmd, scripts, files, names));
+  }
   return { files, names };
 }
 
