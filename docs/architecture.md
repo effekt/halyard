@@ -44,7 +44,7 @@ caching tier to survive the round trip.
                   route pointer            one atomic record per route
                        │
                        ▼
-                  <Renderer artifact blocks={only what this page uses} />
+                  <Renderer artifact registry />   loads only the blocks it names
 ```
 
 **Catalog and registry are separate.** The catalog is serializable data — schemas, hints,
