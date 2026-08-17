@@ -48,35 +48,50 @@ const TOOL_ROWS = new Map([
   ["attw", "attw"],
 ]);
 
+const SCRIPT_FILE = /scripts\/([A-Za-z0-9._-]+\.mjs)/g;
+const PNPM_CALL = /pnpm (?:run )?([A-Za-z0-9:_-]+)/g;
+/** A binary invoked directly, as `pnpm exec biome` or at the head of a chained command. */
+const DIRECT_BINARY = /(?:^|&&|\|\|)\s*(?:pnpm exec )?([a-z-]+)/g;
+
+/** The capture group of every match, which is all any of the three patterns above needs. */
+function captures(text, pattern) {
+  return [...text.matchAll(pattern)].map((match) => match[1]);
+}
+
 /** Every `scripts/*.mjs` and every script name `verify` reaches, at any depth. */
 function reachableFromVerify(scripts) {
   const files = new Set();
   const names = new Set();
-  const walk = (cmd, depth = 0) => {
+  const walk = (cmd, depth) => {
     if (depth > 8 || !cmd) return;
-    for (const match of cmd.matchAll(/scripts\/([A-Za-z0-9._-]+\.mjs)/g)) files.add(match[1]);
-    for (const match of cmd.matchAll(/pnpm (?:run )?([A-Za-z0-9:_-]+)/g)) {
-      const name = match[1];
-      if (names.has(name)) continue;
+    for (const file of captures(cmd, SCRIPT_FILE)) files.add(file);
+    for (const binary of captures(cmd, DIRECT_BINARY)) names.add(binary);
+    for (const name of captures(cmd, PNPM_CALL)) {
+      if (names.has(name) && !scripts[name]) continue;
+      const unseen = !names.has(name);
       names.add(name);
-      if (scripts[name]) walk(scripts[name], depth + 1);
+      if (unseen && scripts[name]) walk(scripts[name], depth + 1);
     }
-    for (const match of cmd.matchAll(/(?:^|&&|\|\|)\s*(?:pnpm exec )?([a-z-]+)/g))
-      names.add(match[1]);
   };
-  walk(scripts.verify);
+  walk(scripts.verify, 0);
   return { files, names };
+}
+
+/** The first cell of a markdown table row, or null where the line is not one. */
+function gateCell(line) {
+  if (!line.startsWith("|") || line.includes("---")) return null;
+  return line.split("|")[1] ?? "";
 }
 
 /** The gate column of every table row in AGENTS.md, as script filenames and tool names. */
 function namedGates(agents) {
   const gates = new Set();
   for (const line of agents.split("\n")) {
-    if (!line.startsWith("|") || line.includes("---")) continue;
-    const cell = line.split("|")[1] ?? "";
-    for (const match of cell.matchAll(/`([^`]+)`/g)) {
-      const token = match[1].trim();
-      if (token.endsWith(".mjs") || TOOL_ROWS.has(token)) gates.add(token);
+    const cell = gateCell(line);
+    if (cell === null) continue;
+    for (const token of captures(cell, /`([^`]+)`/g)) {
+      const name = token.trim();
+      if (name.endsWith(".mjs") || TOOL_ROWS.has(name)) gates.add(name);
     }
   }
   return gates;
