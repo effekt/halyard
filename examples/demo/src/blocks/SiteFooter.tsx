@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { siteFooterSchema } from "./SiteFooter.schema";
 import { TONE_SURFACE } from "./tone.constants";
 
-type SiteFooterProps = z.infer<typeof siteFooterSchema>;
+type SiteFooterProps = InferProps<typeof siteFooterSchema>;
 
 const TONE_STYLES = {
   light: { section: TONE_SURFACE.light, muted: "text-marine/60" },

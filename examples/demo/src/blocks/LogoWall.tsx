@@ -1,8 +1,8 @@
-import type { z } from "zod";
+import type { InferProps } from "@nubbin/core";
 import type { logoWallSchema } from "./LogoWall.schema";
 import { TONE_SURFACE } from "./tone.constants";
 
-type LogoWallProps = z.infer<typeof logoWallSchema>;
+type LogoWallProps = InferProps<typeof logoWallSchema>;
 
 const TONE_STYLES = {
   light: { section: TONE_SURFACE.light, heading: "text-marine/60" },
