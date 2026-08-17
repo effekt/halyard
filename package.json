@@ -53,7 +53,8 @@
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm docs && pnpm prose && pnpm a11y && pnpm vendor-refs && pnpm pinned-deps && pnpm skills-lock && pnpm junk-filenames && pnpm rule-files && pnpm schema-depth && pnpm single-export && pnpm dupes && pnpm knip && pnpm boundaries && pnpm type-coverage && pnpm publishable",
     "map": "repomix --style json --output .repomix/codebase.json",
     "map:docs": "node scripts/docs-catalog.mjs --json > .repomix/docs.json",
-    "release": "pnpm publishable && changeset publish",
+    "release-tag": "node scripts/check-release-tag.mjs --check",
+    "release": "pnpm publishable && pnpm release-tag && changeset publish",
     "release:rc": "pnpm publishable && pnpm --filter \"./packages/*\" publish --tag rc --no-git-checks",
     "changeset": "changeset",
     "prepare": "lefthook install || true"

@@ -99,13 +99,19 @@ read prose check every document; the ones that read code check everything under
 | `check-docs.mjs` | links and anchors resolve; every document is in the index |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
-| `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree in both directions |
+| `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree by name and by content hash |
+| `check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
 | `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; `onClick` on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 
-`pnpm verify` runs every gate above and needs a full install. CI splits the same set in two:
-one job runs the documentation, prose, and accessibility gates against a bare checkout, and a
-second installs the workspace to run lint, typecheck, tests, build, boundaries, duplication,
-and dead-code detection.
+`pnpm verify` runs every gate above and needs a full install. CI runs the same set, split in
+two: one job runs the documentation, prose, accessibility and pinning gates against a bare
+checkout, and a second installs the workspace to run lint, typecheck, tests, build, boundaries,
+duplication, dead code, type coverage, the publishable gates, and the skills lockfile.
+
+One exception, and it is deliberate: `check-stale-docs.mjs` is **advisory**. It flags a
+document that trails something it links to, which is worth re-reading and not worth failing a
+build over, so CI runs it with `continue-on-error` and it is the one entry here that cannot
+block.
 
 `pnpm publishable` is the release subset — build, then the three gates that read the artifact a
 consumer would install rather than the source. Run it before publishing anything; `verify`

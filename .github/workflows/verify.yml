@@ -105,3 +105,17 @@ jobs:
 
       - name: Dead code
         run: pnpm knip
+
+      - name: Type coverage
+        run: pnpm type-coverage
+
+      # The three gates that read the artifact a consumer would install, rather than the
+      # source. They ran in `pnpm verify` and in no automated job, so nothing on a pull
+      # request exercised them.
+      - name: Publishable
+        run: pnpm publishable
+
+      # Passes on a clean checkout, where no skills are installed. It is here to catch a
+      # commit that edits the lockfile into disagreeing with itself.
+      - name: Skills lockfile
+        run: pnpm skills-lock
