@@ -36,7 +36,7 @@ defaults on the block would make the studio load a component to learn a default,
 coupling [the catalog/registry split](../../docs/decisions.md#catalog-and-registry-are-separate)
 exists to prevent.
 
-`defaults` must pass the schema's own `validate()`. **Gate:** none — not enforced in `defineBlock`'s type, so caught only at review.
+`defaults` must pass the schema's own `validate()`. **Gate:** `defineCatalog()`, which runs `assertValidDefaults` and throws naming the failing paths. Registration refuses them, because defaults that fail their own schema produce a block that is invalid the instant it is placed. The type does not express it — `defineBlock` cannot, since `defaults` is not on the block.
 
 ### Props name intent, not style
 
@@ -81,7 +81,7 @@ slots: { items: {} }
 slots: { items: { allow: ["Testimonial"], min: 1, max: 6 } }
 ```
 
-An unconstrained slot means the studio can't grey out invalid drop targets, and the compiler can't reject a bad composition. **Gate:** intended to be `createRegistry()`, resolving `allow` against registered names — not built yet, so a typo in `allow` is currently silent.
+An unconstrained slot means the studio can't grey out invalid drop targets, and the compiler can't reject a bad composition. **Gate:** `compile()` rejects a child the list forbids. The list itself is unchecked, so a name matching no registered block silently rejects everything instead — [#97](https://github.com/effekt/nubbin/issues/97).
 
 ### Rich text needs an explicitly marked type
 
