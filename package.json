@@ -51,7 +51,7 @@
     "peer-deps": "node scripts/check-peer-deps.mjs --check",
     "skills-lock": "node scripts/check-skills-lock.mjs --check",
     "publint": "pnpm --filter \"./packages/*\" exec publint",
-    "attw": "attw --pack packages/core --profile esm-only",
+    "attw": "pnpm --filter \"./packages/*\" exec attw --pack . --profile esm-only",
     "tarball": "node scripts/check-tarball.mjs --check",
     "package-metadata": "node scripts/check-package-metadata.mjs --check",
     "installable": "node scripts/check-installable.mjs --check",
