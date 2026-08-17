@@ -103,6 +103,15 @@ Published artifacts are canonical for the palette, the wireframes and the layout
 `.claude/rules/planning.md` lists them. Restating a hex value or a region name creates a second
 copy that drifts, and the copy is always the one missing the reasoning. Link it.
 
+## A plan handed to you may be wrong
+
+Where you are given a plan rather than a ticket, treat it exactly as you treat a ticket: read it
+against the code before writing anything, and report what does not hold. It was written by
+someone who is no longer looking at it, and possibly by an agent that decided rather than
+checked.
+
+Contradicting the plan is the job, not a failure to follow it.
+
 ## Your report must carry the variances
 
 The pull request and your final report both state, explicitly:
