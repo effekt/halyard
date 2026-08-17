@@ -1,6 +1,6 @@
 {
   "name": "@nubbin/next",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0-rc.3",
   "description": "The Next.js binding for Nubbin: resolve a published artifact for a route, prebuild the ones that exist, and publish or unpublish a single route.",
   "keywords": [
     "nubbin",
