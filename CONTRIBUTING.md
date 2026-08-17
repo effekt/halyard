@@ -66,8 +66,11 @@ leaves no trace of the old name.
 ## Commits
 
 [Conventional Commits](https://www.conventionalcommits.org/), checked by commitlint on every
-PR. Scope is one of `docs`, `repo`, `deps`, `core`, `examples` — the list `commitlint.config.js`
-enforces, which grows as packages land.
+PR. `commitlint.config.mjs` holds the scopes it accepts; that list grows as packages land.
+
+**The subject must start lowercase.** `subject-case` rejects sentence, start, pascal and upper
+case, so a subject opening with a type name or an acronym fails — `feat(core): InferProps…` and
+`fix(repo): CI installed…` were both rejected. Rephrase so the first word is ordinary prose.
 
 ## Code
 
