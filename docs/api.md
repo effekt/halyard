@@ -66,9 +66,14 @@ discover what fields exist and what type each is, and Standard Schema will not t
 
 ```ts
 interface SchemaAdapter {
-  describe(schema: StandardSchemaV1): FieldNode[];   // path, kind, optional, enum members
+  describe(schema: unknown): FieldNode[];   // path, kind, optional, enum members
 }
 ```
+
+`unknown` rather than a schema type, because `CatalogEntry.schema` is `unknown` and the
+capability the adapter actually needs — the Standard JSON Schema converter, spec 1.1 — is
+narrower than `StandardSchemaV1`. A stricter parameter would promise a guarantee the type
+cannot give, and the runtime check would still be required.
 
 **There is one door.** The adapter reads a schema through the Standard JSON Schema converter
 the schema itself exposes — `schema["~standard"].jsonSchema.input(options)`, specified by
@@ -93,8 +98,9 @@ exists, so there is nothing to silently degrade to.
 zod is the reference implementation; any validator exposing the converter works unchanged.
 
 A parallel `ui` structure risks silent drift: a key that no longer refers to a real property.
-Every path is resolved against the schema at `createRegistry()`, so an unresolvable key fails
-registration — see below.
+Every path is resolved against the schema at `defineCatalog()`, so an unresolvable key fails
+registration — see below. It has to be the catalog rather than the registry: hints live in the
+catalog entry, and `createRegistry()` takes blocks and never sees them.
 
 A CI check covers what path resolution cannot: every block has a resolvable control for every prop, so
 a schema change cannot leave a field un-editable.
@@ -152,7 +158,7 @@ ui: {
 ```
 
 Compile-time safety is therefore **not** claimed — every path is resolved against the schema
-at `createRegistry()`, and one that does not resolve fails registration. Resolution order for
+at `defineCatalog()`, and one that does not resolve fails registration. Resolution order for
 a field: explicit `ui.fields[path].control` → registered control for a named format →
 structural default from the schema node's type.
 
@@ -169,7 +175,7 @@ ui: { fields: { bullets: { rowLabel: "heading", min: 1, max: 4 } } }
 Rejected: block-level `data: "static" | "request"` — all-or-nothing, so a hero with a
 static headline and a live price could not be expressed without forking the block. `data` is
 a field hint instead, same mechanism as `label` or `control`, resolved by path and validated
-at `createRegistry()`. See
+at `defineCatalog()`. See
 [Data lifecycle is per field](architecture.md#data-lifecycle-is-per-field) for the three
 states.
 
@@ -289,8 +295,9 @@ it, so only the fraction of a design system meant to be author-placeable is expo
 ## Registry and compile
 
 ```ts
-// Compile reads the catalog — schemas and hints. It needs no components.
-const artifact = await compile(documentVersion, catalog);
+// Compile reads the catalog for schemas and hints, and the registry for structure. Neither
+// carries a component, so compile needs none.
+const artifact = compile(documentVersion, catalog, registry, route);
 // throws CompileError { issues: [{ nodeId, path, code, message }] }
 ```
 
@@ -325,7 +332,7 @@ in the studio.
 1. **Custom editors as second-class.** Answered by the open control registry.
 2. **Per-keystroke re-render on a large tree.** The inspector edits one node by `id`, never
    the whole document.
-3. **Hint drift.** Answered by path resolution at `createRegistry()` plus the CI
+3. **Hint drift.** Answered by path resolution at `defineCatalog()` plus the CI
    completeness check.
 4. **Auto-generation degrading at depth.** JSON Forms and react-jsonschema-form both handle
    scalars and one level of nesting well, then degrade — hence explicit `rowLabel`, `groups`,

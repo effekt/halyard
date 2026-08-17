@@ -119,7 +119,7 @@ an already-validated artifact.
 
 **Trigger:** publish, unpublish, rollback, or (see below) schedule.
 
-**Steps:** `compile(documentVersion, catalog)` → on success, `store.write(artifact)` →
+**Steps:** `compile(documentVersion, catalog, registry, route)` → on success, `store.write(artifact)` →
 `store.publish(route, hash)` swaps that route's pointer, one atomic record
 ([domain model](domain-model.md#compile-and-publish)). Unpublish is
 `store.unpublish(route)` — the artifact is untouched, so republish and rollback are both

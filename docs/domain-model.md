@@ -369,7 +369,7 @@ interface ArtifactStore {
 ```mermaid
 flowchart LR
     A["Edit in studio"] --> B["DocumentVersion<br/>immutable, appended"]
-    B --> C{"compile(version, catalog)"}
+    B --> C{"compile(version, catalog, registry, route)"}
     C -->|"invalid"| D["Reject with node paths<br/>author sees it immediately"]
     C -->|"valid"| E["Resolve refs<br/>freeze static props"]
     E --> F["Artifact<br/>content-addressed hash"]
