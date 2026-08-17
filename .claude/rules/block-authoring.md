@@ -121,7 +121,7 @@ export function Hero() { return (<><h1>{title}</h1><p>{body}</p></>); }
 export function Hero() { return (<section><h1>{title}</h1><p>{body}</p></section>); }
 ```
 
-The studio learns about the page only through the DOM, so block roots carry `data-nubbin-node`. A Fragment with multiple roots leaves nothing to attach it to, and no gate can see the difference. **Gate:** none.
+The studio learns about the page only through the DOM, so block roots carry `data-nubbin-node`. A Fragment leaves nothing to attach it to. **Gate:** `invokeBlock` throws at render, naming the block and the node — static analysis was rejected as redundant, see [the decision](../../docs/decisions.md#one-root-element-per-block-enforced-at-render). A block must also be a server component: a client reference cannot be invoked, so it cannot render at all.
 
 ## Checklist
 
