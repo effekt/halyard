@@ -116,14 +116,20 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 | `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree by name and by content hash |
 | `check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
+| `check-gate-table.mjs` | every gate this table names is reachable from `pnpm verify`, or is a documented exception |
 | `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; `onClick` on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 
-`pnpm verify` runs every gate above and needs a full install. CI runs the same set, split in
+`pnpm verify` runs every gate above except the two named below, and needs a full install.
+`check-gate-table.mjs` is what keeps that sentence true: it fails when a row here resolves to
+nothing `verify` reaches. CI runs the same set, split in
 two: one job runs the documentation, prose, accessibility and pinning gates against a bare
 checkout, and a second installs the workspace to run lint, typecheck, tests, build, boundaries,
 duplication, dead code, type coverage, the publishable gates, and the skills lockfile.
 
-One exception, and it is deliberate: `check-stale-docs.mjs` is **advisory**. It flags a
+Two exceptions, both deliberate and both recorded in `check-gate-table.mjs` so they cannot pass
+as oversights. `check-release-tag.mjs` runs only on the release path — every local version is a
+prerelease, so including it in `verify` would fail every run on every machine. And
+`check-stale-docs.mjs` is **advisory**. It flags a
 document that trails something it links to, which is worth re-reading and not worth failing a
 build over, so CI runs it with `continue-on-error` and it is the one entry here that cannot
 block.
