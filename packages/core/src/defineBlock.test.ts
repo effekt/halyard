@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
+import type { InferProps } from "./block.types";
 import { defineBlock } from "./defineBlock";
 
 const heroSchema = z.object({ title: z.string() });
@@ -34,6 +35,27 @@ describe("defineBlock", () => {
         slots: { items: { min: 3, max: 2 } },
       }),
     ).toThrow(/items/);
+  });
+
+  // Type-level. It compiles or it does not — the assertions below are the test, and a
+  // `@ts-expect-error` that stops being an error fails the typecheck rather than passing
+  // quietly.
+  test("InferProps derives props from the schema, with no second definition", () => {
+    const shaped = z.object({
+      title: z.string(),
+      subtitle: z.string().optional(),
+      count: z.number(),
+    });
+    type Props = InferProps<typeof shaped>;
+
+    const complete: Props = { title: "t", subtitle: "s", count: 1 };
+    const withoutOptional: Props = { title: "t", count: 1 };
+    // @ts-expect-error `title` is required by the schema
+    const missingRequired: Props = { count: 1 };
+    // @ts-expect-error `count` is a number in the schema
+    const wrongType: Props = { title: "t", count: "1" };
+
+    expect([complete, withoutOptional, missingRequired, wrongType]).toHaveLength(4);
   });
 
   test("rejects a migrate key that is not a version this block can migrate to", () => {

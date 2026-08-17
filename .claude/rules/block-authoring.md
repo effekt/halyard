@@ -13,7 +13,7 @@ status: stable
 
 ### Schema first, props inferred — never declared twice
 
-Write `xSchema`, then `type XProps = InferProps<typeof xSchema>`. Full rule and example in [`block-schemas.md`](block-schemas.md#props-are-inferred-never-declared) — a hand-written `interface` beside the schema is invariant 1, and everything below depends on getting this right first.
+Write `xSchema`, then `type XProps = InferProps<typeof xSchema>`, importing `InferProps` from `@nubbin/core`. Full rule and example in [`block-schemas.md`](block-schemas.md#props-are-inferred-never-declared) — a hand-written `interface` beside the schema is invariant 1, and everything below depends on getting this right first.
 
 ### `defaults` is required, and belongs in the catalog entry
 

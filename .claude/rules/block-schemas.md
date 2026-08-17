@@ -54,6 +54,8 @@ testable on its own, and changeable in one place.
 export interface HeroProps { title: string; tone: "light" | "dark" }
 export const heroSchema = z.object({ title: z.string(), tone: z.enum(["light", "dark"]) });
 
+import type { InferProps } from "@nubbin/core";
+
 // CORRECT — one definition, the type follows from it
 export type HeroProps = InferProps<typeof heroSchema>;
 ```
@@ -92,7 +94,7 @@ A schema file over 60 lines is inlining sub-schemas that want names.
 
 - [ ] No `object(…)` appears inside another `object(…)`
 - [ ] Every nested shape is an imported, named schema
-- [ ] Props are `InferProps<typeof xSchema>`, never a hand-written interface
+- [ ] Props are `InferProps<typeof xSchema>` from `@nubbin/core`, never a hand-written interface
 - [ ] Searched existing schemas before defining a new shape
 - [ ] Styling/layout-driving fields are enums, not open strings
 - [ ] The schema has a test asserting both an accepted and a rejected value

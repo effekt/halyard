@@ -6,7 +6,7 @@ export type {
   Manifest,
   RoutePointer,
 } from "./artifact.types";
-export type { Block, SlotConstraint, UnknownProps } from "./block.types";
+export type { Block, InferProps, SlotConstraint, UnknownProps } from "./block.types";
 export { CompileError } from "./CompileError";
 export type {
   BlockDocs,
