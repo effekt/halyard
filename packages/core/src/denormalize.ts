@@ -16,7 +16,7 @@ export function denormalize(version: DocumentVersion, resolve: ResolveNode): Art
     const id = pending.pop();
     if (id === undefined) break;
     const node = version.elements[id];
-    if (node === undefined || built.has(id)) continue;
+    if (built.has(id) || node === undefined) continue;
     built.set(id, artifactNodeOf(node, resolve));
     for (const edge of slotEdges(node)) {
       pending.push(edge.childId);
