@@ -11,8 +11,8 @@ import { walkUnionBranches } from "./walkUnionBranches";
  */
 export function walkJsonSchema(node: JsonSchemaNode, basePath: string): FieldNode[] {
   const kind = kindOfJsonSchema(node);
-  if (kind === "object") return walkObjectProperties(node, basePath);
-  if (kind === "array") return walkArrayItems(node, basePath);
-  if (kind === "union") return walkUnionBranches(node, basePath);
+  if (kind === "object") return walkObjectProperties(node, basePath, walkJsonSchema);
+  if (kind === "array") return walkArrayItems(node, basePath, walkJsonSchema);
+  if (kind === "union") return walkUnionBranches(node, basePath, walkJsonSchema);
   return [];
 }

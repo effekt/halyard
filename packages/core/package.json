@@ -21,6 +21,7 @@
     "@standard-schema/spec": "catalog:"
   },
   "devDependencies": {
+    "tsup": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "zod": "catalog:"
