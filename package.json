@@ -56,7 +56,7 @@
     "package-metadata": "node scripts/check-package-metadata.mjs --check",
     "installable": "node scripts/check-installable.mjs --check",
     "publishable": "pnpm core-version && turbo run build && pnpm publint && pnpm attw && pnpm tarball && pnpm package-metadata && pnpm installable",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm run docs && pnpm file-refs && pnpm prose && pnpm a11y && pnpm vendor-refs && pnpm pinned-deps && pnpm peer-deps && pnpm core-version && pnpm skills-lock && pnpm plugins-lock && pnpm junk-filenames && pnpm rule-files && pnpm script-invocations && pnpm schema-depth && pnpm single-export && pnpm dupes && pnpm knip && pnpm boundaries && pnpm type-coverage && pnpm publishable",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm run docs && pnpm file-refs && pnpm prose && pnpm a11y && pnpm vendor-refs && pnpm pinned-deps && pnpm peer-deps && pnpm core-version && pnpm skills-lock && pnpm plugins-lock && pnpm junk-filenames && pnpm rule-files && pnpm gate-table && pnpm script-invocations && pnpm schema-depth && pnpm single-export && pnpm dupes && pnpm knip && pnpm boundaries && pnpm type-coverage && pnpm publishable",
     "map": "repomix --style json --output .repomix/codebase.json",
     "map:docs": "node scripts/docs-catalog.mjs --json > .repomix/docs.json",
     "release-tag": "node scripts/check-release-tag.mjs --check",
@@ -65,7 +65,8 @@
     "changeset": "changeset",
     "prepare": "lefthook install || true",
     "plugins-lock": "node scripts/check-plugins-lock.mjs",
-    "script-invocations": "node scripts/check-script-invocations.mjs"
+    "script-invocations": "node scripts/check-script-invocations.mjs",
+    "gate-table": "node scripts/check-gate-table.mjs"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",
