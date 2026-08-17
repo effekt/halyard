@@ -33,12 +33,14 @@ catalog:
   react-dom: 19.2.7
   next: 16.2.7
 
-  # Schema — zod is what blocks are written against; Standard Schema joins the catalog
-  # with the package that imports it, pinned to whatever is current then.
+  # Schema — Standard Schema is the interface, zod is what we test against
+  "@standard-schema/spec": 1.1.0
   zod: 4.4.3
 
   # Toolchain
   typescript: 6.0.3
+  vitest: 4.1.10
+  tsup: 8.5.1
   "@biomejs/biome": 2.5.8
   turbo: 2.10.9
 

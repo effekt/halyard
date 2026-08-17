@@ -56,10 +56,13 @@ module.exports = {
       comment:
         "Import a package through its published entrypoint only. A deep path becomes a " +
         "de-facto API that semver cannot protect.",
-      from: { path: "^(packages|apps)/" },
+      // The capture group is what makes this a *cross*-package rule. Without it the pattern
+      // matches a package importing its own modules, which every package with more than one
+      // file does — so the rule failed everything the moment real code existed.
+      from: { path: "^(?:packages|apps)/([^/]+)/" },
       to: {
         path: "^packages/[^/]+/src/",
-        pathNot: "^packages/[^/]+/src/index\\.tsx?$",
+        pathNot: ["^packages/[^/]+/src/index\\.tsx?$", "^packages/$1/"],
       },
     },
     {
