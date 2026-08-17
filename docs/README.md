@@ -44,12 +44,12 @@ these documents and published by CI — see
 
 ## Keeping them honest
 
-Documentation rots differently from code: a stale sentence compiles, passes every lint, and
-still reads as authoritative. Gates run against these files on every commit — links and
-anchors resolve, no claim rests on a corpus a reader cannot open, nothing reaches back for a
-name that no longer exists, no reference identifies a codebase that is not this one, and a
-document that trails something it links to gets flagged for re-reading.
+Prose has no compiler, so a wrong sentence here is caught by nothing but a reader who acts on
+it and comes unstuck. Gates run against these files on every commit — links and anchors
+resolve, no claim rests on a corpus a reader cannot open, nothing reaches back for a name that
+no longer exists, no reference identifies a codebase that is not this one, one claim lives in
+one document, and a document that trails something it links to gets flagged for re-reading.
 
-[`.claude/rules/documentation.md`](../.claude/rules/documentation.md) covers what the gates
-cannot: which document holds what, and the rule that a decision changes prose in *every*
-document describing it, in the same commit.
+[`.claude/rules/documentation.md`](../.claude/rules/documentation.md) holds why that is worth
+the machinery, and what the gates cannot reach: which document holds what, and the rule that a
+decision changes prose in *every* document describing it, in the same commit.
