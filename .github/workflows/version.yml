@@ -7,6 +7,13 @@ on:
   push:
     branches: [main]
 
+# `pnpm install` runs `prepare`, which installs lefthook's git hooks. In CI that means any
+# step doing a `git push` runs the whole pre-push suite — the checks this workflow already
+# runs as explicit jobs, against a checkout that may not have built yet. Hooks are for a
+# developer's machine.
+env:
+  LEFTHOOK: "0"
+
 concurrency:
   group: version
   cancel-in-progress: false

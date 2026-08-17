@@ -86,6 +86,13 @@ into versions a registry understands; npm cannot do that itself.
 The last step reads the registry back, because the publish output is not evidence that a
 package landed — an `npm view` of the version a consumer would resolve is.
 
+### Git hooks do not run in CI
+
+Every workflow sets `LEFTHOOK: "0"`. `pnpm install` runs `prepare`, which installs lefthook's
+hooks, so without it a workflow step that pushes runs the whole pre-push suite — against a
+checkout that may not have built yet, duplicating checks the workflow already runs as jobs.
+The `version` workflow found this the first time it tried to push a Version Packages branch.
+
 ### Before the first CI release
 
 Two things live outside this repository and are set up once:
