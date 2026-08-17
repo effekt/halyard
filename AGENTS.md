@@ -104,7 +104,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `knip` | no unused files, exports, or dependencies |
 | `dependency-cruiser` | package boundaries — `core` stays portable, `react` stays free of node builtins and Next, `store-fs` stays free of frameworks |
 | `type-coverage` | ≥99% typed |
-| `publint` · `attw` | the published package resolves correctly — `attw` runs the `esm-only` profile, because these packages are ESM-only by choice |
+| `publint` · `attw` | every publishable package resolves correctly — both iterate `packages/*`, and `attw` runs the `esm-only` profile because these packages are ESM-only by choice |
 | `check-tarball.mjs` | no `catalog:`, `workspace:` or `link:` specifier survives into a packed manifest |
 | `check-installable.mjs` | every package installs from its own tarball into an empty project and imports |
 | `check-peer-deps.mjs` | no package declares a peer dependency nothing in it imports |
