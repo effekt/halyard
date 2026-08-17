@@ -52,8 +52,10 @@ Marketplaces: `claude-plugins-official` (`anthropics/claude-plugins-official`) a
 
 ## Skills
 
-Seven, from `vercel-labs/agent-skills`, recorded in `skills-lock.json` with a content hash each.
-Reinstall them with the skills CLI; the lockfile is what makes the set reproducible.
+9, from `vercel-labs/agent-skills`, recorded in `skills-lock.json` with a content hash each.
+Reinstall them with the skills CLI; the lockfile is what makes the set reproducible, and it
+is the authority on which ones — a count written in prose drifts the moment somebody installs
+another.
 
 **They install into the project directory** — content under `.agents/skills/`, symlinked from
 `.claude/skills/`. Both are ignored. Check `git status` after installing one: three hundred
