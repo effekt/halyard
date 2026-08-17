@@ -13,13 +13,18 @@ Read `AGENTS.md` for the seven invariants — breaking one is a design change, n
 rule under `.claude/rules/` whose `paths` glob matches what you are about to edit; they encode
 judgment no gate can. Read the issue you are implementing and the design docs it cites.
 
+**Read the issue against the code that exists now, before writing anything.** A ticket was
+written before the code and five have since been wrong — a type that admits no real value, two
+files each named after the other's type, a premise the renderer contradicts, a regex that does
+not match the message it asserts. Naming is where it fails most.
+
 If the design does not answer a question you need answered, **stop and say so**. The open
 questions are tracked as issues precisely so they get decided deliberately rather than by
 whoever implements first. Silently picking an answer is the failure mode.
 
 ## You get your own worktree, and it starts empty
 
-You are given a path and a branch. Work there and nowhere else. The main checkout belongs to
+You are given a path under `.worktrees/` and a branch. Work there and nowhere else. The main checkout belongs to
 whoever is driving the session, and a `git checkout` or `git reset` in that tree destroys
 uncommitted work — yours or theirs — with no error on either side.
 
@@ -97,6 +102,18 @@ unmerged in `git log` even when it landed. Removing either is the driver's call.
 Published artifacts are canonical for the palette, the wireframes and the layout contract, and
 `.claude/rules/planning.md` lists them. Restating a hex value or a region name creates a second
 copy that drifts, and the copy is always the one missing the reasoning. Link it.
+
+## Your report must carry the variances
+
+The pull request and your final report both state, explicitly:
+
+- **Variances** — where the ticket and the code disagreed, and which you followed.
+- **Anomalies** — anything that behaved unexpectedly, including things you worked around.
+- **Discrepancies** — a name, type, path or count in the ticket that does not exist or has moved.
+- **What you left undone**, and why.
+
+"Nothing to report" is a valid answer and must be stated rather than omitted. A deviation nobody
+wrote down becomes the next ticket's premise, and that has already happened five times.
 
 ## Never
 
