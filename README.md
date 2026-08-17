@@ -7,8 +7,13 @@ non-developers compose pages from them. The composition is data, the contract is
 publishing compiles a document into an immutable artifact — no bundler, no deploy, no second
 source of truth.
 
-The contract is built and the rest is sequenced — see [Status](#status). A block declares its
-schema once, and each field decides for itself whether it freezes at publish or stays live:
+```bash
+npm install @nubbin/core@rc
+```
+
+Four packages are published as release candidates; the studio is not built yet — see
+[Status](#status). A block declares its schema once, and each field decides for itself whether
+it freezes at publish or stays live:
 
 ```ts
 // hero.schema.ts — sub-schemas are extracted so blocks can share them
@@ -66,13 +71,21 @@ a cache to survive a round trip on every render.
 
 ## Status
 
-**The contract is built; everything around it is not.**
+**Three packages are complete, one is partial, and the studio is not started.**
 
-`@nubbin/core` implements `defineBlock`, `defineCatalog`, `createRegistry`, `compile` and
-`checkRollback`, tested against real schemas rather than mocks. A build gate fails on any
-`node:` or framework import inside it, so the claim that it runs anywhere is checked rather
-than asserted. The React binding, the Next adapter, the storage adapter and the studio are
-sequenced and unwritten.
+| Package | State |
+|---|---|
+| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback` |
+| `@nubbin/store-fs` | A pointer-per-route store, passing a contract suite a third-party adapter can run |
+| `@nubbin/next` | Read and write paths — resolve, prebuild params, publish and unpublish |
+| `@nubbin/react` | Hole resolution only. The renderer waits on [#88](https://github.com/effekt/nubbin/issues/88) |
+
+All four are on npm at `0.1.0-rc.0` under the `rc` tag. Everything is tested against real
+schemas rather than mocks, and a build gate fails on any `node:` or framework import inside
+`core`, so the claim that it runs anywhere is checked rather than asserted.
+
+The studio is unbuilt, and the milestone that could invalidate the whole approach has not
+run.
 
 The architecture came first, with the decisions and the alternatives each one beat. It has
 been through one adversarial review, which falsified the live postMessage preview and the
