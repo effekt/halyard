@@ -9,5 +9,6 @@ test("the published surface exports exactly the documented API", async () => {
     "createRegistry",
     "defineBlock",
     "defineCatalog",
+    "parseMatchKind",
   ]);
 });

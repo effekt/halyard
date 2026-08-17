@@ -92,7 +92,13 @@ module.exports = {
       comment:
         "An orphan module is unreachable — either wire it up or delete it. Error, not warn: " +
         "depcruise exits 0 on warnings, so `pnpm boundaries` reported orphans and passed.",
-      from: { orphan: true, pathNot: "\\.d\\.ts$|\\.config\\.[cm]?[jt]s$" },
+      // `src/testing/` is exempt because test files are excluded from the graph below, so a
+      // module imported only by a test has no visible incoming edge and reads as an orphan.
+      // Nothing is lost: knip follows test files and still fails on an unused file there.
+      from: {
+        orphan: true,
+        pathNot: "\\.d\\.ts$|\\.config\\.[cm]?[jt]s$|(^|/)src/testing/",
+      },
       to: {},
     },
   ],

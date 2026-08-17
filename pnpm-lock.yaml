@@ -196,6 +196,10 @@ importers:
         version: 4.1.10(@types/node@25.9.2)(vite@8.2.1(@types/node@25.9.2)(esbuild@0.27.7)(jiti@2.7.0)(yaml@2.9.0))
 
   packages/store-fs:
+    dependencies:
+      '@nubbin/core':
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
