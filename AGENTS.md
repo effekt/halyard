@@ -19,10 +19,10 @@ package lands in the right place rather than wherever it was convenient. See `##
 
 ```
 packages/
-  core/       @effekt/nubbin             — defineBlock, registry, compile, artifact types
-  react/      @effekt/nubbin-react       — render an artifact tree with a block registry
-  next/       @effekt/nubbin-next        — catch-all route, preview route, draft resolution
-  store-fs/   @effekt/nubbin-store-fs    — reference storage adapter
+  core/       nubbin             — defineBlock, registry, compile, artifact types
+  react/      nubbin-react       — render an artifact tree with a block registry
+  next/       nubbin-next        — catch-all route, preview route, draft resolution
+  store-fs/   nubbin-store-fs    — reference storage adapter
 apps/
   studio/     the editor — pulled and run alongside your app, never a hosted service
 ```
@@ -131,7 +131,7 @@ term list lives in `scripts/vendor-terms.txt`, which is gitignored — a publish
 defeats its own purpose. See `vendor-terms.example.txt` for the format.
 
 **Examples must be self-contained.** Scaffold a clean Next.js application with the
-`@effekt/create-starter` generator for fixtures, demos, and manual testing. Never point them
+the create-starter generator for fixtures, demos, and manual testing. Never point them
 at a codebase that is not part of this repository.
 
 ## Testing

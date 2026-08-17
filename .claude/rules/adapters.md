@@ -68,7 +68,7 @@ describe.each([["memory", createMemoryStore], ["fs", createFsStore]])(
 
 ### Adapters don't import each other
 
-Full rule in [`package-boundaries.md`](package-boundaries.md#framework-packages-depend-on-core-never-on-each-other), enforced by `dependency-cruiser` (`pnpm boundaries`). Composition happens through an interface `core` declares — an auth adapter that needs storage takes an `ArtifactStore` as a constructor argument, it never imports `@effekt/nubbin-store-fs` directly.
+Full rule in [`package-boundaries.md`](package-boundaries.md#framework-packages-depend-on-core-never-on-each-other), enforced by `dependency-cruiser` (`pnpm boundaries`). Composition happens through an interface `core` declares — an auth adapter that needs storage takes an `ArtifactStore` as a constructor argument, it never imports `nubbin-store-fs` directly.
 
 ### Publish rejects a missing hash
 
