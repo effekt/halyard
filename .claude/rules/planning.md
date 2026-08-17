@@ -113,6 +113,23 @@ Report variances as findings, not as a shrug: what the ticket says, what is true
 and whether the ticket needs editing. A deviation nobody wrote down becomes the next ticket's
 premise.
 
+### The agent that plans is not the agent that implements
+
+An agent that designs a solution arrives at implementation already committed to it. It reads the
+ticket for confirmation rather than for contradiction, which is exactly the reading that let five
+tickets ship wrong. Split the two:
+
+```
+agent A   audits the ticket, reads the code, writes the plan, decides nothing
+agent B   receives the plan, implements it, and reports where the plan was wrong
+```
+
+B is told the plan may be wrong and that saying so is the job. A plan nobody contradicted is a
+plan nobody checked. This is the audit step one level up: that one protects an implementer from a
+stale ticket, this from a fresh one written by someone who has stopped being able to see it.
+
+**Gate:** none — no check can tell one agent's output from another's. It is a dispatch habit.
+
 ### A plan that produced no measurement produced nothing
 
 Where a phase exists to answer a question rather than to ship a feature, the plan says what gets recorded and what result would stop the work. "It felt hard" cannot end a project. A number, or a named structure that turned out to be unrepresentable, can.
@@ -126,3 +143,4 @@ Where a phase exists to answer a question rather than to ship a feature, the pla
 - [ ] A phase that exists to answer a question says what would stop the work
 - [ ] The ticket was read against the current code, and every variance is reported
 - [ ] A file-editing agent was given a worktree under `.worktrees/`, not a shared tree
+- [ ] Where a plan was written by an agent, a different agent implemented it
