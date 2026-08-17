@@ -173,11 +173,20 @@ A `PostToolUse` hook reviews added comments on every edit.
 
 ## Status
 
-**`@nubbin/core` exists.** `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, and
-`checkRollback` are implemented, tested against real zod schemas, and exported as the
-package's whole runtime surface; dependency-cruiser fails the build on any `node:` or
-framework import inside it. The React binding (`packages/react`), the Next adapter
-(`packages/next`), the store adapter (`packages/store-fs`), and the studio remain unbuilt.
+**Four packages exist and are published at `0.1.0-rc.0` under the `rc` tag.**
+
+| Package | Surface |
+|---|---|
+| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback`, `parseMatchKind` |
+| `@nubbin/store-fs` | `createFsArtifactStore`, proven against the shared `ArtifactStore` contract |
+| `@nubbin/next` | `resolveArtifact`, `staticRouteParams`, `holeFetchOptions`, `routeFromSlug`, `publishRoute`, `unpublishRoute` |
+| `@nubbin/react` | `resolveNodeHoles`, `setAtPath`, and the hole types |
+
+Everything is tested against real zod schemas; dependency-cruiser fails the build on any
+`node:` or framework import inside `core`, and on a framework import inside either adapter.
+
+**Unbuilt:** the renderer and registry in `packages/react`, which wait on
+[#88](https://github.com/effekt/nubbin/issues/88), and the studio.
 
 Read `docs/architecture.md` for the model and `docs/decisions.md` for what has already been
 settled and why, and treat the open issues labelled `design-question` as the list of things
