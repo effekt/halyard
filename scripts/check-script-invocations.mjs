@@ -20,8 +20,8 @@
 //
 // Usage: node scripts/check-script-invocations.mjs [--check]
 
-import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -31,11 +31,53 @@ const WORKFLOWS = join(ROOT, ".github", "workflows");
 // Commands pnpm resolves itself, including the npm ones it proxies. A name here is never
 // reached by shorthand, whatever the package declares.
 const PNPM_COMMANDS = new Set([
-  "add", "audit", "bin", "config", "create", "dedupe", "deploy", "dlx", "doc", "docs", "env",
-  "exec", "fetch", "i", "import", "init", "install", "install-test", "it", "licenses", "link",
-  "list", "ln", "ls", "outdated", "pack", "patch", "patch-commit", "patch-remove", "prune",
-  "publish", "rebuild", "remove", "rm", "root", "run", "server", "setup", "start", "store",
-  "test", "un", "uninstall", "unlink", "update", "up", "why",
+  "add",
+  "audit",
+  "bin",
+  "config",
+  "create",
+  "dedupe",
+  "deploy",
+  "dlx",
+  "doc",
+  "docs",
+  "env",
+  "exec",
+  "fetch",
+  "i",
+  "import",
+  "init",
+  "install",
+  "install-test",
+  "it",
+  "licenses",
+  "link",
+  "list",
+  "ln",
+  "ls",
+  "outdated",
+  "pack",
+  "patch",
+  "patch-commit",
+  "patch-remove",
+  "prune",
+  "publish",
+  "rebuild",
+  "remove",
+  "rm",
+  "root",
+  "run",
+  "server",
+  "setup",
+  "start",
+  "store",
+  "test",
+  "un",
+  "uninstall",
+  "unlink",
+  "update",
+  "up",
+  "why",
 ]);
 
 // `test` and `start` are the deliberate exceptions: pnpm's subcommand *is* "run the script of
@@ -46,7 +88,10 @@ async function workflowSources() {
   if (!existsSync(WORKFLOWS)) return [];
   const names = (await readdir(WORKFLOWS)).filter((n) => /\.ya?ml$/.test(n));
   return Promise.all(
-    names.map(async (n) => ({ file: `.github/workflows/${n}`, text: await readFile(join(WORKFLOWS, n), "utf8") })),
+    names.map(async (n) => ({
+      file: `.github/workflows/${n}`,
+      text: await readFile(join(WORKFLOWS, n), "utf8"),
+    })),
   );
 }
 
@@ -58,7 +103,10 @@ const shadowed = Object.keys(scripts).filter(
 );
 
 const sources = [
-  ...Object.entries(scripts).map(([name, body]) => ({ file: `package.json → scripts.${name}`, text: body })),
+  ...Object.entries(scripts).map(([name, body]) => ({
+    file: `package.json → scripts.${name}`,
+    text: body,
+  })),
   ...(await workflowSources()),
 ];
 
@@ -70,7 +118,9 @@ for (const name of shadowed) {
     for (const match of text.matchAll(bare)) {
       const before = text.slice(Math.max(0, match.index - 12), match.index);
       if (/run\s+$/.test(before)) continue;
-      problems.push(`${file}\n        "${match[0]}" — the package manager claims \`${name}\`, so the script never runs`);
+      problems.push(
+        `${file}\n        "${match[0]}" — the package manager claims \`${name}\`, so the script never runs`,
+      );
     }
   }
 }
