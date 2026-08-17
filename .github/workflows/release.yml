@@ -1,0 +1,103 @@
+name: release
+
+# Manual, not tag-triggered. A tag push publishes whatever the tag points at; a dispatch makes
+# someone choose the dist-tag deliberately, and the `npm` environment is where a required
+# reviewer or a branch rule hangs if this ever needs one.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "npm dist-tag to publish under"
+        required: true
+        default: rc
+        type: choice
+        options: [rc, latest]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      # OIDC. Trusted publishing exchanges this for a short-lived credential scoped to this
+      # workflow, so no npm token is stored anywhere. Also what --provenance signs with.
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      # Trusted publishing needs npm >= 11.5.1. The pinned Node ships one, but checking here
+      # makes a silent downgrade fail with the reason rather than at the publish step.
+      - name: Check npm supports trusted publishing
+        run: |
+          set -euo pipefail
+          npm --version
+          node -e '
+            const [major, minor, patch] = process.argv[1].split(".").map(Number);
+            const ok = major > 11 || (major === 11 && (minor > 5 || (minor === 5 && patch >= 1)));
+            if (!ok) throw new Error(`npm ${process.argv[1]} is below the 11.5.1 trusted publishing floor`);
+          ' "$(npm --version)"
+
+      - name: Refuse a stable release of a prerelease version
+        if: inputs.tag == 'latest'
+        run: pnpm release-tag
+
+      - name: Build and prove the artifacts are publishable
+        run: pnpm publishable
+
+      # pnpm packs, npm publishes. pnpm is what rewrites `catalog:` and `workspace:*` into real
+      # versions — npm does not, and a manifest carrying either fails on install for every
+      # consumer. npm is what performs the OIDC exchange and signs provenance. Neither tool
+      # does both, so each does the half it owns.
+      #
+      # An already-published version is skipped rather than failing, so a re-run after a
+      # partial failure finishes the job instead of stopping on the packages that succeeded.
+      - name: Publish
+        run: |
+          set -euo pipefail
+          published=0
+          skipped=0
+          for dir in packages/*/; do
+            [ -f "$dir/package.json" ] || continue
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "skip    $name@$version — already on the registry"
+              skipped=$((skipped + 1))
+              continue
+            fi
+            out=$(mktemp -d)
+            pnpm -C "$dir" pack --pack-destination "$out" >/dev/null
+            npm publish "$out"/*.tgz --tag "$TAG" --provenance
+            echo "publish $name@$version → $TAG"
+            published=$((published + 1))
+          done
+          echo "published=$published skipped=$skipped" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          TAG: ${{ inputs.tag }}
+
+      # The publish output is not the evidence — the registry is. This reads back what a
+      # consumer would resolve, and fails the run if a package did not land.
+      - name: Verify against the registry
+        run: |
+          set -euo pipefail
+          for dir in packages/*/; do
+            [ -f "$dir/package.json" ] || continue
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            npm view "$name@$version" version
+            echo "$name dist-tags: $(npm view "$name" dist-tags --json | tr -d '\n')" >> "$GITHUB_STEP_SUMMARY"
+          done
