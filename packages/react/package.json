@@ -23,9 +23,6 @@
   "dependencies": {
     "@nubbin/core": "workspace:*"
   },
-  "peerDependencies": {
-    "react": ">=19.0.0"
-  },
   "devDependencies": {
     "tsup": "catalog:",
     "typescript": "catalog:",
