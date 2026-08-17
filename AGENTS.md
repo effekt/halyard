@@ -166,12 +166,14 @@ already covering the ground and checks the draft carries cause, reason, decision
 close condition:
 
 ```bash
-pnpm run issue-scaffold --template > /tmp/draft.md
+pnpm run --silent issue-scaffold --template > /tmp/draft.md
 pnpm run issue-scaffold --body-file /tmp/draft.md --title "…" --label enhancement
 ```
 
-Every run passes an explicit `--limit`, prints the size of the set it read before anything
-else, refuses a list that came back exactly full, and corroborates that size against a second
+`--silent` on the first line keeps pnpm's own banner out of the redirected draft. Redirected
+without it, the banner opens the draft and puts an absolute path from a contributor's machine
+into a public issue body. Every run passes an explicit
+`--limit`, prints the size of the set it read before anything else, refuses a list that came back exactly full, and corroborates that size against a second
 count taken through the search index. `gh issue list` returns its first page with no warning
 when no limit is passed, and a duplicate search over the newest half of a tracker reports
 "nothing similar" in the same words a complete one uses. `--open` creates the issue, once the

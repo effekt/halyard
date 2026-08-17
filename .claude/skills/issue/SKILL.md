@@ -15,8 +15,11 @@ reading the tracker in a browser is the check that produced the duplicates.
 ## 1. Draft to a scratchpad, never to the repository
 
 ```bash
-pnpm run issue-scaffold --template > /tmp/draft.md
+pnpm run --silent issue-scaffold --template > /tmp/draft.md
 ```
+
+`--silent` keeps pnpm's banner out of the draft. Redirected without it, the banner opens the
+file and carries an absolute path from your machine into a public issue body.
 
 A plan-shaped file committed under `docs/` has no close condition either. See
 [`planning.md`](../../rules/planning.md).

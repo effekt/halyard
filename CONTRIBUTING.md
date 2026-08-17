@@ -61,7 +61,7 @@ reasoning already on the page, not just the conclusion.
 From a clone, the scaffold drafts and checks one:
 
 ```bash
-pnpm run issue-scaffold --template > /tmp/draft.md
+pnpm run --silent issue-scaffold --template > /tmp/draft.md
 pnpm run issue-scaffold --body-file /tmp/draft.md --title "…"
 ```
 
