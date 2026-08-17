@@ -16,10 +16,12 @@ Do not open a public issue for a suspected vulnerability.
 
 ## Scope
 
-There is no implementation yet — see [`README.md`](README.md#status). Until a package ships,
-the realistic surface is the tooling in `scripts/` and the workflows in
-`.github/workflows/`: anything that could run untrusted code, exfiltrate data, or bypass a
-gate it exists to enforce. Report that here rather than filing it as a bug.
+Four packages ship — see [`README.md`](README.md#status). The surface is those packages, the
+tooling in `scripts/`, and the workflows in `.github/workflows/`: anything that could run
+untrusted code, exfiltrate data, or bypass a gate it exists to enforce. An artifact carrying
+anything executable is in scope by definition, because
+[artifacts contain data, never code](docs/decisions.md#artifacts-contain-data-never-code) is a
+security constraint rather than a preference. Report that here rather than filing it as a bug.
 
 ## What to expect
 

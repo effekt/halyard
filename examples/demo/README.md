@@ -6,10 +6,9 @@ status: reference
 
 # Demo marketing site
 
-Nubbin has no implementation yet — `packages/core` is empty. This app exists so there is
-something real for `defineBlock` to register once it does: a marketing site for a fictional
-scheduling product, Tidewell, built from eight components whose shape already matches what a
-block requires.
+A marketing site for a fictional scheduling product, Tidewell, built from eight components
+whose shape already matches what a block requires. It exists so `defineBlock` has something
+real to register — ordinary application code first, a Nubbin fixture second.
 
 It does not import Nubbin. Nothing here is a stub or a placeholder for a future API — every
 component, schema, and page is ordinary Next.js code that stands on its own.
