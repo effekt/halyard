@@ -63,6 +63,27 @@ A pattern that catches one spelling and misses another is the failure above wear
 - A bare specifier and a resolved `node_modules` path are different strings. Where the dependency is not installed in the package under test, only the bare form ever occurs — which is exactly the import the rule exists to reject.
 - Node builtins are not matched by a `^node:` path pattern at all. dependency-cruiser classifies them by `dependencyTypes: ["core"]`, and a path pattern silently matches nothing.
 
+### The check needs checking before its output means anything
+
+A verification that measures the wrong thing, or the right thing at the wrong moment, produces a
+confident and specific number. It reads exactly like a correct one. Five in a single session:
+
+| The check said | What was actually wrong |
+|---|---|
+| `intermediate frames: 15 … FAIL` | the pass condition treated a spring overshoot — 65px settling to 62px — as a failure |
+| `ghost misaligned by 153px` | measured after scrolling past, once the exit observer had cleared the state. A CSS fix was written for an invented cause and changed nothing |
+| `PASS — it loops` | asserted the timer had fired, not that anything moved. It fired, the rewind took two frames against an 850ms transition, and nothing visibly replayed |
+| `collapses observed: 0` | required two adjacent samples to straddle the drop, which an 850ms transition sampled every 120ms never does |
+| four gates unreachable | the walker's `[a-z-]+` cannot match `a11y`, so it could not see a gate that was wired in fine |
+
+Three rules follow. **Assert on the thing, not a proxy** — a class landing, an exit code, a timer
+firing are all one remove from what you care about. **Fix the measurement before writing a second
+fix**: a change that alters nothing is evidence about the instrument, not the subject. And
+**assert on shape rather than an exact figure** where physics is involved, so an overshoot or an
+easing curve does not read as a defect.
+
+**Gate:** none — a check that lies passes every gate. This is the judgment `verify` cannot hold.
+
 ### Say what the gate cannot catch
 
 Claiming full coverage is how the next gap is missed. `check-installable.mjs` records that it cannot see an unused peer dependency, because the package imports perfectly well — it just drags something along. That sentence is why `check-peer-deps.mjs` exists.
@@ -82,3 +103,4 @@ A gate reading `src/` cannot see what packing, publishing and installing do. Fou
 - [ ] Every form the violation can take was seeded, not just the first one
 - [ ] What the gate cannot catch is written down
 - [ ] Any exclusion names the reason, and the threshold did not move to accommodate it
+- [ ] The check asserts on the thing itself, at a defined moment, not on a proxy for it
