@@ -55,18 +55,19 @@ const SCAN = ["docs", ".claude/rules", "AGENTS.md"];
 const MIN_RUN_WORDS = 12;
 
 /**
- * The duplicated words the corpus already contains, and therefore the whole budget.
+ * The duplicated words the corpus is allowed to hold: none. Each of the ten claims that used to
+ * live in two documents now has one home and a link from every other mention (#186), so zero is
+ * a measurement rather than an aspiration.
  *
  * A word count rather than a percentage, because a share moves when the corpus grows: adding an
- * unrelated document lowers the denominator and silently widens the allowance. The count is the
- * figure measured at `MIN_RUN_WORDS`, not rounded up — headroom is a waiver, and
- * `.claude/rules/gates.md` rejects raising a threshold to accommodate a hit. Every clone is at
- * least `MIN_RUN_WORDS` on each side, so a new one adds at least 24 words and cannot arrive
- * without failing this.
+ * unrelated document lowers the denominator and silently widens the allowance. Any figure above
+ * the measured one is headroom, and headroom is a waiver — `.claude/rules/gates.md` rejects
+ * raising a threshold to accommodate a hit, so a clone that appears gets a home and a link.
  *
- * It is a budget, not an endorsement: every clone inside it is printed on every run.
+ * Every clone is at least `MIN_RUN_WORDS` on each side, so a copied claim arrives 24 words at a
+ * time and cannot arrive quietly.
  */
-const MAX_DUPLICATED_WORDS = 272;
+const MAX_DUPLICATED_WORDS = 0;
 
 const FENCE = /^\s*(?:```|~~~)/;
 const TABLE_ROW = /^\s*\|/;

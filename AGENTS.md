@@ -33,27 +33,30 @@ replace any of them. Bring your own storage, your own auth, your own framework b
 
 These are the reason the project exists. Breaking one is a design change, not a fix.
 
+Each is stated here and argued where it links to. Repeating the argument here would put it in
+two places, and the copy is the one that goes stale while the original is corrected.
+
 1. **Schema lives in code.** Block props are inferred *from* the schema, never declared
    alongside it. There is no second definition of a block anywhere, and no schema in a
-   database.
+   database — [Schema in code, content in a
+   database](docs/decisions.md#schema-in-code-content-in-a-database).
 2. **`core` has no runtime dependencies beyond Standard Schema.** No React, no Next, no
-   `node:*`. It runs in a browser, a worker, and a build step unchanged.
+   `node:*`. It runs in a browser, a worker, and a build step unchanged —
+   [`core` depends on nothing](docs/decisions.md#core-depends-on-nothing).
 3. **Published artifacts are immutable and content-addressed.** Publishing writes a new
-   artifact and moves a pointer. Nothing mutates in place, so nothing needs invalidating at
-   the store.
-4. **Compiling is not building.** Compile validates and serializes a document — it never
-   invokes a bundler. Publishing and previewing must never require a deploy.
+   artifact and moves a pointer — [Artifacts are immutable and
+   content-addressed](docs/decisions.md#artifacts-are-immutable-and-content-addressed).
+4. **Compiling is not building.** Compile validates and serializes a document; publishing and
+   previewing never require a deploy — [Why compile at
+   publish](docs/architecture.md#why-compile-at-publish).
 5. **IO happens in adapters.** `core` computes; adapters read and write.
-6. **Artifacts contain data, never code.** No author-supplied JavaScript, no CSS blocks, no
-   expression language, no binding strings evaluated at render — see
-   [Artifacts contain data, never code](docs/decisions.md#artifacts-contain-data-never-code)
-   for the security and performance argument.
-7. **Nubbin knows nothing about the consumer's stack.** It constructs schemas and renders.
-   It ships no CSS, holds no opinion about styling, and makes no assumption about their
-   dependencies. A value like `space: "lg"` is passed through as data; what it *means* is
-   resolved by the consumer's component, in the consumer's codebase, with the consumer's
-   design system. Any feature that requires knowing what is on the other side is the wrong
-   feature.
+6. **Artifacts contain data, never code.** What that excludes, and why it is a security and
+   performance boundary rather than a preference, is
+   [Artifacts contain data, never code](docs/decisions.md#artifacts-contain-data-never-code).
+7. **Nubbin knows nothing about the consumer's stack.** It constructs schemas and renders,
+   ships no CSS, and holds no opinion about styling — [Layout is ordinary props, and Nubbin
+   ships no CSS](docs/decisions.md#layout-is-ordinary-props-and-nubbin-ships-no-css). Any
+   feature that requires knowing what is on the other side is the wrong feature.
 
 ## Commands
 
@@ -160,10 +163,12 @@ source, and it is on this list because the release workflow runs `publishable` a
 without it a version bump can publish artifacts that misreport what produced them, and no gate
 on the release path notices.
 
-**The gates cannot catch everything.** A function that formats a date inline is one
-declaration, eight lines, complexity 1 — every gate passes and it is still wrong. That
-judgment lives in `.claude/rules/single-concern.md`, and a `PostToolUse` hook reviews for
-it. Rules auto-load by path; read the matching one before writing code.
+**The gates cannot catch everything.** A logger that formats its own timestamp —
+[the canonical violation](.claude/rules/single-concern.md#the-canonical-violation) — sits
+under every threshold in the table and is still wrong, because a threshold bounds how large a
+violation can grow and says nothing about whether one is there. That judgment lives in
+`.claude/rules/single-concern.md`, and a `PostToolUse` hook reviews for it. Rules auto-load by
+path; read the matching one before writing code.
 
 ## Opening an issue
 

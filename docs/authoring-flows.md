@@ -76,10 +76,9 @@ declaration greys out an invalid drop target during drag
 commits — `elements[id].props` is written to the draft store — and the canvas, the real app
 in an iframe, reloads from the server against that draft.
 
-**System:** the canvas does not live-patch as you type. A true server component's code never
-reaches the browser, so client-side prop patching can't work uniformly — the canvas updates
-on commit, not continuously. Preview and canvas are the same server-render path, given a
-draft version instead of an artifact.
+**System:** the canvas updates on commit, not as you type — a server component's code never
+ships to the browser, so there is nothing on the client to patch
+([one render path, one preview mode](studio.md#one-render-path-one-preview-mode)).
 
 **Failure modes:**
 
@@ -94,8 +93,8 @@ draft version instead of an artifact.
 
 **Trigger:** "Preview," or a viewport change.
 
-**Steps:** draft preview is a real server render — the studio's preview route is the same
-code path as the public catch-all, given a draft document ([`studio.md`](studio.md)).
+**Steps:** draft preview is a real server render through the route the public site already
+uses ([one render path, one preview mode](studio.md#one-render-path-one-preview-mode)).
 Viewport switching reads named presets from the consumer's own breakpoints plus free-drag,
 which works because the canvas is a true iframe (CSS2 §9.1.1, "at most one viewport per
 canvas"). Preview at content extremes generates values from the schema's own bounds

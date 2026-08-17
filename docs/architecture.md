@@ -53,10 +53,11 @@ a block name to a lazy import, so the bundler emits a chunk per block and a rout
 only the blocks its artifact names. Adding the hundredth block costs pages that do not use
 it nothing.
 
-**Documents are flat while authoring, nested once published.** A draft is
-`{ root, elements }` keyed by id, because every editor operation is by id. Compile
-denormalizes it into a self-contained tree — which is also where reference integrity,
-cycle-freedom, and reachability get checked.
+**Documents are flat while authoring, nested once published.** The draft shape is
+`{ root, elements }` keyed by id, so an editor addresses a node directly instead of walking a
+tree to find it. Compile denormalizes that into the self-contained tree the renderer reads,
+checking reference integrity, cycle-freedom and reachability on the way —
+[the decision](decisions.md#flat-while-authoring-nested-once-published) has the rest.
 
 ## Why compile at publish
 
@@ -101,10 +102,10 @@ A recommendation for the Next binding, not a requirement of `core`.
 
 ## Artifacts contain data, never code
 
-No author-supplied JavaScript, no CSS blocks, no expression language, no binding strings
-evaluated at render — every value is inert data validated against a schema. See
-[Artifacts contain data, never code](decisions.md#artifacts-contain-data-never-code) for the
-security and performance argument.
+Every value an artifact holds is inert data validated against a schema, so the render path
+evaluates nothing it loads and a published page cannot execute anything its author typed. The
+list of what that rules out, and the security and performance case for it, is
+[the decision](decisions.md#artifacts-contain-data-never-code).
 
 ## Preview
 

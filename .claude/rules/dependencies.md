@@ -19,8 +19,11 @@ into thousands of installs before anyone read the diff.
 Two independent controls, because either alone leaks:
 
 - **Pinning** removes the automatic upgrade. A new version arrives only in a commit.
-- **`minimumReleaseAge: 4320`** (3 days) covers the window where a pin is *deliberately*
-  bumped to something freshly published and freshly hijacked.
+- **`minimumReleaseAge: 4320`** (3 days) holds a *deliberate* bump back until a hijacked
+  release has had time to be found and pulled, which pinning alone does nothing about.
+
+Three days, not a week: a hijack is caught in hours, and a longer cooldown stalls every
+ordinary bump — [the decision](../../docs/decisions.md#pinned-versions-and-a-3-day-cooldown).
 
 ## Rules
 
