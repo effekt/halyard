@@ -77,10 +77,32 @@ for (const file of targets) {
   if (!/^##\s+Checklist\s*$/m.test(text)) {
     problems.push(`${rel}  no "## Checklist" section — a rule ends with what to verify`);
   }
+
+  // A rule that never says whether it is enforced reads as enforced. Six files said nothing,
+  // and the reader cannot tell an ungated rule from a gated one without grepping `scripts/`.
+  // Saying `none` is a valid answer and the common one — the requirement is to say it.
+  if (!/\*\*Gate:\*\*/.test(text)) {
+    problems.push(
+      `${rel}  no "**Gate:**" declaration — say which script enforces this, or say none`,
+    );
+  }
 }
 
+// Ungated rules are the repository's largest source of silent drift: a rule declares `none`
+// when written, the system grows until the rule becomes load-bearing, and nothing re-reads the
+// declaration. `block-authoring.md` asserted no gate could detect a multi-root block; the
+// renderer later made that the difference between a working page and a silently unstamped one.
+// Printing the count keeps the debt visible rather than letting it sit inside prose.
+const ungated = (
+  await Promise.all(
+    targets.map(async (file) => (await readFile(file, "utf8")).match(/\*\*Gate:\*\* none/g) ?? []),
+  )
+).flat().length;
+
 if (problems.length === 0) {
-  console.log(`✅ Rule files well-formed — ${targets.length} checked.`);
+  console.log(
+    `✅ Rule files well-formed — ${targets.length} checked, ${ungated} rule(s) declare no gate.`,
+  );
   process.exit(0);
 }
 

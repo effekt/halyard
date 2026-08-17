@@ -86,6 +86,14 @@ None of these catch the example above. It is one declaration, zero private funct
 eight lines, complexity 1 — every gate passes. **This rule is the judgment the gates
 cannot encode**, which is why it is written down and why a `PostToolUse` hook reviews for it.
 
+## Gates
+
+`biome` caps complexity at 10, functions at 50 lines and files at 200, and
+`check-single-export.mjs` allows one unit per file. Those bound the size of a violation, never
+its existence: a function that formats a date inline is one declaration, eight lines and
+complexity 1. **Gate:** none for that — a `PostToolUse` reviewer reads for it on every edit,
+which is a judgment, not a check.
+
 ## Checklist
 
 - [ ] Every nameable step inside the function is its own exported unit

@@ -90,6 +90,14 @@ an open door that puts arbitrary values in published artifacts.
 
 A schema file over 60 lines is inlining sub-schemas that want names.
 
+## Gates
+
+`check-schema-depth.mjs` rejects a nested object schema, and `check-single-export.mjs` keeps one
+sub-schema per file. Neither can see openness: a `z.string()` where the values are a closed set
+typechecks and passes both. **Gate:** none for that — it is the review judgment this rule exists
+to carry, and [#9](https://github.com/effekt/nubbin/issues/9) asks whether a primitive would
+lower the pressure that produces it.
+
 ## Checklist
 
 - [ ] No `object(…)` appears inside another `object(…)`
