@@ -20,6 +20,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@nubbin/core": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "catalog:",
     "tsup": "catalog:",
