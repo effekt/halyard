@@ -1,5 +1,13 @@
 # @nubbin/next
 
+## 0.1.0-rc.4
+
+### Patch Changes
+
+- Updated dependencies [97144e9]
+- Updated dependencies [dd9c3b3]
+  - @nubbin/core@0.1.0-rc.4
+
 ## 0.1.0-rc.3
 
 ### Patch Changes
