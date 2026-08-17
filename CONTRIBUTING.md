@@ -56,6 +56,23 @@ already settled and why. If you think one was settled wrong, argue it — reopen
 is not a lesser contribution than proposing a new one, it just needs to engage with the
 reasoning already on the page, not just the conclusion.
 
+## Opening an issue
+
+From a clone, the scaffold drafts and checks one:
+
+```bash
+pnpm run issue-scaffold --template > /tmp/draft.md
+pnpm run issue-scaffold --body-file /tmp/draft.md --title "…"
+```
+
+It reads the open issues for ones already covering the ground, states how many it read, and
+refuses a draft missing cause, reason, decision, choice or a close condition. Nothing is
+created without `--open`, so running it costs a look at the tracker and nothing else.
+
+An issue opened from the web forms is welcome and held to the same content: the parts are what
+make it answerable, and the close condition is what lets it close. [`AGENTS.md`](AGENTS.md)
+covers both.
+
 ## Documentation changes
 
 Most contributions right now are documentation. Read

@@ -25,10 +25,11 @@ scripts/vendor-terms.txt
 # Skills the CLI installs into the project. The content is third-party and not ours to
 # redistribute, so it is ignored the way node_modules is — skills-lock.json is committed
 # instead, and records the source, path and content hash needed to reinstall the same set.
-# The decision skill is ours and stays tracked.
+# The skills written here are ours and stay tracked, one exception each.
 /.agents/
 /.claude/skills/*
 !/.claude/skills/decision/
+!/.claude/skills/issue/
 
 # Agent worktrees. Inside the repository so a stray `rm -rf /tmp` cannot take uncommitted
 # work with it, and ignored because a worktree is a checkout, not content.
