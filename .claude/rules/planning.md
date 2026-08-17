@@ -44,7 +44,7 @@ An issue saying "implement the schema adapter as designed" has moved the work ra
 | A plan, a task, an open question | A GitHub issue | It closes |
 | A settled decision and what it beat | `docs/decisions.md` | It is read while writing code |
 | A contract an implementer works against | `docs/` | It changes in the same commit as the code |
-| The long-form argument, including paths not taken | The design site | Useful once, rarely twice, and it costs context in a working tree |
+| The long-form argument, including paths not taken | `docs/`, published to the design site by CI | It is read once and rarely twice, so it stays out of the reading order — but a copy the repository cannot see is a copy that drifts |
 | A visual artifact — palette, wireframe, prototype | A published artifact | It is looked at, not read, and a repository renders it badly |
 
 ### Reference an artifact rather than restating it
