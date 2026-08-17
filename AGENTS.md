@@ -114,17 +114,28 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-file-refs.mjs` | a repository file named inside a code span exists, or is gitignored on purpose |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
+| `check-no-vendor-refs.mjs` | no employer, client, internal application or product name, and no absolute path from a contributor's machine |
+| `check-pinned-deps.mjs` | no range specifier — every dependency version is exact, so an upgrade arrives only in a commit someone wrote |
+| `check-script-invocations.mjs` | a script whose name the package manager also claims is invoked as `pnpm run <name>`, never bare |
 | `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree by name and by content hash |
+| `check-plugins-lock.mjs` | `plugins-lock.json` and the installed plugins agree as a set, by name — versions are recorded but not compared, because a marketplace that publishes none reports `unknown` |
 | `check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
-| `check-gate-table.mjs` | every gate this table names is reachable from `pnpm verify`, or is a documented exception |
+| `check-gate-table.mjs` | every gate this table names is reachable from `pnpm verify`, and every gate `verify` runs has a row here — each direction with documented exceptions |
 | `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; `onClick` on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 
 `pnpm verify` runs every gate above except the two named below, and needs a full install.
-`check-gate-table.mjs` is what keeps that sentence true: it fails when a row here resolves to
-nothing `verify` reaches. CI runs the same set, split in
-two: one job runs the documentation, prose, accessibility and pinning gates against a bare
-checkout, and a second installs the workspace to run lint, typecheck, tests, build, boundaries,
-duplication, dead code, type coverage, the publishable gates, and the skills lockfile.
+`check-gate-table.mjs` is what keeps that sentence true in both directions: it fails when a row
+here resolves to nothing `verify` reaches, and when `verify` runs a gate with no row here. CI
+runs the same set, split in two: one job runs the documentation, prose, accessibility and pinning
+gates against a bare checkout, and a second installs the workspace to run lint, typecheck, tests,
+build, boundaries, duplication, dead code, type coverage and the publishable gates.
+
+**The two lockfile gates run locally and not in CI**, because the thing they compare against is
+not in a checkout. `.agents/` and the plugin cache are ignored the way `node_modules` is, so on
+a runner `check-skills-lock.mjs` finds nothing installed and takes its "nothing to compare"
+path — it exited 0 on every CI run it was ever wired into, which is the same shape as the gates
+in [`gates.md`](.claude/rules/gates.md) that passed while checking nothing. They belong to the
+contributor's machine, where the comparison is real.
 
 Two exceptions, both deliberate and both recorded in `check-gate-table.mjs` so they cannot pass
 as oversights. `check-release-tag.mjs` runs only on the release path — every local version is a

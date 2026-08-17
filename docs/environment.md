@@ -56,7 +56,8 @@ is recorded rather than left to whoever is at the keyboard.
 `"unknown"` for anything installed from a marketplace that does not publish one, so a gate
 comparing versions would fail for a reason a contributor cannot act on; version and commit are
 recorded beside each entry as evidence, not as assertions. It skips where no manifest exists,
-so a fresh clone and CI both pass.
+so a fresh clone passes. **It runs locally and not in CI** — a runner has no plugins installed,
+so the only path it could take there is the one that checks nothing.
 
 A marketplace being present is not the same as a plugin being installed from it. Browsing a
 marketplace repository shows skills that will not load until the plugin carrying them is
@@ -72,8 +73,12 @@ updates.
 `check-skills-lock.mjs` fails a commit where the lockfile and the installed set disagree in
 either direction. Without it the lockfile is a claim about a machine no reader can see: an
 entry nobody installed sends a contributor after a skill the work never used, and an
-installed skill missing from the lockfile is a result nobody else can reproduce. The gate
-skips where no skills are installed, so a fresh clone and CI both pass.
+installed skill missing from the lockfile is a result nobody else can reproduce.
+
+Where no skills are installed — a fresh clone, and CI — the comparison against disk cannot run,
+so the gate checks the half that needs no disk instead: that the lockfile parses, and that every
+entry carries the fields a reinstall reads. Skipping outright is what it used to do, and a
+`skills-lock.json` replaced with `{ this is not valid json` exited 0 on every CI run.
 
 **They install into the project directory** — content under `.agents/skills/`, symlinked from
 `.claude/skills/`. Both are ignored. Check `git status` after installing one: three hundred

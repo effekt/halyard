@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
-// Fails when a gate named in AGENTS.md's table is not actually reachable from `pnpm verify`.
+// Keeps AGENTS.md's gate table and `pnpm verify` in agreement, in both directions.
 //
-// That table is what a contributor reads to learn what is enforced, so a row in it is a claim
-// about the build. The claim has been wrong three times:
+// That table is what a contributor reads to learn what is enforced, so it makes two claims:
+// every row runs, and every gate has a row. Both have been wrong.
 //
 //   - `publint` and `attw` were installed, documented as gates, and wired to nothing.
 //   - `attw` packed `packages/core` while the row implied the set `publint` covers.
 //   - `check-release-tag.mjs` sits in the table and runs only on the release path, which is
 //     correct, while the prose below promised `verify` runs every gate above.
+//   - four gates ran in `verify` with no row at all, so a contributor reading the table to
+//     learn what is enforced was told about none of them.
 //
-// The first is already in `.claude/rules/gates.md`. This stops the shape recurring: a row
-// resolves to something `verify` reaches, or to a named exception with a reason beside it.
+// The first is already in `.claude/rules/gates.md`. Checking one direction is what let the
+// fourth through: a row must resolve to something `verify` reaches, *and* a script `verify`
+// reaches must have a row — each with a named exception carrying a reason otherwise.
 //
 // Reachability is computed by walking `verify`'s command through the scripts it calls, so a
 // gate wired in at any depth counts and a gate wired in nowhere does not. It cannot tell you a
@@ -36,6 +39,13 @@ const EXCEPTIONS = new Map([
     "release path only; every local version is a prerelease, so it would fail every run",
   ],
 ]);
+
+/**
+ * Scripts `verify` runs that deliberately have no row. Empty, and that is the point: every
+ * script `verify` reaches is something a contributor should be able to read about in the table,
+ * so an addition here is a decision to hide one, and needs a reason beside it.
+ */
+const UNLISTED = new Map();
 
 /** Tool-shaped rows are named by binary rather than by file. */
 const TOOL_ROWS = new Map([
@@ -129,21 +139,31 @@ for (const gate of gates) {
   unreached.push(gate);
 }
 
+// The other direction: a gate `verify` runs with no row is enforced against contributors who
+// were never told it exists. Four were, which is why this half exists.
+const unlisted = [...files].filter((file) => !gates.has(file) && !UNLISTED.has(file));
+
 // An exception for something `verify` now reaches is stale bookkeeping, and the next reader
 // trusts it. Report it rather than letting the list rot.
 const staleExceptions = [...EXCEPTIONS.keys()].filter((gate) => files.has(gate));
 
-if (unreached.length === 0 && staleExceptions.length === 0) {
+if (unreached.length === 0 && unlisted.length === 0 && staleExceptions.length === 0) {
   console.log(
-    `✅ Gate table honest — ${gates.size} gate(s) named, ${gates.size - EXCEPTIONS.size} reached by verify, ${EXCEPTIONS.size} documented exception(s).`,
+    `✅ Gate table honest — ${gates.size} gate(s) named, ${gates.size - EXCEPTIONS.size} reached by verify, ${EXCEPTIONS.size} documented exception(s); all ${files.size} script(s) verify runs have a row.`,
   );
   process.exit(0);
 }
 
-console.log("\n❌ AGENTS.md names gates that `pnpm verify` does not run.\n");
+console.log("\n❌ AGENTS.md's gate table and `pnpm verify` disagree.\n");
 if (unreached.length > 0) {
-  for (const gate of unreached.sort()) console.log(`  ${gate}`);
+  console.log("  Named in the table, not run by verify:");
+  for (const gate of unreached.sort()) console.log(`        ${gate}`);
   console.log("        → wire it into `verify`, or add it to EXCEPTIONS here with a reason\n");
+}
+if (unlisted.length > 0) {
+  console.log("  Run by verify, absent from the table:");
+  for (const gate of unlisted.sort()) console.log(`        ${gate}`);
+  console.log("        → give it a row, or add it to UNLISTED here with a reason\n");
 }
 for (const gate of staleExceptions.sort()) {
   console.log(`  ${gate}  is listed as an exception but verify now reaches it`);

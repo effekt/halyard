@@ -3,6 +3,7 @@
   "marketplaces": {
     "accesslint": "accesslint/claude-marketplace",
     "bencium-marketplace": "bencium/bencium-marketplace",
+    "claude-code-plugins": "anthropics/claude-code",
     "claude-plugins-official": "anthropics/claude-plugins-official"
   },
   "plugins": {
@@ -22,6 +23,10 @@
       "version": "1.0.0",
       "commit": null
     },
+    "code-review@claude-code-plugins": {
+      "version": "1.0.0",
+      "commit": "ae58f7a0a23f0fddedd668de74622ff46646526b"
+    },
     "code-review@claude-plugins-official": {
       "version": "unknown",
       "commit": null
@@ -37,6 +42,10 @@
     "context7@claude-plugins-official": {
       "version": "unknown",
       "commit": null
+    },
+    "feature-dev@claude-code-plugins": {
+      "version": "1.0.0",
+      "commit": "ae58f7a0a23f0fddedd668de74622ff46646526b"
     },
     "feature-dev@claude-plugins-official": {
       "version": "unknown",
@@ -54,9 +63,17 @@
       "version": "unknown",
       "commit": null
     },
+    "plugin-dev@claude-code-plugins": {
+      "version": "0.1.0",
+      "commit": "ae58f7a0a23f0fddedd668de74622ff46646526b"
+    },
     "plugin-dev@claude-plugins-official": {
       "version": "unknown",
       "commit": null
+    },
+    "remember@claude-plugins-official": {
+      "version": "0.20.0",
+      "commit": "7a24ebbd84c12af230569975ebd18b87e84547b4"
     },
     "renaissance-architecture@bencium-marketplace": {
       "version": "1.0.0",
