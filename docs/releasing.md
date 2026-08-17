@@ -17,9 +17,12 @@ A change that should ship carries a changeset:
 pnpm changeset          # pick the packages and the bump, describe the change
 ```
 
-The `version` workflow turns accumulated changesets into a "Version Packages" pull request
-that bumps every manifest and writes the changelogs. Merging that pull request is what makes a
-version real. Nothing else edits a `version` field.
+The `version` workflow turns accumulated changesets into a `changeset-release/main` branch
+that bumps every manifest and writes the changelogs. Opening a pull request from that branch
+and merging it is what makes a version real. Nothing else edits a `version` field.
+
+Opening it is manual, for two reasons that happen to agree: GitHub Actions cannot create pull
+requests in this repository, and enabling that would also let any workflow *approve* one.
 
 The four packages are `fixed` in `.changeset/config.json`, so they move together — one version
 across the set, and a changeset naming any of them bumps all of them.
