@@ -2,6 +2,10 @@
 export default {
   extends: ["@commitlint/config-conventional"],
   rules: {
-    "scope-enum": [2, "always", ["docs", "repo", "deps", "examples", "core", "next", "store-fs"]],
+    "scope-enum": [
+      2,
+      "always",
+      ["docs", "repo", "deps", "examples", "core", "next", "react", "store-fs"],
+    ],
   },
 };
