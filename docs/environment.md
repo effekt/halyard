@@ -99,10 +99,14 @@ without them, and no reload command reaches them — restart to pick them up.
 ```bash
 nvm install && nvm use
 corepack enable pnpm && pnpm install
-claude plugin install accesslint@accesslint
-claude plugin install superpowers@claude-plugins-official
-claude plugin install playwright@claude-plugins-official
-# remaining plugins as listed above
+
+# every marketplace the lockfile names, then every plugin in it
+node -p 'Object.values(require("./plugins-lock.json").marketplaces).join("\n")' |
+  xargs -I{} claude plugin marketplace add {}
+node -p 'Object.keys(require("./plugins-lock.json").plugins).join("\n")' |
+  xargs -I{} claude plugin install {}
+
+pnpm plugins-lock             # confirms the record and your machine agree
 ```
 
 Then install the skills in `skills-lock.json` and restart the session so the hooks load.
