@@ -7,10 +7,14 @@
 // people to reference it — while the file is `commitlint.config.mjs`. A pointer to the wrong
 // filename is worse than the stale list it replaced, because it reads as authoritative.
 //
-// A span is treated as a repository reference only when its first path segment is something
-// that exists at the repository root. That is what separates `scripts/check-docs.mjs` from
+// A span is treated as a repository reference only when its first path segment exists at the
+// repository root or beside the document naming it, so `src/app/page.tsx` in a package README
+// anchors to that package. That is what separates `scripts/check-docs.mjs` from
 // `next/cache.js`, which is a module specifier resolved by Node rather than a path here.
 // Globs and templates are skipped: `packages/*/src` and `<Name>.block.ts` name a shape.
+//
+// Beyond it: a bare filename naming a file deeper in the same package, because its only
+// possible anchor is the existence test itself, and a gate anchored there can never fail.
 //
 // Usage: node scripts/check-file-refs.mjs [--check] [files...]
 
@@ -30,20 +34,52 @@ const NOT_A_PATH = /[*<>{}()\s,|]|^@|^node:|^https?:/;
 /** Root entries by stem, so `commitlint.config.js` can be recognised as meaning `.mjs`. */
 const ROOT_STEMS = new Set([...TOP_LEVEL].map((name) => name.replace(EXTENSION, "")));
 
+/** Entry names per directory, memoised so the gate reads each directory once, not per span. */
+const DIR_ENTRIES = new Map();
+function entriesOf(dir) {
+  let entries = DIR_ENTRIES.get(dir);
+  if (entries === undefined) {
+    try {
+      entries = new Set(readdirSync(dir));
+    } catch {
+      entries = new Set();
+    }
+    DIR_ENTRIES.set(dir, entries);
+  }
+  return entries;
+}
+
+const DIR_STEMS = new Map();
+function stemsOf(dir) {
+  let stems = DIR_STEMS.get(dir);
+  if (stems === undefined) {
+    stems = new Set([...entriesOf(dir)].map((name) => name.replace(EXTENSION, "")));
+    DIR_STEMS.set(dir, stems);
+  }
+  return stems;
+}
+
 /**
- * True when a span names a path in this repository rather than a module or a shape.
+ * The directories a span is anchored to — empty when it names a module or a shape rather
+ * than a path in this repository. Existence is later checked against exactly these, so a
+ * span anchored only beside its document still fails when the file exists only at the root:
+ * a coincidental hit elsewhere would pass a reference that is wrong where it stands.
  *
- * A span containing `/` qualifies when its first segment exists at the root — that is what
+ * A span containing `/` anchors where its first segment is an entry — that is what
  * separates `scripts/check-docs.mjs` from `next/cache.js`, a specifier Node resolves.
  *
- * A span without `/` qualifies when a root entry shares its stem, which catches the observed
- * failure: naming a real root file with the wrong extension. A bare filename matching nothing
- * at the root is left alone, since prose says `index.ts` about many files that are not here.
+ * A span without `/` anchors where an entry shares its stem, which catches the observed
+ * failure: naming a real file with the wrong extension. A bare filename matching nothing
+ * is left alone, since prose says `index.ts` about many files that are not here.
  */
-function isRepositoryPath(span) {
-  if (NOT_A_PATH.test(span) || !EXTENSION.test(span)) return false;
-  if (span.includes("/")) return TOP_LEVEL.has(span.split("/")[0]);
-  return ROOT_STEMS.has(span.replace(EXTENSION, ""));
+function anchorsOf(span, base) {
+  if (NOT_A_PATH.test(span) || !EXTENSION.test(span)) return [];
+  const slashed = span.includes("/");
+  const key = slashed ? span.split("/")[0] : span.replace(EXTENSION, "");
+  const anchors = [];
+  if ((slashed ? TOP_LEVEL : ROOT_STEMS).has(key)) anchors.push(ROOT);
+  if (base !== ROOT && (slashed ? entriesOf(base) : stemsOf(base)).has(key)) anchors.push(base);
+  return anchors;
 }
 
 /**
@@ -62,12 +98,16 @@ function isDeliberatelyAbsent(span) {
 
 async function danglingRefs(file) {
   const text = await readFile(file, "utf8");
+  const base = dirname(file);
   const seen = new Set();
   const dangling = [];
   for (const [, span] of text.matchAll(CODE_SPAN)) {
-    if (seen.has(span) || !isRepositoryPath(span)) continue;
+    if (seen.has(span)) continue;
+    const anchors = anchorsOf(span, base);
+    if (anchors.length === 0) continue;
     seen.add(span);
-    if (!existsSync(join(ROOT, span)) && !isDeliberatelyAbsent(span)) dangling.push(span);
+    const found = anchors.some((dir) => existsSync(join(dir, span)));
+    if (!found && !isDeliberatelyAbsent(span)) dangling.push(span);
   }
   return dangling;
 }
