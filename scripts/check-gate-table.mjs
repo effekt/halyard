@@ -159,6 +159,17 @@ for (const name of ruleFiles) {
     if (existsSync(join(ROOT, "scripts", named))) continue;
     phantomCitations.push(`.claude/rules/${name}  names ${named}, which does not exist`);
   }
+  // A named skill is the same claim in a different noun. `.gitignore` carries
+  // `/.claude/skills/*` with one negation per repository-local skill, so a skill added without
+  // its `!` line is staged by nothing and reported by nothing — which is how a rule came to cite
+  // a `worktree` skill that had never been committed.
+  for (const match of text.matchAll(/`([a-z][a-z-]+)` skill/g)) {
+    const named = match[1];
+    if (existsSync(join(ROOT, ".claude/skills", named, "SKILL.md"))) continue;
+    phantomCitations.push(
+      `.claude/rules/${name}  names the \`${named}\` skill, which does not exist`,
+    );
+  }
 }
 
 // An exception for something `verify` now reaches is stale bookkeeping, and the next reader
@@ -172,7 +183,7 @@ if (
   phantomCitations.length === 0
 ) {
   console.log(
-    `✅ Gate table honest — ${gates.size} gate(s) named, ${gates.size - EXCEPTIONS.size} reached by verify, ${EXCEPTIONS.size} documented exception(s); all ${files.size} script(s) verify runs have a row; ${ruleFiles.length} rule file(s) name only gates that exist.`,
+    `✅ Gate table honest — ${gates.size} gate(s) named, ${gates.size - EXCEPTIONS.size} reached by verify, ${EXCEPTIONS.size} documented exception(s); all ${files.size} script(s) verify runs have a row; ${ruleFiles.length} rule file(s) name only gates and skills that exist.`,
   );
   process.exit(0);
 }
@@ -193,10 +204,10 @@ for (const gate of staleExceptions.sort()) {
   console.log("        → drop it from EXCEPTIONS\n");
 }
 if (phantomCitations.length > 0) {
-  console.log("  Named by a rule, but no such script:");
+  console.log("  Named by a rule, but not present:");
   for (const citation of phantomCitations.sort()) console.log(`        ${citation}`);
   console.log(
-    "        \u2192 write the gate, or change the rule to `**Gate:** none` with the reason\n",
+    "        \u2192 create it, or drop the citation. A skill also needs its `!` line in .gitignore\n",
   );
 }
 process.exit(process.argv.includes("--check") ? 1 : 0);
