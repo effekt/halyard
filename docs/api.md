@@ -325,9 +325,12 @@ export default async function Page({ params }: { params: Promise<{ slug: string[
 ```
 
 **`registry` is the prop name; `blockRegistry` is what goes in it.** `RendererProps.registry` is
-typed `BlockRegistry` — the render-side map of `() => Promise<BlockComponent>` from
-`defineRegistry`. The compile-side `Registry` from `createRegistry` is a different type with
-`get`, `names` and `fingerprint`, and it is what `compile` validates against. Passing it here, or
+typed `BlockRegistry` — the render-side map of `() => Promise<BlockComponent<never>>` from
+`defineRegistry`, where `never` is what admits real components: a block typed against its own
+props cannot substitute for one required to take anything, so a wider stored type would turn
+every one away ([#88](https://github.com/effekt/nubbin/issues/88)). The compile-side `Registry`
+from `createRegistry` is a different type with `get`, `names` and `fingerprint`, and it is what
+`compile` validates against. Passing it here, or
 passing the render-side map to `compile`, is the same mistake in two directions, and it has
 reached four separate tickets — see
 [registry file naming](decisions/each-registry-file-is-named-after-the-type-it-holds.md).
