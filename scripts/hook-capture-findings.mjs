@@ -7,8 +7,18 @@
 // Usage: node scripts/hook-capture-findings.mjs [--dry-run]   (hook payload on stdin)
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const FINDINGS_HEADING = /^#{1,6}\s+findings\b/i;
 const ANY_HEADING = /^#{1,6}\s+/;
@@ -24,10 +34,15 @@ const SLUG_WORDS = 8;
 const TITLE_LIMIT = 80;
 
 /**
- * The issue path is proven against a stub rather than by opening a real issue, so the executable
- * is a seam.
+ * Every issue this opens goes through the same front door as one opened by hand, so one duplicate
+ * search covers every arrival. Resolved beside this file rather than from the working directory,
+ * because the hook runs in whichever worktree the session is in.
  */
-const GH_BIN = process.env.NUBBIN_GH_BIN ?? "gh";
+const SCAFFOLD = fileURLToPath(new URL("./scaffold-issue.mjs", import.meta.url));
+
+/** The scaffold's own sentence, so the count reported here is the count it read. */
+const SEARCH_LINE = /^Searched \d+ open issues[^\n]*?(?=\.?$)/m;
+const CANDIDATE_LINE = /^\s*CANDIDATE\s+\d+%\s+#(\d+)/gm;
 
 const isDryRun = process.argv.includes("--dry-run");
 
@@ -165,30 +180,77 @@ function titleFor(finding) {
   return `${cut.slice(0, cut.lastIndexOf(" "))}…`;
 }
 
-function issueArgs(finding, payload, route) {
-  const title = titleFor(finding);
+function issueBody(finding, payload, route) {
   const preamble =
     route === "rule"
       ? "Routed to a rule: this belongs in `.claude/rules/`, with a gate that has been seen to fail on the violation."
       : "Routed to an issue: a closable question.";
-  const body = [
+  return [
     preamble,
     "",
     finding.lines.join("\n"),
     "",
     `Reported by a \`${payload.agent_type ?? "subagent"}\` agent at exit, session ${payload.session_id ?? "unknown"}.`,
   ].join("\n");
-  return ["issue", "create", "--title", title, "--body", body];
+}
+
+/** The draft goes to a temporary directory, because a repository is not a scratchpad. */
+function writeBodyFile(body) {
+  const file = join(mkdtempSync(join(tmpdir(), "nubbin-capture-")), "finding.md");
+  writeFileSync(file, `${body}\n`);
+  return file;
+}
+
+/**
+ * No label: this knows the tag a report carried and nothing about the surfaces a repository
+ * labels by, and a wrong label is read as a decision someone made.
+ */
+function scaffoldArgs(title, bodyFile) {
+  return [
+    SCAFFOLD,
+    "--body-file",
+    bodyFile,
+    "--title",
+    title,
+    "--open",
+    "--acknowledge-duplicates",
+    "--advisory-validation",
+  ];
+}
+
+function candidatesIn(output) {
+  return [...output.matchAll(CANDIDATE_LINE)].map((match) => `#${match[1]}`);
+}
+
+/** The last thing the scaffold printed: the issue's URL, or the reason it stopped. */
+function lastLineOf(output) {
+  return output.trim().split("\n").at(-1)?.trim() ?? "";
+}
+
+function describeOpened(route, searched, output) {
+  const candidates = candidatesIn(output);
+  const nearby = candidates.length > 0 ? `; may duplicate ${candidates.join(", ")}` : "";
+  return `${route} (${searched}${nearby}; ${lastLineOf(output)})`;
+}
+
+/**
+ * A finding that was never searched must not read as one that was, so a missing search line is
+ * reported as loudly as a non-zero exit — it is the shape the defect would take on returning.
+ */
+function describeStopped(route, searched, output) {
+  const why = searched ? "the scaffold opened nothing" : "NO DUPLICATE SEARCH RAN";
+  return `${route} (FAILED — ${why}: ${lastLineOf(output) || "no output"})`;
 }
 
 function routeToIssue(finding, payload, route) {
-  const args = issueArgs(finding, payload, route);
-  if (isDryRun) return `${route} (dry run: would run ${GH_BIN} ${args.slice(0, 4).join(" ")}…)`;
-  const run = spawnSync(GH_BIN, args, { encoding: "utf8" });
-  if (run.status !== 0) {
-    return `${route} (FAILED to open an issue: ${(run.stderr || run.error?.message || "").trim()})`;
-  }
-  return `${route} (${run.stdout.trim().split("\n").at(-1)})`;
+  const title = titleFor(finding);
+  if (isDryRun) return `${route} (dry run: would scaffold "${title}")`;
+  const bodyFile = writeBodyFile(issueBody(finding, payload, route));
+  const run = spawnSync(process.execPath, scaffoldArgs(title, bodyFile), { encoding: "utf8" });
+  const output = `${run.stdout ?? ""}${run.stderr ?? ""}${run.error?.message ?? ""}`;
+  const searched = output.match(SEARCH_LINE)?.[0].trim() ?? null;
+  if (run.status !== 0 || searched === null) return describeStopped(route, searched, output);
+  return describeOpened(route, searched, output);
 }
 
 function routeOne(finding, payload, memoryDir) {

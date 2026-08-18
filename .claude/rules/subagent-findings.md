@@ -43,8 +43,8 @@ home lives there rather than twice.
 
 | Tag | Home | What `scripts/hook-capture-findings.mjs` does |
 |---|---|---|
-| `[rule]` | `.claude/rules/`, plus a gate | Opens an issue carrying the finding. A hook can write prose but not a gate, and a rule shipped without one is the failure [`gates.md`](gates.md) catalogues |
-| `[issue]` | A GitHub issue | Opens it |
+| `[rule]` | `.claude/rules/`, plus a gate | Opens an issue through the scaffold, carrying the finding. A hook can write prose but not a gate, and a rule shipped without one is the failure [`gates.md`](gates.md) catalogues |
+| `[issue]` | A GitHub issue | Opens it through the scaffold |
 | `[memory]` | The session's memory directory | Writes the memory beside the others and adds it to `MEMORY.md` |
 | `[task-local]` | Nowhere | Drops it, and says that it dropped it |
 
@@ -52,17 +52,35 @@ The memory directory is derived from the hook payload's `transcript_path`, which
 session already keeps its memory — a path written into the hook would be right until the
 repository moved, and wrong silently afterwards.
 
+## Every arrival goes through the front door
+
+An issue is opened by `scripts/scaffold-issue.mjs` whether a person opens it or the hook does, so
+one duplicate search covers every arrival. A tracker with a front door and a second way in fills
+through the second one, and nothing about that reads as wrong from either side.
+
+A captured finding is one sentence, so the hook runs the scaffold with `--advisory-validation`:
+the four parts a sentence cannot carry are reported as warnings instead of refusing the finding.
+The search is not softened alongside them — it runs above the check that is, so nothing reaches an
+open unsearched. Where the search surfaces a nearby issue the finding is opened anyway and that
+issue's number goes into its body, because whether two issues are the same work is a judgement for
+whoever reads them, and a run's output scrolls away while an issue body does not.
+
+It passes no label. The hook knows which tag a report used and nothing about the surfaces this
+repository labels by, and a wrong label reads as a decision someone made.
+
 ## It says what it saw
 
 ```
 subagent capture: saw a 17 line(s) report from a `builder` subagent
 captured 4 finding(s): 1 -> rule, 1 -> issue, 1 -> memory, 1 -> dropped (task-local)
+  issue (Searched 57 open issues in effekt/nubbin (--limit 200; corroborated by search/issues: 57); may duplicate #212; https://github.com/effekt/nubbin/issues/300)
 ```
 
 A capture that quietly captures nothing reads exactly like one with nothing to capture, which is
 the failure [`gates.md`](gates.md) exists to stop. So a report with no findings says so, a report
-that never arrived says that instead, and every routed finding prints the issue URL or the file it
-became.
+that never arrived says that instead, and every routed finding prints the size of the set searched
+and the issue URL, or the file it became. A search that could not run prints `NO DUPLICATE SEARCH
+RAN` and no URL, which is the one thing a capture must not be able to hide.
 
 **Gate:** none — nothing can tell a finding written as a paragraph from ordinary prose, so a
 report that buries its findings outside the section is captured as zero. The hook reports the
