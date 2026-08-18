@@ -47,11 +47,10 @@ caching tier to survive the round trip.
                   <Renderer artifact registry />   loads only the blocks it names
 ```
 
-**Catalog and registry are separate.** The catalog is serializable data — schemas, hints,
-defaults — so the studio needs no components and validation runs anywhere. The registry maps
-a block name to a lazy import, so the bundler emits a chunk per block and a route resolves
-only the blocks its artifact names. Adding the hundredth block costs pages that do not use
-it nothing.
+**Catalog and registry are separate.** The pipeline splits at `defineBlock` for that reason:
+one branch is inert data any environment can validate against, the other is a set of importers
+a bundler can follow. Chosen over one flat list of components, which forces every page to load
+all of them — [the decision](decisions.md#catalog-and-registry-are-separate).
 
 **Documents are flat while authoring, nested once published.** The draft shape is
 `{ root, elements }` keyed by id, so an editor addresses a node directly instead of walking a
