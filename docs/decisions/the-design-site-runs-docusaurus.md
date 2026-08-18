@@ -22,10 +22,12 @@ renders — the strongest demo this project can have is a page on this site buil
 Nubbin blocks, and a static generator forecloses it. That argument is the deciding one; the
 rest is quality of life.
 
-The site serves at `/docs` on [the canonical origin](one-origin-serves-both-audiences.md),
-whose root is the landing page. Rejected: `/reference`, a name that fits only the API pages
-and misdescribes the corpus the moment a guide lands; and the documentation at the root,
-which takes the front door from the page whose job is selling what the documents describe.
+The site serves at `effekt.github.io/nubbin`, which is where GitHub Pages publishes the
+branch CI writes to, and the repository is the only thing that address depends on. Rejected:
+a path on [the canonical origin](one-origin-serves-both-audiences.md) — that origin serves
+one hand-written file today, so the documentation would reach it through a second host and a
+rewrite, buying a nicer address at the cost of a hop nobody asked for and a deploy path that
+can fail on its own. It moves there when the origin has something to serve it from.
 
 Rejected: staying on a static generator and accepting a patch per theme defect. Right while
 the site was a handful of documents nobody styled; the defect list is what ended it.
