@@ -32,29 +32,22 @@ replace any of them. Bring your own storage, your own auth, your own framework b
 ## The invariants
 
 These are the reason the project exists. Breaking one is a design change, not a fix. Each is
-argued where it links to.
+argued where its name links to.
 
-1. **Schema lives in code.** Block props are inferred *from* the schema, never declared
-   alongside it. There is no second definition of a block anywhere, and no schema in a
-   database — [Schema in code, content in a
-   database](docs/decisions/schema-in-code-content-in-a-database.md).
-2. **`core` has no runtime dependencies beyond Standard Schema.** No React, no Next, no
-   `node:*`. It runs in a browser, a worker, and a build step unchanged —
-   [`core` depends on nothing](docs/decisions/core-depends-on-nothing.md).
-3. **Published artifacts are immutable and content-addressed.** Publishing writes a new
-   artifact and moves a pointer — [Artifacts are immutable and
-   content-addressed](docs/decisions/artifacts-are-immutable-and-content-addressed.md).
-4. **Compiling is not building.** Compile validates and serializes a document; publishing and
-   previewing never require a deploy — [Why compile at
-   publish](docs/architecture.md#why-compile-at-publish).
+1. **[Schema lives in code.](docs/decisions/schema-in-code-content-in-a-database.md)** Props are
+   inferred *from* the schema, never declared beside it, and no schema lives in a database.
+2. **[`core` depends on nothing.](docs/decisions/core-depends-on-nothing.md)** No React, no Next,
+   no `node:*` — it runs in a browser, a worker and a build step unchanged.
+3. **[Artifacts are immutable and content-addressed.](docs/decisions/artifacts-are-immutable-and-content-addressed.md)**
+   Publishing writes a new artifact and moves a pointer.
+4. **[Compiling is not building.](docs/architecture.md#why-compile-at-publish)** Compile validates
+   and serializes a document; publishing and previewing never require a deploy.
 5. **IO happens in adapters.** `core` computes; adapters read and write.
-6. **Artifacts contain data, never code.** What that excludes, and why it is a security and
-   performance boundary rather than a preference, is
-   [Artifacts contain data, never code](docs/decisions/artifacts-contain-data-never-code.md).
-7. **Nubbin knows nothing about the consumer's stack.** It constructs schemas and renders,
-   ships no CSS, and holds no opinion about styling — [Layout is ordinary props, and Nubbin
-   ships no CSS](docs/decisions/layout-is-ordinary-props-and-nubbin-ships-no-css.md). Any
-   feature that requires knowing what is on the other side is the wrong feature.
+6. **[Artifacts contain data, never code.](docs/decisions/artifacts-contain-data-never-code.md)**
+   It is a security and performance boundary, not a preference.
+7. **[Nubbin knows nothing about the consumer's stack.](docs/decisions/layout-is-ordinary-props-and-nubbin-ships-no-css.md)**
+   It ships no CSS and holds no opinion about styling. A feature needing to know what is on the
+   other side is the wrong feature.
 
 ## Commands
 
@@ -74,32 +67,28 @@ Node 22+ (24 in `.nvmrc`) and pnpm are required; `packageManager` pins the versi
 
 ## Where everything else lives
 
-Read the one that matches what you are about to do. Nothing below is repeated here, because a
-summary beside a full argument is the copy that goes stale.
+Two pages are surfaced by nothing, and are named here for that reason:
 
 | Doing | Read |
 |---|---|
-| Anything that must pass CI | [`docs/gates.md`](docs/gates.md) — every gate, what `verify` runs, what stays local |
+| Anything that must pass CI | [`docs/gates.md`](docs/gates.md) |
 | Writing prose, an example, or a fixture | [`docs/public-repository.md`](docs/public-repository.md) |
-| Writing code | the rule under `.claude/rules/` whose `paths` glob matches the file — they load automatically |
-| Opening an issue, recording a decision, starting a change | the `issue`, `decision` and `worktree` skills |
-| Finishing a subagent report | `.claude/rules/subagent-findings.md` — an untagged finding is written nowhere |
 
-Four agents exist and nothing loads them automatically, so they are named here rather than
-found: `planner` audits a ticket against the code and decides nothing, `builder` implements
-against a settled design, `adversary` tries to falsify a design or a diff, and `scout` locates
-things without spending the caller's context. `.claude/rules/planning.md` argues why the agent
-that plans is not the agent that implements.
+A rule under `.claude/rules/` loads on its own when a file matches its `paths` glob, and skill
+descriptions load at session start. Neither is listed here: a list beside a mechanism is the
+copy that goes stale.
+
+Two things have no such mechanism. **The agents** — `planner` audits a ticket against the code
+and decides nothing, `builder` implements against a settled design, `adversary` tries to
+falsify a design or a diff, and `scout` locates things without spending the caller's context.
+**A subagent's report** — it ends in a `## Findings` section whose every bullet is tagged, and
+an untagged one is written nowhere.
 
 ## Status
 
 Four packages are published under the `rc` tag — `npm view @nubbin/core dist-tags` for the
-version, which in prose would be a copy of the registry. `@nubbin/core` carries `defineBlock`,
-`defineCatalog`, `createRegistry`, `compile` and the rollback helpers; `@nubbin/react` renders
-an artifact tree; `@nubbin/next` resolves and publishes routes; `@nubbin/store-fs` is the
-reference storage adapter. Each is described as shipped under [`docs/reference/`](docs/README.md).
-
-**Unbuilt:** the studio.
+version, which in prose would be a copy of the registry. Every shipped surface is documented
+under [`docs/reference/`](docs/README.md). **Unbuilt:** the studio.
 
 Read [`docs/architecture.md`](docs/architecture.md) for the model and
 [`docs/decisions/`](docs/decisions/README.md) for what is settled, and treat the open issues
