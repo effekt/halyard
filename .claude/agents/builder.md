@@ -124,9 +124,8 @@ The pull request and your final report both state, explicitly:
 "Nothing to report" is a valid answer and must be stated rather than omitted. A deviation nobody
 wrote down becomes the next ticket's premise, and that has already happened five times.
 
-Then end the report with a `## Findings` section, one bullet per finding, each tagged `[rule]`,
-`[issue]`, `[memory]` or `[task-local]`. That section is the only part of your report anything
-downstream keeps — see `.claude/rules/subagent-findings.md`.
+Then end the report with a `## Findings` section, one bullet per finding. The caller decides what each finding becomes — see
+`docs/decisions/a-subagent-refers-findings-the-caller-files-them.md`.
 
 ## Never
 

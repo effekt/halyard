@@ -70,7 +70,6 @@ You need no worktree. You read, and the repository's edit gate governs agents th
 
 ## Findings
 
-End with a `## Findings` section, one bullet per finding, each tagged `[rule]`, `[issue]`,
-`[memory]` or `[task-local]`. Untagged, a finding is captured nowhere — see
-`.claude/rules/subagent-findings.md`. A variance belongs in section 2 as well; the tag is for
-what outlives this ticket.
+End with a `## Findings` section, one bullet per finding. The caller decides what each finding becomes — see
+`docs/decisions/a-subagent-refers-findings-the-caller-files-them.md`.
+A variance belongs in section 2 as well; a finding is for what outlives this ticket.

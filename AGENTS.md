@@ -81,8 +81,8 @@ copy that goes stale.
 Two things have no such mechanism. **The agents** — `planner` audits a ticket against the code
 and decides nothing, `builder` implements against a settled design, `adversary` tries to
 falsify a design or a diff, and `scout` locates things without spending the caller's context.
-**A subagent's report** — it ends in a `## Findings` section whose every bullet is tagged, and
-an untagged one is written nowhere.
+**A subagent's report** — it ends in a `## Findings` section, and the caller decides what each
+finding becomes.
 
 ## Status
 
