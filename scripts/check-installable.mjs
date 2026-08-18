@@ -21,15 +21,13 @@ import { readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { packageManagerCommand } from "./packageManager.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGES = join(ROOT, "packages");
 
-// Re-invoke the package manager that started this script; a bare `pnpm` resolves against a
-// different PATH than the caller. `-C` rather than cwd, for the reason check-tarball records.
-const PNPM = process.env.npm_execpath
-  ? [process.execPath, [process.env.npm_execpath]]
-  : ["pnpm", []];
+// `-C` rather than cwd, for the reason check-tarball records.
+const PNPM = packageManagerCommand();
 
 function publishableDirs() {
   return readdirSync(PACKAGES, { withFileTypes: true })

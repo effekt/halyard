@@ -17,6 +17,7 @@ import { existsSync, mkdtempSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { packageManagerCommand } from "./packageManager.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const PACKAGES = join(ROOT, "packages");
@@ -30,11 +31,7 @@ function publishablePackages() {
     .filter((dir) => existsSync(join(dir, "package.json")));
 }
 
-// Re-invoke the package manager that started this script rather than a bare `pnpm`, whose
-// shim resolves against a different PATH than the caller.
-const PACK = process.env.npm_execpath
-  ? [process.execPath, [process.env.npm_execpath]]
-  : ["pnpm", []];
+const PACK = packageManagerCommand();
 
 /** The package.json as it would arrive on a consumer's disk. */
 function packedManifest(packageDir, destination) {
