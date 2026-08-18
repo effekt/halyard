@@ -115,6 +115,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-package-metadata.mjs` | every publishable package has a README, a licence file and field, a description and a repository |
 | `check-docs.mjs` | links and anchors resolve; every document is in the index |
 | `check-file-refs.mjs` | a repository file named inside a code span exists, or is gitignored on purpose |
+| `check-plan-files.mjs` | no plan-shaped file under `docs/` — a `plans/` directory, a date-stamped filename, or a stem that is the word itself |
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 | `check-prose-dupes.mjs` | one claim, one home — a run of 12 words written into two documents, measured after fences, comments and tables are stripped out |
