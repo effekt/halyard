@@ -1,0 +1,8 @@
+{
+  "$schema": "https://unpkg.com/syncpack@15.3.3/dist/schema.json",
+  "semverGroups": [
+    { "dependencyTypes": ["peer", "local"], "isIgnored": true },
+    { "dependencyTypes": ["**"], "range": "" }
+  ],
+  "versionGroups": [{ "dependencyTypes": ["peer", "local"], "isIgnored": true }]
+}

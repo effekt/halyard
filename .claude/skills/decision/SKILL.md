@@ -1,6 +1,6 @@
 ---
 name: decision
-description: Record or change a design decision so it survives — cause, reason, decision, and what it beat — then sweep every document that argued the old position. Use when settling an open question, reversing a prior choice, or writing a file into docs/decisions/.
+description: Records or changes a design decision so it survives — cause, reason, decision, and what it beat — then sweep every document that argued the old position. Use when settling an open question, reversing a prior choice, or writing a file into docs/decisions/.
 ---
 
 # Record a decision
@@ -46,7 +46,7 @@ diverge, and the reader cannot tell which is current.
 ## 3. Write it
 
 One file per decision: `docs/decisions/<slug>.md`, slugged from the title by the rule
-`check-docs.mjs` applies to headings, with the standard frontmatter and the title as an `# `
+`tests/documentationStructure.test.mjs` applies to headings, with the standard frontmatter and the title as an `# `
 heading. The filename is what an inbound link cites, so a title change is a file rename and
 step 5 applies.
 
@@ -95,17 +95,13 @@ true.
 ## 5. If a name changed, remove the old one entirely
 
 Replace it everywhere and leave no note explaining what it was before. Git holds that, and a
-reader carrying two names for one thing cannot tell which is real.
-
-The rejected alternative is different and stays. "Route pointers, not one mutable manifest,
-because a whole-document read-modify-write permits a silent lost update" is the reason for the
-decision — it is what stops the manifest being re-proposed. Name a rejected design when it
-explains the current one; never to record that something was once called something else.
+reader carrying two names for one thing cannot tell which is real. A rejected *design* is the
+opposite case and stays; [`documentation.md`](../../rules/documentation.md) draws the line.
 
 ## 6. Verify
 
 ```bash
-node scripts/check-docs.mjs --check   # links and anchors resolve
+pnpm exec vitest run --project repo   # links, anchors, index, one claim one home
 node scripts/check-prose.mjs --check  # no unciteable claims, no old names, no filler
 ```
 

@@ -20,10 +20,14 @@
 //   --check  verify against upstream and report, writing nothing.
 // SKILLS_DIR overrides the install root, which is how this is tested without touching a real one.
 
-import { createHash } from "node:crypto";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { skillDigest } from "./skillDigest.mjs";
+
+/** Enough of a sha256 to tell two apart in a report, without filling the line. */
+const DIGEST_PREFIX = 12;
+const short = (digest) => digest.slice(0, DIGEST_PREFIX);
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LOCKFILE = join(ROOT, "skills-lock.json");
@@ -73,17 +77,6 @@ async function fetchFiles(entry, dir, paths) {
   return files;
 }
 
-/** The same digest `check-skills-lock.mjs` computes: each file under its own relative path. */
-function digestOf(files) {
-  const digest = createHash("sha256");
-  for (const path of [...files.keys()].sort()) {
-    digest.update(path);
-    digest.update("\0");
-    digest.update(files.get(path));
-  }
-  return digest.digest("hex");
-}
-
 async function writeSkill(name, files) {
   const target = join(SKILLS_DIR, name);
   await rm(target, { recursive: true, force: true });
@@ -103,11 +96,9 @@ export async function installAgentSkills() {
   for (const [name, entry] of Object.entries(skills)) {
     const { dir, paths } = await pathsFor(entry);
     const files = await fetchFiles(entry, dir, paths);
-    const digest = digestOf(files);
+    const digest = skillDigest(files);
     if (digest !== entry.contentHash) {
-      failures.push(
-        `${name} — recorded ${entry.contentHash.slice(0, 12)}…, upstream ${digest.slice(0, 12)}…`,
-      );
+      failures.push(`${name} — recorded ${short(entry.contentHash)}…, upstream ${short(digest)}…`);
       console.log(`  ❌ ${name}  ${paths.length} file(s), digest differs — nothing written`);
       continue;
     }
@@ -124,7 +115,7 @@ export async function installAgentSkills() {
     console.log(
       "\n        Upstream moved, or the lockfile is wrong. Nothing was written for these — on a\n" +
         "        machine carrying the intended set, re-record it with\n" +
-        "        `node scripts/check-skills-lock.mjs --write`.\n",
+        "        `pnpm skills:record`.\n",
     );
     return failures.length;
   }

@@ -5,10 +5,10 @@ on:
   push:
     branches: [main]
 
-# `pnpm install` runs `prepare`, which installs lefthook's git hooks. In CI that means any
-# step doing a `git push` runs the whole pre-push suite — the checks this workflow already
-# runs as explicit jobs, against a checkout that may not have built yet. Hooks are for a
-# developer's machine.
+# `pnpm install` runs `prepare`, which installs lefthook's git hooks. In CI that means any step
+# doing a `git push` runs the whole pre-push suite — the checks this workflow already runs as
+# explicit jobs, against a checkout that may not have built yet. Hooks are for a developer's
+# machine.
 env:
   LEFTHOOK: "0"
 
@@ -17,78 +17,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Every gate here is plain Node with no dependencies, so it runs against a bare
-  # checkout with no install step and no lockfile.
-  #
-  # check-schema-depth and check-single-export are absent despite also being scripts:
-  # both import `typescript`, so they run in the code job below alongside the gates
-  # that need node_modules.
+  # The two gates that are still standalone scripts, because both are slated for a maintained
+  # tool rather than for the suite: `check-prose.mjs` for Vale and `check-a11y.mjs` for axe.
+  # Neither imports anything, so this job needs no install and no lockfile.
   prose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          # check-stale-docs compares commit times across link edges, so it needs history.
-          fetch-depth: 0
 
-      # These scripts import nothing, so there is no install — but the runtime still comes
-      # from `devEngines.runtime` like every other job, rather than from a second source.
+      # These scripts import nothing, so there is no install — but the runtime still comes from
+      # `devEngines.runtime` like every other job, rather than from a second source.
       - uses: pnpm/setup@v2
         with:
           install: false
 
-      - name: Documentation structure
-        run: node scripts/check-docs.mjs --check
-
       - name: Prose
         run: node scripts/check-prose.mjs --check
-
-      - name: Prose duplication
-        run: node scripts/check-prose-dupes.mjs --check
-
-      - name: Plan files
-        run: node scripts/check-plan-files.mjs --check
 
       - name: Accessibility
         run: node scripts/check-a11y.mjs --check
 
-      - name: Rule files
-        run: node scripts/check-rules.mjs --check
-
-      - name: Pinned dependencies
-        run: node scripts/check-pinned-deps.mjs --check
-
-      - name: Junk-drawer filenames
-        run: node scripts/check-structure.mjs --check
-
-      - name: File references resolve
-        run: node scripts/check-file-refs.mjs --check
-
-      - name: Peer dependencies
-        run: node scripts/check-peer-deps.mjs --check
-
-      - name: Script invocations
-        run: node scripts/check-script-invocations.mjs --check
-
-      # The last two check the others rather than the tree. `check-gate-table.mjs` fails when a
-      # row in docs/gates.md reaches nothing `verify` runs, and when `verify` runs a gate with no
-      # row. `check-plugins-lock.mjs` is deliberately absent from both — it compares against a
-      # plugin cache no runner has, so it would report success having read nothing.
-      - name: Gate table
-        run: node scripts/check-gate-table.mjs --check
-
-      # And the one that stops the gates above drifting back out of this job.
-      - name: CI parity
-        run: node scripts/check-ci-parity.mjs --check
-
-      # Advisory: a document trailing something it links to is worth re-reading,
-      # not worth failing a build over.
-      - name: Stale documents
-        run: node scripts/check-stale-docs.mjs
-        continue-on-error: true
-
-  # Everything needing an install: lint, typecheck, tests, build, structure gates,
-  # package boundaries, duplication, and dead code.
+  # Everything else. Every repository invariant that used to be its own script is a test in the
+  # `repo` vitest project now, so `pnpm test` is where they run and the runner owns each verdict:
+  # there is no path by which one prints its failure and exits 0.
   code:
     runs-on: ubuntu-latest
     steps:
@@ -107,17 +58,17 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # Package suites plus the `repo` project: documentation structure, file references, prose
+      # duplication, plan files, rule files, one unit per file, schema depth, junk-drawer
+      # filenames, peer dependencies, package metadata, the version stamp and the skills lockfile.
       - name: Test
         run: pnpm test
 
       - name: Build
         run: pnpm build
 
-      - name: One unit per file
-        run: node scripts/check-single-export.mjs --check
-
-      - name: Schema depth
-        run: node scripts/check-schema-depth.mjs --check
+      - name: Pinned dependencies
+        run: pnpm pinned-deps
 
       - name: Package boundaries
         run: pnpm boundaries
@@ -131,14 +82,8 @@ jobs:
       - name: Type coverage
         run: pnpm type-coverage
 
-      # The three gates that read the artifact a consumer would install, rather than the
-      # source. They ran in `pnpm verify` and in no automated job, so nothing on a pull
-      # request exercised them.
+      # The gates that read the artifact a consumer would install rather than the source. The
+      # tarball install is in its own vitest project because its verdict depends on the registry,
+      # which no cache key can see; it is invoked directly and is not a turbo task.
       - name: Publishable
         run: pnpm publishable
-
-      # A runner has no skills installed, so the comparison against disk cannot run here. What
-      # this catches is a commit that edits the lockfile into something nothing can reinstall
-      # from — it parses, and every entry carries the fields a reinstall reads.
-      - name: Skills lockfile is usable
-        run: pnpm skills-lock

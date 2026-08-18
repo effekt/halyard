@@ -38,6 +38,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { danglingFileRefs } from "./danglingFileRefs.mjs";
 
 /**
  * Well above the whole set — open and closed together — so a full-length result means something is
@@ -241,31 +242,23 @@ function validateDraft(text) {
  * bodies and comments is several megabytes. `ENOBUFS` surfaces as "nothing was searched", which
  * is honest but stops the run, so the ceiling is raised rather than discovered again.
  */
-const GH_MAX_BUFFER = 64 * 1024 * 1024;
+/** Shared terms worth printing before the list stops being readable. */
+const SHARED_SHOWN = 12;
+/** 64 MiB. `gh` can answer with a very large JSON page, and a smaller buffer truncates it. */
+const GH_MAX_BUFFER = 67_108_864;
 
 /**
  * A ticket naming a path that has moved sends its implementer to a file that is not there, and
  * nine open issues cite `docs/decisions.md` — a file that became a directory — because no gate
- * reads an issue body. `check-file-refs.mjs` already answers this for any file it is handed, so
- * the draft is checked with the same rules the tree is, rather than a second copy of them.
+ * reads an issue body. `danglingFileRefs` answers this for any text it is handed, so the draft is
+ * checked with the same rules the tree is, rather than a second copy of them.
  */
 function danglingRefProblems(bodyFile) {
   if (!bodyFile) return [];
-  const script = resolve(dirname(fileURLToPath(import.meta.url)), "check-file-refs.mjs");
-  try {
-    execFileSync(process.execPath, [script, "--check", bodyFile], { stdio: "pipe" });
-    return [];
-  } catch (error) {
-    // `check-file-refs.mjs` prints the file it read at two spaces and each dangling span at
-    // eight. Matching the indent rather than the content keeps the run's own absolute path —
-    // and its explanatory sentence — out of a message that may be read in public.
-    const named = `${error.stdout ?? ""}`
-      .split("\n")
-      .filter((line) => /^ {8}\S+$/.test(line))
-      .map((line) => line.trim());
-    if (named.length === 0) return [];
-    return [`Names a repository file that does not exist: ${named.join(", ")}`];
-  }
+  const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+  const named = danglingFileRefs(root, resolve(bodyFile), readFileSync(bodyFile, "utf8"));
+  if (named.length === 0) return [];
+  return [`Names a repository file that does not exist: ${named.join(", ")}`];
 }
 
 function runGh(args) {
@@ -429,7 +422,7 @@ function reportNearest(nearest) {
     const mark = markFor(issue, score);
     const state = issue.isOpen ? "" : " (closed)";
     console.log(`  ${mark}  ${percent}%  #${issue.number}${state}  ${issue.title}`);
-    console.log(`             shared: ${shared.slice(0, 12).join(", ") || "nothing"}`);
+    console.log(`             shared: ${shared.slice(0, SHARED_SHOWN).join(", ") || "nothing"}`);
   }
 }
 

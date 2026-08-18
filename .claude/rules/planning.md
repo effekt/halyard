@@ -27,7 +27,7 @@ WRONG   docs/plans/core-implementation.md
 CORRECT one issue per task, linked from the phase issue, closed as each lands
 ```
 
-Write the plan wherever is convenient while drafting — a scratchpad is ideal — then transform it into issues and let the draft go. **Gate:** `check-plan-files.mjs` rejects plan-shaped paths under `docs/`.
+Write the plan wherever is convenient while drafting — a scratchpad is ideal — then transform it into issues and let the draft go. **Gate:** `tests/planFiles.test.mjs` rejects plan-shaped paths under `docs/`.
 
 ### One issue per task, carrying the real content
 
@@ -67,24 +67,12 @@ The main working tree belongs to whoever is driving the session. An agent told t
 `git reset`, `git checkout`, a merge — destroys the agent's uncommitted edits with no
 error on either side.
 
-```bash
-# WRONG — shares a tree with the driver and with every other agent
-"Work on a branch off main called fix/thing."
-
-# WRONG — outside the repository, where a temp sweep takes uncommitted work with it
-git worktree add -b fix/thing /tmp/some-scratchpad/thing-wt main
-
-# CORRECT — the `worktree` skill does this and confirms the gates run afterwards
-git worktree add -b fix/thing .worktrees/thing origin/main && \
-  cd .worktrees/thing && pnpm install
-```
-
-`.worktrees/` is gitignored, so a checkout there is invisible to `git status` in the main tree
-while living on the same disk as the work. Branch from `origin/main`: the local ref may be
-behind, or checked out elsewhere. The install belongs in that same command — hooks live in the
-common directory and fire in a fresh worktree, but their runner does not. **Gate:**
-`check-worktree.mjs` refuses a `Write`, `Edit` or `MultiEdit` aimed at the primary tree or at a
-worktree whose gates cannot run; `check-primary-tree.mjs` reports what any other route left.
+The worktree goes inside `.worktrees/`, which is gitignored — a checkout there is invisible to
+`git status` in the main tree while living on the same disk as the work, and a temp sweep cannot
+take it. The `worktree` skill holds the commands and the reasons each part is the way it is; run
+it rather than assembling one by hand. **Gate:** `check-worktree.mjs` refuses a `Write`, `Edit` or
+`MultiEdit` aimed at the primary tree or at a worktree whose gates cannot run;
+`check-primary-tree.mjs` reports what any other route left.
 
 This has happened here: an agent given a branch and no worktree, the driver running
 `git reset --hard` in that tree twice while it worked. **A reverted edit and an edit never made

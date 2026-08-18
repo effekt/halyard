@@ -45,7 +45,7 @@ Without pre mode, `changeset version` graduates a prerelease straight to stable 
 | Command | Does |
 |---|---|
 | `pnpm changeset` | Records a change, so the next version bump knows about it |
-| `pnpm publishable` | Builds, then runs the three gates that read the artifact a consumer installs rather than the source — `publint`, `attw`, `check-tarball` |
+| `pnpm publishable` | Checks the version stamp, builds, then runs the gates that read the artifact a consumer installs rather than the source — `publint`, `attw`, and the `release` test project |
 | `pnpm release:rc` | `publishable`, then publishes with `--tag rc` |
 | `pnpm release` | `publishable`, then refuses if any version is a prerelease, then `changeset publish` |
 
@@ -59,8 +59,9 @@ either. **pnpm rewrites them to real versions when it packs; npm does not** — 
 published with `npm publish` looks correct in the repository and fails on `install` for every
 consumer, with an error naming the protocol rather than the mistake.
 
-`check-tarball.mjs` inspects the packed manifest rather than the tool, so it holds whichever
-command produced the tarball.
+`tests/release/packagesInstallFromTarball.test.mjs` inspects the packed manifest rather than the
+tool, so it holds whichever command produced the tarball — and then installs it, because npm
+rejects a surviving `catalog:` with an error naming the protocol rather than the specifier.
 
 ## Two behaviours that surprise people
 

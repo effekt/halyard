@@ -20,13 +20,22 @@ const MAX_OUTPUT = 64 * 1024 * 1024;
 
 /** Repository-relative paths of every non-binary file git would publish. */
 export function trackedFiles(root) {
+  // `GIT_*` is stripped so `cwd` decides which repository answers. Inside a git hook the
+  // environment carries `GIT_DIR` and `GIT_INDEX_FILE` naming the repository the hook fired in,
+  // and git prefers those over the working directory — so a scanner handed one root would silently
+  // report another's files, which is the failure this module exists to prevent.
+  const env = Object.fromEntries(
+    Object.entries(process.env).filter(([name]) => !name.startsWith("GIT_")),
+  );
   const listed = execFileSync(
     "git",
     ["ls-files", "-z", "--cached", "--others", "--exclude-standard"],
-    { cwd: root, encoding: "utf8", maxBuffer: MAX_OUTPUT },
+    // stderr piped, not inherited: the throw below is the answer, and git's own message on top
+    // of it is noise in a suite where a caller is expected to handle the failure.
+    { cwd: root, encoding: "utf8", maxBuffer: MAX_OUTPUT, stdio: ["ignore", "pipe", "pipe"], env },
   ).split("\0");
   // A tracked symlink and its target are the same bytes listed twice; resolving to the real
-  // path keeps one, the same dedup check-prose-dupes.mjs applies for the same reason. A path
+  // path keeps one, the same dedup the prose-duplication corpus applies for the same reason. A path
   // git lists but the tree no longer holds cannot be read, so it is dropped rather than thrown.
   const seen = new Set();
   const files = [];

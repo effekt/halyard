@@ -37,7 +37,10 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { trackedFiles } from "./trackedFiles.mjs";
+import { trackedFiles } from "../tests/support/trackedFiles.mjs";
+
+/** Enough of the text after a `<` to hold any tag name a scan needs to identify. */
+const TAG_NAME_WINDOW = 64;
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const MARKUP_EXT = /\.(tsx|jsx|html)$/;
@@ -113,7 +116,7 @@ function scanTags(text) {
   const tags = [];
   for (let at = 0; at < text.length; at += 1) {
     if (text[at] !== "<") continue;
-    const opener = /^<([a-zA-Z][\w.]*)/.exec(text.slice(at, at + 64));
+    const opener = /^<([a-zA-Z][\w.]*)/.exec(text.slice(at, at + TAG_NAME_WINDOW));
     if (!opener) continue;
     const start = at + opener[0].length;
     const end = tagEnd(text, start);

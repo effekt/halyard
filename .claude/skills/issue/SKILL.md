@@ -1,6 +1,6 @@
 ---
 name: issue
-description: Open a GitHub issue that carries cause, reason, decision, choice and a close condition, after searching the open set for one that already covers it. Use when filing an issue, writing a ticket, or turning a plan into work.
+description: Opens a GitHub issue that carries cause, reason, decision, choice and a close condition, after searching the open set for one that already covers it. Use when filing an issue, writing a ticket, or turning a plan into work.
 ---
 
 # Open an issue
@@ -34,8 +34,8 @@ A plan-shaped file committed under `docs/` has no close condition either. See
 | `## Choice` | What it was chosen over, and why the alternative lost |
 | `## Done when` | The state at which the issue closes, written so someone else can tell whether it holds |
 
-[`prose.md`](../../rules/prose.md) holds the argument for the first four. **Choice** is the
-one that gets dropped, and it is the one that stops the same proposal returning.
+[`prose.md`](../../rules/prose.md) holds the argument for the first four, including why
+**Choice** is both the section most often omitted and the one worth most.
 
 A close condition someone else cannot evaluate is not one. "Publishing feels better" cannot
 close; "publishing an unchanged document writes no new artifact" can.

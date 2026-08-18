@@ -104,8 +104,8 @@
             ]
           }
         },
-        // filename === export. Held alongside `check-single-export.mjs` (one unit per file) and
-        // `check-structure.mjs` (no category names), this makes filename → symbol invertible,
+        // filename === export. Held alongside `tests/oneUnitPerFile.test.mjs` and
+        // `tests/junkDrawerFilenames.test.mjs`, this makes filename → symbol invertible,
         // which is what `scripts/catalog.mjs` derives every CATALOG.md from.
         "useFilenamingConvention": {
           "level": "error",
@@ -195,22 +195,25 @@
       }
     },
     {
+      // Narrowed from a blanket `scripts/**` exemption, and what stayed has a reason each.
+      // `useFilenamingConvention` is `filenameCases: ["export"]`, which an executable entry point
+      // cannot satisfy: it exports nothing, so there is no name for the file to match — 15 of the
+      // 24 diagnostics the blanket form was hiding were this one rule against that shape.
+      // `noExcessiveLinesPerFile` covers `scaffold-issue.mjs` at 586 lines, which is a real
+      // decomposition and is tracked as one. `noMagicNumbers` and `noExcessiveLinesPerFunction`
+      // were dropped from the exemption and the five violations under them fixed.
       "includes": ["scripts/**"],
       "linter": {
         "rules": {
           "style": {
             "useFilenamingConvention": "off",
-            "noMagicNumbers": "off",
             "noExcessiveLinesPerFile": "off"
-          },
-          "complexity": {
-            "noExcessiveLinesPerFunction": "off"
           }
         }
       }
     },
     {
-      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/__tests__/**"],
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.test.mjs", "**/__tests__/**", "tests/**"],
       "linter": {
         "rules": {
           "suspicious": {

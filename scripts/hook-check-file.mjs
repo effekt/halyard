@@ -26,32 +26,22 @@ function rootOf(filePath) {
   }
 }
 
-const CODE_GATES = [
-  ["node", ["scripts/check-single-export.mjs", "--check"]],
-  ["node", ["scripts/check-structure.mjs", "--check"]],
-  ["node", ["scripts/check-schema-depth.mjs", "--check"]],
-  ["pnpm", ["exec", "biome", "check", "--no-errors-on-unmatched"]],
-];
+/** Takes the edited path, so it reports the exact line rather than a whole-corpus summary. */
+const CODE_GATES = [["pnpm", ["exec", "biome", "check", "--no-errors-on-unmatched"]]];
 
 /** Markup and stylesheets, which is where an accessibility failure is written. */
 const MARKUP_GATES = [["node", ["scripts/check-a11y.mjs", "--check"]]];
 
-/** Judged against the file alone, so these run per-file and report the exact line. */
-const PER_FILE_PROSE_GATES = [
-  ["node", ["scripts/check-prose.mjs", "--check"]],
-  // A filename either resolves against the filesystem or it does not — no other document is
-  // involved, so this belongs at the edit rather than waiting for the commit.
-  ["node", ["scripts/check-file-refs.mjs", "--check"]],
-];
+/** Judged against the file alone, so this runs per-file and reports the exact line. */
+const PER_FILE_PROSE_GATES = [["node", ["scripts/check-prose.mjs", "--check"]]];
 
 /**
- * A link is only broken relative to every other document, and a claim is only duplicated
- * relative to where else it appears, so these take no file argument and read the whole corpus.
+ * Everything else is a repository invariant, and lives in `tests/` where the runner owns the
+ * verdict. The whole `repo` project runs rather than a selection: these read files as *data*
+ * rather than importing them, so `vitest related` selects none of them for any edited path. It
+ * costs about 400ms, which is affordable once per edit and is why they are all in one project.
  */
-const PROSE_GATES = [
-  ["node", ["scripts/check-docs.mjs", "--check"]],
-  ["node", ["scripts/check-prose-dupes.mjs", "--check"]],
-];
+const SUITE = ["pnpm", ["exec", "vitest", "run", "--project", "repo"]];
 
 const payload = await new Promise((resolve) => {
   let raw = "";
@@ -79,11 +69,17 @@ const isManifest = filePath.endsWith("package.json");
 const perFile = [
   ...(isCode ? CODE_GATES : []),
   ...(isMarkup ? MARKUP_GATES : []),
-  ...(isManifest ? [["node", ["scripts/check-pinned-deps.mjs", "--check"]]] : []),
   ...(isProse ? PER_FILE_PROSE_GATES : []),
 ];
 
-if (perFile.length === 0 && !isProse) process.exit(0);
+// Corpus-wide, so no path argument: a manifest's specifier is exact only relative to the catalog
+// it resolves through, and every invariant in the suite is a property of the tree, not of a file.
+const corpus = [
+  ...(isCode || isProse || isManifest ? [SUITE] : []),
+  ...(isManifest ? [["pnpm", ["pinned-deps"]]] : []),
+];
+
+if (perFile.length === 0 && corpus.length === 0) process.exit(0);
 
 const cwd = rootOf(filePath);
 
@@ -91,9 +87,7 @@ const failures = [
   ...perFile.map(([command, args]) =>
     spawnSync(command, [...args, filePath], { encoding: "utf8", cwd }),
   ),
-  ...(isProse
-    ? PROSE_GATES.map(([command, args]) => spawnSync(command, args, { encoding: "utf8", cwd }))
-    : []),
+  ...corpus.map(([command, args]) => spawnSync(command, args, { encoding: "utf8", cwd })),
 ].filter((result) => result.status !== 0);
 
 if (failures.length === 0) process.exit(0);

@@ -32,7 +32,7 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { trackedFiles } from "./trackedFiles.mjs";
+import { trackedFiles } from "../tests/support/trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const EXEMPT_LINE = /<!--\s*prose-ok\s*-->/;

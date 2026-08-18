@@ -61,7 +61,7 @@ stable, this issue path points at the offending node.
 
 ## Gates
 
-`vitest` runs the suite and `check-installable.mjs` proves each package imports from its own
+`vitest` runs the suite, and its `release` project proves each package imports from its own
 tarball. **Gate:** none for the colocated-test requirement itself — nothing asserts that a unit
 has a test beside it, and most units currently do not.
 [#96](https://github.com/effekt/nubbin/issues/96) is what closing that would take, and why it is

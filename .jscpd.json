@@ -24,7 +24,6 @@
     "**/src/testing/**",
     "**/fixtures/**",
     "**/*.config.*",
-    "**/scripts/**",
     "**/*.schema.ts",
     "**/*.constants.ts",
     "**/*Defaults.ts",

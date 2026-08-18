@@ -57,6 +57,7 @@ catalog:
 
   # Ratchets
   jscpd: 5.0.15
+  syncpack: 15.3.3
   knip: 6.32.2
   dependency-cruiser: 18.1.1
   type-coverage: 2.30.1

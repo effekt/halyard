@@ -35,7 +35,7 @@ them was internally plausible, which is why nothing caught them.
 
 A design document that has stopped changing has a job to do: move its conclusion into
 a file under `docs/decisions/` and leave a link. Two documents describing one decision is how they diverge.
-**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence. The budget is zero: a non-zero allowance would silently grow as the corpus duplicates itself, catching whoever next adds prose rather than catching the duplication. It reads `docs/` and `AGENTS.md`, so a claim copied between two files in this directory is caught by a reader or not at all.
+**Gate:** `tests/proseDuplication.test.mjs` — twelve matching words is a copy, not coincidence. The budget is zero: a non-zero allowance would silently grow as the corpus duplicates itself, catching whoever next adds prose rather than catching the duplication. It reads `docs/`, `AGENTS.md`, `.claude/rules/` and `.claude/skills/`, so a claim copied from a document into a rule is caught where it used not to be.
 
 ## Rules
 
@@ -81,7 +81,7 @@ A list in prose beside a list a tool enforces is a copy, and the copy is the one
 
 A count in prose drifts the same way, including a count of this repository's own review hooks written inside the document arguing against counting in prose.
 
-The same holds for a claim about project state. "There is no implementation yet" outlived its truth in the README, the published site and the contributing guide. <!-- prose-ok --> **Correcting one is not correcting it:** grep the repository and the site for the old phrasing. `pnpm stale-docs` cannot help — each of those documents was newer than what it misdescribed. **Gate:** none — `check-prose-dupes.mjs` catches the copy, never the staleness, so a tool cannot flag what only a reader can notice.
+The same holds for a claim about project state. "There is no implementation yet" outlived its truth in the README, the published site and the contributing guide. <!-- prose-ok --> **Correcting one is not correcting it:** grep the repository and the site for the old phrasing. Freshness cannot help — each of those documents was newer than what it misdescribed. **Gate:** none — the duplication test catches the copy, never the staleness, so a tool cannot flag what only a reader can notice.
 
 ### Sweep the neighbours
 
@@ -95,7 +95,7 @@ exists to make smaller.
 
 Relative links and `#anchors` are checked against real headings. An anchor drops the em-dash
 and keeps the spaces around it, so `## Node — flat` anchors as `#node--flat` with two
-hyphens. **Gate:** `check-docs.mjs`.
+hyphens. **Gate:** `tests/documentationStructure.test.mjs`.
 
 ### Every document carries frontmatter
 
@@ -113,12 +113,13 @@ quotes: `.claude/CATALOG.md` renders every rule's `paths` and `summary` as a row
 that describes itself badly reads badly everywhere.
 
 The `docs/README.md` table is a separate, hand-written reading order — **gate:**
-`check-docs.mjs` verifies every file appears in it; the accuracy of a status line is on you.
+`tests/documentationStructure.test.mjs` verifies every file appears in it; the accuracy of a
+status line is on you.
 
 ### A document that trails what it depends on gets reviewed
 
 If A links to B and B was committed after A was last touched, A described B's subject at a
-moment that has since moved. `pnpm stale-docs` flags it.
+moment that has since moved.
 
 Freshness comes from `git log`, not a hand-maintained date, so there is nothing to forget
 and nothing that can lie. It is deliberately biased toward false positives — a review costs

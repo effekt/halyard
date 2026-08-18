@@ -47,7 +47,7 @@ tone: z.string()
 tone: z.enum(["brand", "neutral"])
 ```
 
-Name intent, not style — the same rule the layout contract applies, here applied to the block's own schema. It has to be a rule rather than a convention, because the default pull is always toward an open `string`: it is faster to write, accepts anything an author asks for, and only reveals its cost once the values are stored and someone wants to change what they mean. **Gate:** none; `check-schema-depth.mjs` checks nesting, not openness.
+Name intent, not style — the same rule the layout contract applies, here applied to the block's own schema. It has to be a rule rather than a convention, because the default pull is always toward an open `string`: it is faster to write, accepts anything an author asks for, and only reveals its cost once the values are stored and someone wants to change what they mean. **Gate:** none; `tests/schemaDepth.test.mjs` checks nesting, not openness.
 
 ### A block is an organism, never a primitive
 

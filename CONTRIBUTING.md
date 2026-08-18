@@ -16,19 +16,19 @@ up, and what's actually worth contributing right now.
 ```bash
 nvm install && nvm use     # reads .nvmrc
 corepack enable pnpm       # activates the pinned pnpm
-pnpm install               # installs the git hooks via `prepare`
+pnpm install               # sets core.hooksPath and installs the git hooks via `prepare`
 pnpm verify                # every gate
 ```
 
 If a git hook later reports `pnpm: command not found`, the toolchain is missing from that
 shell's PATH rather than from the machine — the hooks shell out to `pnpm` directly.
 
-The prose gates are plain Node and need no install, which is why CI runs them against a
-bare checkout:
+Two gates are plain Node and need no install, which is why CI runs them against a bare
+checkout. Everything else is a test, so it needs one:
 
 ```bash
-node scripts/check-docs.mjs --check
 node scripts/check-prose.mjs --check
+node scripts/check-a11y.mjs --check
 ```
 
 Node 22+ (24 pinned in `.nvmrc`) and pnpm are required; `packageManager` in `package.json`
