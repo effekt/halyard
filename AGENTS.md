@@ -39,23 +39,23 @@ two places, and the copy is the one that goes stale while the original is correc
 1. **Schema lives in code.** Block props are inferred *from* the schema, never declared
    alongside it. There is no second definition of a block anywhere, and no schema in a
    database — [Schema in code, content in a
-   database](docs/decisions.md#schema-in-code-content-in-a-database).
+   database](docs/decisions/schema-in-code-content-in-a-database.md).
 2. **`core` has no runtime dependencies beyond Standard Schema.** No React, no Next, no
    `node:*`. It runs in a browser, a worker, and a build step unchanged —
-   [`core` depends on nothing](docs/decisions.md#core-depends-on-nothing).
+   [`core` depends on nothing](docs/decisions/core-depends-on-nothing.md).
 3. **Published artifacts are immutable and content-addressed.** Publishing writes a new
    artifact and moves a pointer — [Artifacts are immutable and
-   content-addressed](docs/decisions.md#artifacts-are-immutable-and-content-addressed).
+   content-addressed](docs/decisions/artifacts-are-immutable-and-content-addressed.md).
 4. **Compiling is not building.** Compile validates and serializes a document; publishing and
    previewing never require a deploy — [Why compile at
    publish](docs/architecture.md#why-compile-at-publish).
 5. **IO happens in adapters.** `core` computes; adapters read and write.
 6. **Artifacts contain data, never code.** What that excludes, and why it is a security and
    performance boundary rather than a preference, is
-   [Artifacts contain data, never code](docs/decisions.md#artifacts-contain-data-never-code).
+   [Artifacts contain data, never code](docs/decisions/artifacts-contain-data-never-code.md).
 7. **Nubbin knows nothing about the consumer's stack.** It constructs schemas and renders,
    ships no CSS, and holds no opinion about styling — [Layout is ordinary props, and Nubbin
-   ships no CSS](docs/decisions.md#layout-is-ordinary-props-and-nubbin-ships-no-css). Any
+   ships no CSS](docs/decisions/layout-is-ordinary-props-and-nubbin-ships-no-css.md). Any
    feature that requires knowing what is on the other side is the wrong feature.
 
 ## Commands
@@ -282,6 +282,6 @@ Everything is tested against real zod schemas; dependency-cruiser fails the buil
 
 **Unbuilt:** the studio.
 
-Read `docs/architecture.md` for the model and `docs/decisions.md` for what has already been
+Read `docs/architecture.md` for the model and `docs/decisions/` for what has already been
 settled and why, and treat the open issues labelled `design-question` as the list of things
 you may not silently decide.

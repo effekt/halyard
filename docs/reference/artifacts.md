@@ -10,9 +10,9 @@ This page describes the shipped output-layer contracts of `@nubbin/core`: the `A
 `ArtifactNode` and `Holes` shapes `compile` produces, the `ArtifactStore` interface adapters
 implement, `RoutePointer` and `Manifest`, and the two functions that operate on them —
 `checkRollback` and `parseMatchKind`. Why artifacts are immutable and addressed by content is
-[Artifacts are immutable and content-addressed](../decisions.md#artifacts-are-immutable-and-content-addressed);
+[Artifacts are immutable and content-addressed](../decisions/artifacts-are-immutable-and-content-addressed.md);
 what they may contain is
-[Artifacts contain data, never code](../decisions.md#artifacts-contain-data-never-code).
+[Artifacts contain data, never code](../decisions/artifacts-contain-data-never-code.md).
 
 ## `Artifact`
 

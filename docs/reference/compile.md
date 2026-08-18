@@ -132,7 +132,7 @@ interface DocumentMeta {
 The authoring shape is flat: `elements` is an index keyed by id, and a node's `slots` hold
 ordered child ids rather than nested nodes, so every editor operation addresses a node
 directly. Compiling denormalizes it into the artifact's nested tree — the trade is
-[Flat while authoring, nested once published](../decisions.md#flat-while-authoring-nested-once-published).
+[Flat while authoring, nested once published](../decisions/flat-while-authoring-nested-once-published.md).
 
 `root` names the single entry element, while `Artifact.tree` is an array. How that boundary
 should treat a page of stacked sections — which has no single containing block — is the open

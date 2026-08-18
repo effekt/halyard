@@ -59,7 +59,7 @@ Hybrid, split on "intrinsic to the field" versus "specific to this surface":
 
 Rejected: embedding hints via each validator's own metadata slot (zod `.meta()`, valibot
 `v.metadata()`, arktype `.configure()`) behind one adapter. See
-[Editing hints live beside the schema, not inside it](decisions.md#editing-hints-live-beside-the-schema-not-inside-it).
+[Editing hints live beside the schema, not inside it](decisions/editing-hints-live-beside-the-schema-not-inside-it.md).
 
 ## Introspection is still needed, and is per-validator
 
@@ -288,7 +288,7 @@ const artifact = await resolveArtifact(store, params.slug);
 return <Renderer artifact={artifact} registry={registry} />;  // loads only what it names
 ```
 
-See [Catalog and registry are separate](decisions.md#catalog-and-registry-are-separate) for
+See [Catalog and registry are separate](decisions/catalog-and-registry-are-separate.md) for
 why. The catalog is also why `core` must not depend on React (invariant 2): CI validating
 artifacts against current schemas needs the catalog and nothing else.
 
@@ -330,7 +330,7 @@ typed `BlockRegistry` — the render-side map of `() => Promise<BlockComponent>`
 `get`, `names` and `fingerprint`, and it is what `compile` validates against. Passing it here, or
 passing the render-side map to `compile`, is the same mistake in two directions, and it has
 reached four separate tickets — see
-[registry file naming](decisions.md#each-registry-file-is-named-after-the-type-it-holds).
+[registry file naming](decisions/each-registry-file-is-named-after-the-type-it-holds.md).
 
 **`[...slug]`, not `[[...slug]]`**, wherever the application also has a hand-written `app/page.tsx`:
 the optional form claims `/` as well, and Next rejects two owners of one path. An application with

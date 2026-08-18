@@ -50,13 +50,13 @@ caching tier to survive the round trip.
 **Catalog and registry are separate.** The pipeline splits at `defineBlock` for that reason:
 one branch is inert data any environment can validate against, the other is a set of importers
 a bundler can follow. Chosen over one flat list of components, which forces every page to load
-all of them — [the decision](decisions.md#catalog-and-registry-are-separate).
+all of them — [the decision](decisions/catalog-and-registry-are-separate.md).
 
 **Documents are flat while authoring, nested once published.** The draft shape is
 `{ root, elements }` keyed by id, so an editor addresses a node directly instead of walking a
 tree to find it. Compile denormalizes that into the self-contained tree the renderer reads,
 checking reference integrity, cycle-freedom and reachability on the way —
-[the decision](decisions.md#flat-while-authoring-nested-once-published) has the rest.
+[the decision](decisions/flat-while-authoring-nested-once-published.md) has the rest.
 
 ## Why compile at publish
 
@@ -104,7 +104,7 @@ A recommendation for the Next binding, not a requirement of `core`.
 Every value an artifact holds is inert data validated against a schema, so the render path
 evaluates nothing it loads and a published page cannot execute anything its author typed. The
 list of what that rules out, and the security and performance case for it, is
-[the decision](decisions.md#artifacts-contain-data-never-code).
+[the decision](decisions/artifacts-contain-data-never-code.md).
 
 ## Preview
 

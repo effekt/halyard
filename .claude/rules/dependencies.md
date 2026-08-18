@@ -23,7 +23,7 @@ Two independent controls, because either alone leaks:
   release has had time to be found and pulled, which pinning alone does nothing about.
 
 Three days, not a week: a hijack is caught in hours, and a longer cooldown stalls every
-ordinary bump — [the decision](../../docs/decisions.md#pinned-versions-and-a-3-day-cooldown).
+ordinary bump — [the decision](../../docs/decisions/pinned-versions-and-a-3-day-cooldown.md).
 
 ## Rules
 

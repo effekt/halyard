@@ -114,7 +114,7 @@ built on top of that assumption.
 | Read | For |
 |---|---|
 | [`docs/architecture.md`](docs/architecture.md) | How the pieces fit |
-| [`docs/decisions.md`](docs/decisions.md) | What is settled, what was rejected, and what is out of scope |
+| [`docs/decisions/`](docs/decisions/README.md) | What is settled, what was rejected, and what is out of scope |
 | [`docs/domain-model.md`](docs/domain-model.md) | Every entity and what owns it |
 | [`docs/api.md`](docs/api.md) | The API shape |
 | [Open design questions](https://github.com/effekt/nubbin/issues/15) | What is still undecided — the best place to disagree |

@@ -33,7 +33,7 @@ export const catalog = defineCatalog({
 `defaults` is what a freshly dropped block renders with, so the **studio** is what needs it —
 and the studio fetches the catalog precisely because the catalog carries no components. Putting
 defaults on the block would make the studio load a component to learn a default, which is the
-coupling [the catalog/registry split](../../docs/decisions.md#catalog-and-registry-are-separate)
+coupling [the catalog/registry split](../../docs/decisions/catalog-and-registry-are-separate.md)
 exists to prevent.
 
 `defaults` must pass the schema's own `validate()`. **Gate:** `defineCatalog()`, which runs `assertValidDefaults` and throws naming the failing paths. Registration refuses them, because defaults that fail their own schema produce a block that is invalid the instant it is placed. The type does not express it — `defineBlock` cannot, since `defaults` is not on the block.
@@ -121,7 +121,7 @@ export function Hero() { return (<><h1>{title}</h1><p>{body}</p></>); }
 export function Hero() { return (<section><h1>{title}</h1><p>{body}</p></section>); }
 ```
 
-The studio learns about the page only through the DOM, so block roots carry `data-nubbin-node`. A Fragment leaves nothing to attach it to. **Gate:** `invokeBlock` throws at render, naming the block and the node — static analysis was rejected as redundant, see [the decision](../../docs/decisions.md#one-root-element-per-block-enforced-at-render). A block must also be a server component: a client reference cannot be invoked, so it cannot render at all.
+The studio learns about the page only through the DOM, so block roots carry `data-nubbin-node`. A Fragment leaves nothing to attach it to. **Gate:** `invokeBlock` throws at render, naming the block and the node — static analysis was rejected as redundant, see [the decision](../../docs/decisions/one-root-element-per-block-enforced-at-render.md). A block must also be a server component: a client reference cannot be invoked, so it cannot render at all.
 
 ## Checklist
 
