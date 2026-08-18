@@ -297,9 +297,9 @@ Holding `nubbin.io` also settles the collision recorded in
 [#74](https://github.com/effekt/nubbin/issues/74), which rested on that name belonging to someone
 else.
 
-Where the documentation sits under this origin is decided with
-[#71](https://github.com/effekt/nubbin/issues/71), because a path and a generator constrain each
-other.
+Where the documentation sits under this origin is settled with the generator, in
+[the design-site entry](#the-design-site-runs-docusaurus), because a path and a generator
+constrain each other.
 
 ## The design site runs Docusaurus
 
@@ -317,6 +317,11 @@ build, and upstream maintains that check; and the site is React, which is what N
 renders — the strongest demo this project can have is a page on this site built from real
 Nubbin blocks, and a static generator forecloses it. That argument is the deciding one; the
 rest is quality of life.
+
+The site serves at `/docs` on [the canonical origin](#one-origin-serves-both-audiences),
+whose root is the landing page. Rejected: `/reference`, a name that fits only the API pages
+and misdescribes the corpus the moment a guide lands; and the documentation at the root,
+which takes the front door from the page whose job is selling what the documents describe.
 
 Rejected: staying on a static generator and accepting a patch per theme defect. Right while
 the site was a handful of documents nobody styled; the defect list is what ended it.

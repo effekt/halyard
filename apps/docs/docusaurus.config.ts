@@ -7,8 +7,10 @@ import { codeTheme } from "./codeTheme";
 const config: Config = {
   title: "Nubbin",
   tagline: "Your components. Their pages. A page builder that lives inside your codebase.",
-  url: "https://effekt.github.io",
-  baseUrl: "/nubbin/",
+  // The canonical origin and the documentation's path on it — both recorded in
+  // docs/decisions.md ("One origin serves both audiences", "The design site runs Docusaurus").
+  url: "https://nubbin.io",
+  baseUrl: "/docs/",
   organizationName: "effekt",
   projectName: "nubbin",
   onBrokenLinks: "throw",
