@@ -1,5 +1,5 @@
 ---
-paths: "examples/**, apps/**, packages/**/*.tsx"
+paths: "examples/**, apps/**, packages/**/*.tsx, **/*.html"
 title: Accessibility Rules
 summary: The accessibility decisions a gate cannot make — names, heading order, focus, colour, semantics, motion
 status: stable

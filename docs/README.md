@@ -24,9 +24,14 @@ produced them.
 | [`api.md`](api.md) | The shape of `defineBlock` through compile and render, and where UI hints live | draft |
 | [`authoring-flows.md`](authoring-flows.md) | What an author does step by step, and the failure modes each flow carries | draft |
 | [`studio.md`](studio.md) | How the self-hosted canvas, cross-iframe drag, and preview are architected | draft |
+| [`reference/blocks.md`](reference/blocks.md) | `defineBlock` and `createRegistry` as shipped — what registration rejects, and what the fingerprint covers | reference |
+| [`reference/catalog.md`](reference/catalog.md) | `defineCatalog` as shipped — entries, field hints, defaults, and schema introspection | reference |
+| [`reference/compile.md`](reference/compile.md) | `compile` as shipped — the document shape, the two validation passes, and every issue code | reference |
+| [`reference/artifacts.md`](reference/artifacts.md) | The `Artifact` and `ArtifactStore` contracts as shipped, with `checkRollback` and `parseMatchKind` | reference |
 
 `draft` means the shape is expected to move. `stable` means changing it is a design change,
-not an edit.
+not an edit. `reference` means the page describes the shipped surface — it changes when the
+code does.
 
 ## What lives elsewhere
 

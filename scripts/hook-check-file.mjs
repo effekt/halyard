@@ -5,7 +5,27 @@
 // Reads the hook payload on stdin, extracts `tool_input.file_path`, and delegates.
 // Exit 2 blocks and returns stderr to the agent.
 
-import { spawnSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
+import { dirname } from "node:path";
+import { isBinaryPath } from "./isBinaryPath.mjs";
+
+/**
+ * The gates resolve their arguments against the working directory, and a hook inherits the
+ * session's — which is the primary checkout even when the edit landed in a worktree. Running
+ * them there reported every new file in a worktree as missing. Derive the root from the edited
+ * file instead, so the gate reads the tree the edit is actually in.
+ */
+function rootOf(filePath) {
+  try {
+    return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      cwd: dirname(filePath),
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return process.cwd();
+  }
+}
 
 const CODE_GATES = [
   ["node", ["scripts/check-single-export.mjs", "--check"]],
@@ -56,18 +76,16 @@ try {
 if (!filePath) process.exit(0);
 
 const isCode = /\.tsx?$/.test(filePath);
-const isMarkup = /\.(tsx|jsx|css)$/.test(filePath);
+const isMarkup = /\.(tsx|jsx|html|css)$/.test(filePath);
 const isProse = /\.(md|mdx)$/.test(filePath);
 const isManifest = filePath.endsWith("package.json");
 
 /**
- * Every extension the vendor scanner reads. Deliberately wider than code and prose: the one
- * leak that survived four hand sweeps was a comment in a `.grit` file, which nothing scanned
- * because it was neither.
+ * Everything but the certainly-binary, matching the vendor scanner's own sweep. An allowlist
+ * of extensions here once hid a leak in a `.grit` comment that nothing scanned because the
+ * list predated the file type — the same blindness would meet the next new extension.
  */
-const isScannable = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/.test(
-  filePath,
-);
+const isScannable = !isBinaryPath(filePath);
 
 const perFile = [
   ...(isCode ? CODE_GATES : []),
@@ -79,12 +97,14 @@ const perFile = [
 
 if (perFile.length === 0 && !isProse) process.exit(0);
 
+const cwd = rootOf(filePath);
+
 const failures = [
   ...perFile.map(([command, args]) =>
-    spawnSync(command, [...args, filePath], { encoding: "utf8" }),
+    spawnSync(command, [...args, filePath], { encoding: "utf8", cwd }),
   ),
   ...(isProse
-    ? PROSE_GATES.map(([command, args]) => spawnSync(command, args, { encoding: "utf8" }))
+    ? PROSE_GATES.map(([command, args]) => spawnSync(command, args, { encoding: "utf8", cwd }))
     : []),
 ].filter((result) => result.status !== 0);
 

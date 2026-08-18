@@ -1,5 +1,5 @@
 ---
-paths: "scripts/**, .dependency-cruiser.cjs, biome.json, knip.jsonc, lefthook.yml, .github/workflows/**"
+paths: "scripts/**, .dependency-cruiser.cjs, biome.jsonc, knip.jsonc, lefthook.yml, .github/workflows/**"
 title: Gates
 summary: How to add or change a gate so it actually catches what it claims
 status: stable
@@ -18,6 +18,7 @@ A gate that passes because it scanned zero files reads exactly like one that pas
 | `check-no-vendor-refs.mjs` | `walk()` only handled directories, so top-level files were never scanned |
 | its term list | gitignored and absent, so it ran with zero terms |
 | three scanners | omitted `examples/` from `SCAN_ROOTS` |
+| the same three scanners | each carried an extension list narrower than its gate-table row claims, so a machine path in an `.svg`, a `.css` or an `.html` sat under a green tick |
 | `check-single-export`, `check-schema-depth` | accepted only explicit paths, so `verify` ran both against nothing |
 | `core-imports-no-framework` | matched a resolved `node_modules` path that never occurs, so the rule guarding the central invariant had never fired |
 | `publint`, `attw` | installed, documented as gates, wired to nothing |
@@ -84,6 +85,17 @@ easing curve does not read as a defect.
 
 **Gate:** none — a check that lies passes every gate. This is the judgment `verify` cannot hold.
 
+### A scanner's scope is asked of git, not listed
+
+A gate that enumerates extensions or directories is blind to every file type nobody thought of
+when the list was written, and the blindness is silent — the tick over the files it did read is
+indistinguishable from a complete one. `scripts/trackedFiles.mjs` asks `git ls-files` for
+everything committed plus everything untracked and not ignored, which is exactly the set a
+contributor is about to publish; a scanner needing a narrower slice filters that set down
+rather than building its own. It throws instead of falling back to a directory walk, because a
+fallback nobody exercises is where a gate quietly stops reading anything. **Gate:** none — this
+is how a scanner is built, which no gate over the scanner can see.
+
 ### Say what the gate cannot catch
 
 Claiming full coverage is how the next gap is missed. `check-installable.mjs` records that it cannot see an unused peer dependency, because the package imports perfectly well — it just drags something along. That sentence is why `check-peer-deps.mjs` exists.
@@ -91,6 +103,30 @@ Claiming full coverage is how the next gap is missed. `check-installable.mjs` re
 ### A tuned threshold is not a waived one
 
 Where a gate fires on something legitimate, tune the scope and record the reason — do not raise the threshold to accommodate it. A contract suite constructs a fresh store per test deliberately, so `src/testing/` is excluded from duplication; the rest of the corpus stayed at 0.92% against a 1% threshold rather than the threshold moving.
+
+### Have someone else run the check against real inputs
+
+A check is written from a model of how the thing fails, and that model is the same one its
+author used to decide what to check. So its misses are exactly the cases the model does not
+contain, and they stay invisible to the author no matter how carefully they re-read it. A second
+person brings a different model — that is the whole of the mechanism, and why looking harder is
+not a substitute.
+
+Reading the design is not enough either. Both defects below were found by running the check
+against real inputs and watching what it did, not by reviewing it:
+
+| Proposed check | What running it showed |
+|---|---|
+| a `PreToolUse` hook matching `Write|Edit|MultiEdit`, to keep the primary worktree clean | files written by an MCP server never meet it — [#211](https://github.com/effekt/nubbin/issues/211) |
+| a pattern over gate-table rows, to find rows over-claiming their surface | the only rows stating a surface are ``publint``·``attw`` and `check-plan-files.mjs`, and both state it correctly — so it fires on the honest rows and passes the rest |
+
+Open `AGENTS.md` and grep the table for a scope literal to check the second yourself. Both authors
+had argued against this failure in the same breath as proposing it.
+
+So: hand the check to whoever did not design it, and ask them to run it against the corpus it
+will meet — the same standard as seeding a gate, one level up.
+
+**Gate:** none — nothing can tell whether the person seeding a check is the person who wrote it.
 
 ### Check the artifact, not only the source
 
@@ -104,3 +140,4 @@ A gate reading `src/` cannot see what packing, publishing and installing do. Fou
 - [ ] What the gate cannot catch is written down
 - [ ] Any exclusion names the reason, and the threshold did not move to accommodate it
 - [ ] The check asserts on the thing itself, at a defined moment, not on a proxy for it
+- [ ] Someone who did not design the check seeded the violation against it

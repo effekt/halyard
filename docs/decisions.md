@@ -275,6 +275,32 @@ written down in `.claude/rules/` and reviewed by a hook, because no gate can enc
 The `logMessage` case is the proof: a function that formats its own timestamp inline is one
 declaration, eight lines, complexity 1. Every gate passes it. It is still wrong.
 
+## One origin serves both audiences
+
+`nubbin.io` is canonical. `nubbin.dev` and `nubbin.ca` redirect to it permanently, and are held
+rather than allowed to lapse.
+
+A page that sells the product and a page that documents it answer different questions, and one
+page attempting both serves neither with force. They are therefore two paths on the same origin,
+and moving between them is an ordinary navigation. Each view has an address, so it can be linked,
+indexed and sent to someone. A switch held only in client state gives the second view no URL, and
+a view nobody can link to is one nobody arrives at.
+
+Rejected: a domain per audience, with the developer site living at `nubbin.dev`. The name says
+who it is for and the TLD is on the HSTS preload list, so the reading is right. It loses on two
+counts. Cross-document View Transitions are same-origin only, so the switch between the two views
+degrades from a transition to a page load exactly when it is the thing being demonstrated. And
+inbound links divide across two origins rather than accumulating on one, which costs the newer
+surface the most. A redirect supplies the mnemonic without either cost.
+
+Holding `nubbin.io` also settles the collision recorded in
+[#74](https://github.com/effekt/nubbin/issues/74), which rested on that name belonging to someone
+else.
+
+Where the documentation sits under this origin is decided with
+[#71](https://github.com/effekt/nubbin/issues/71), because a path and a generator constrain each
+other.
+
 ## The design site runs Docusaurus
 
 Every defect the site's audits found was the theme's, never the documents': syntax
@@ -297,7 +323,7 @@ the site was a handful of documents nobody styled; the defect list is what ended
 
 The dependency surface is not an exception to
 [the pinning discipline](#pinned-versions-and-a-3-day-cooldown). `check-pinned-deps.mjs`
-reads the manifests under `packages/`, `apps/` and `examples/` plus the workspace catalog,
-and never walks the transitive tree — so exactly pinning the site's direct dependencies
+reads every manifest git tracks plus the workspace catalog, and never walks the transitive
+tree — so exactly pinning the site's direct dependencies
 satisfies it in full, and the transitive tree answers to the lockfile,
 `blockExoticSubdeps` and `minimumReleaseAge` the same way every other dependency's does.
