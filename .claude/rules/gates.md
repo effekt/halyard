@@ -121,13 +121,18 @@ against real inputs and watching what it did, not by reviewing it:
 | a `PreToolUse` hook matching `Write|Edit|MultiEdit`, to keep the primary worktree clean | files written by an MCP server never meet it — [#211](https://github.com/effekt/nubbin/issues/211) |
 | a pattern over gate-table rows, to find rows over-claiming their surface | the only rows stating a surface are ``publint``·``attw`` and `check-plan-files.mjs`, and both state it correctly — so it fires on the honest rows and passes the rest |
 
-Open `AGENTS.md` and grep the table for a scope literal to check the second yourself. Both authors
-had argued against this failure in the same breath as proposing it.
+Open `AGENTS.md` and grep the table for a scope literal to check the second yourself. Both authors had argued against this failure in the same breath as proposing it.
 
 So: hand the check to whoever did not design it, and ask them to run it against the corpus it
 will meet — the same standard as seeding a gate, one level up.
 
 **Gate:** none — nothing can tell whether the person seeding a check is the person who wrote it.
+
+### Put the property in the shape, not in a rule someone remembers
+
+A check whose correctness rests on a convention fails silently the first time someone edits around it, and every gate still passes. Put it where the code cannot work without it. `scaffold-issue.mjs` runs its duplicate search *above* the validation a flag softens, so no flag can reach an issue-open unsearched — the invariant is the statement order, not a note asking callers to search first. `anchorsOf` returns the directories that qualify a path rather than a boolean saying one did, so the existence test cannot drift from the classification test it depends on.
+
+Ask what a careless edit would have to do to break the check, and whether anything would notice. Where the answer is "delete a line nobody reads", the property is in the wrong place.
 
 ### Check the artifact, not only the source
 
@@ -142,3 +147,4 @@ A gate reading `src/` cannot see what packing, publishing and installing do. Fou
 - [ ] Any exclusion names the reason, and the threshold did not move to accommodate it
 - [ ] The check asserts on the thing itself, at a defined moment, not on a proxy for it
 - [ ] Someone who did not design the check seeded the violation against it
+- [ ] The property lives in the code's shape, not in a convention a later edit can drop
