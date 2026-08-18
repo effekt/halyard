@@ -1,6 +1,7 @@
 import type { DocumentVersion } from "@nubbin/core";
 import { home } from "./home";
 import { livePulse } from "./livePulse";
+import { pricing } from "./pricing";
 import { promotionsFlash } from "./promotionsFlash";
 import { promotionsSummer } from "./promotionsSummer";
 import { promotionsWinter } from "./promotionsWinter";
@@ -9,6 +10,7 @@ import { promotionsWinter } from "./promotionsWinter";
  * decision, made by the publish script. */
 export const fixtureRoutes: Record<string, DocumentVersion> = {
   "/": home,
+  "/pricing": pricing,
   "/promotions/summer": promotionsSummer,
   "/promotions/winter": promotionsWinter,
   "/promotions/flash": promotionsFlash,
