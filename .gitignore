@@ -27,6 +27,7 @@ report/
 /.claude/skills/*
 !/.claude/skills/decision/
 !/.claude/skills/issue/
+!/.claude/skills/querying-github/
 !/.claude/skills/worktree/
 
 # Agent worktrees. Inside the repository so a stray `rm -rf /tmp` cannot take uncommitted
