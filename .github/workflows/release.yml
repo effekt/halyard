@@ -104,9 +104,13 @@ jobs:
           set -euo pipefail
           deadline=$((SECONDS + 1800))
           while :; do
-            json=$(gh api "repos/$REPO/actions/workflows/verify.yml/runs?head_sha=$SHA&per_page=1")
-            status=$(jq -r '.workflow_runs[0].status // "missing"' <<<"$json")
-            conclusion=$(jq -r '.workflow_runs[0].conclusion // ""' <<<"$json")
+            # `gh api --jq` rather than a pipe into `jq`: gh carries its own engine, so this needs
+            # nothing installed beyond the CLI the step already depends on. An unmatched `head_sha`
+            # returns an empty array rather than falling back to the newest run, so `missing` really
+            # does mean this commit has no run.
+            read -r status conclusion <<<"$(gh api \
+              "repos/$REPO/actions/workflows/verify.yml/runs?head_sha=$SHA&per_page=1" \
+              --jq '"\(.workflow_runs[0].status // "missing") \(.workflow_runs[0].conclusion // "none")"')"
             if [ "$status" = "missing" ]; then
               echo "::error::No verify run for $SHA. This workflow publishes only what verify has passed." >&2
               exit 1
