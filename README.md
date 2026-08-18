@@ -93,8 +93,12 @@ All four are on npm under the `rc` tag; `npm view @nubbin/core dist-tags` is the
 schemas rather than mocks, and a build gate fails on any `node:` or framework import inside
 `core`, so the claim that it runs anywhere is checked rather than asserted.
 
-The studio is unbuilt, and the milestone that could invalidate the whole approach has not
-run.
+The studio runs against the demo: it reads the catalog, previews a draft, edits a field, and
+publishes the artifact. [`apps/studio/README.md`](apps/studio/README.md) is its current extent.
+
+The milestone that could invalidate the whole approach has run — five real pages authored as
+fixtures against real blocks, with no editor. Weighing the evidence it produced is
+[#70](https://github.com/effekt/nubbin/issues/70).
 
 The architecture came first, with the decisions and the alternatives each one beat. It has
 been through one adversarial review, which falsified the live postMessage preview and the
