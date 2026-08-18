@@ -9,7 +9,7 @@ model: fable
 export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh" >/dev/null 2>&1; nvm use 24 >/dev/null 2>&1
 ```
 
-Node 24 and pnpm 10 are installed and are not on the default PATH, so a bare shell reports
+Node 24 and pnpm 11 are installed and are not on the default PATH, so a bare shell reports
 `pnpm: command not found`. Run `pnpm test`, never `pnpm --filter <pkg> test` — the filtered form
 bypasses turbo's `^build` and fails naming functions that exist in source.
 
