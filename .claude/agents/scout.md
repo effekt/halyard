@@ -20,6 +20,6 @@ Untagged, it is not captured — see `.claude/rules/subagent-findings.md`.
 
 Two facts about this repository that will otherwise cost you time:
 
-- `packages/` and `apps/` are empty. Code lives in `examples/demo` and `scripts/`.
+- Code lives in `packages/`, `examples/demo` and `scripts/`. The studio is unbuilt.
 - The toolchain is not on the default PATH. Any command needing node or pnpm must first run
   `export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh" >/dev/null 2>&1; nvm use 24 >/dev/null 2>&1`
