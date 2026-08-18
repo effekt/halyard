@@ -13,10 +13,10 @@ and it could not run in a linked worktree
 happens — so in every worktree run it reported a green tick over an empty term list.
 
 A control that runs in one place, and whose configuration cannot travel to the places the
-work happens, is not protecting anything. Its single standing match on `main` was a common
-English word used in its ordinary sense, and that line stays where it is — removing the gate
-resolves nothing about the file it flagged, and a later reader should not take the build going
-green as evidence that anything was cleaned.
+work happens, is not protecting anything. What it had flagged on `main` is resolved separately,
+in its own change: removing a check and resolving what it found are different acts, and the
+build going green here is caused by the first. A later reader should not read that as evidence
+of the second.
 
 The gate, its term list, its example file and its wiring are removed. The editorial standard —
 this repository is public and carries nothing from private work — is a matter for review, not
