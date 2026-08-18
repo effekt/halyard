@@ -7,7 +7,7 @@ import { codeTheme } from "./codeTheme";
 const config: Config = {
   title: "Nubbin",
   tagline: "Your components. Their pages. A page builder that lives inside your codebase.",
-  // Where GitHub Pages serves the branch CI publishes, recorded in docs/decisions/
+  // Where GitHub Pages serves the artifact CI deploys, recorded in docs/decisions/
   // ("The design site runs Docusaurus"). The address is the repository's own, so it moves
   // when the decision does and not when a domain is bought.
   url: "https://effekt.github.io",

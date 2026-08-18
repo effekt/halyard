@@ -51,7 +51,7 @@ content are deliberately not here:
 published by CI from [the repository's
 markdown](decisions/the-site-publishes-the-repositorys-markdown.md), these documents
 included — see
-[Generated documents live only on `gh-pages`](decisions/generated-documents-live-only-on-gh-pages.md).
+[Generated documents are published, never committed](decisions/generated-documents-are-published-never-committed.md).
 
 ## Keeping them honest
 

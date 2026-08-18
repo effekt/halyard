@@ -5,33 +5,33 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# `pnpm install` runs `prepare`, which installs lefthook's git hooks — and this job
-# pushes, so without this the publish drags the whole pre-push suite along behind it.
+# `pnpm install` runs `prepare`, which installs lefthook's git hooks. They are for a
+# developer's machine; the gates this repository runs in CI are jobs, not hooks.
 env:
   LEFTHOOK: "0"
 
-# The branch is a shared artifact rather than a per-ref build, so publishes queue rather
-# than run together, and a running one is never cancelled: a half-written push is a
-# broken site until the next merge.
+# Pages serves one deployment at a time, so publishes queue rather than race, and a
+# running one is never cancelled: the site it is mid-way through writing is the live one.
 concurrency:
   group: pages
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   # No `paths:` filter. The site renders the documents, the workspace and the lockfile,
   # and a filter listing those goes stale the first time an input moves — where the
-  # failure is a site that silently stops updating. Building every merge costs a minute
-  # and short-circuits below when the output is unchanged.
+  # failure is a site that silently stops updating.
   publish:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          # The publish commits onto `gh-pages`, whose history a shallow checkout omits.
-          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
@@ -46,26 +46,16 @@ jobs:
       - name: Build the site
         run: pnpm --filter docs-site run build
 
-      - name: Publish to gh-pages
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin gh-pages
-          git worktree add -B gh-pages ../published origin/gh-pages
+      # `enablement` moves Pages from serving a branch to serving this workflow's
+      # artifact. Declaring it here rather than setting it once by hand keeps the
+      # publishing path in the repository, where a reader can see it.
+      - uses: actions/configure-pages@v6
+        with:
+          enablement: true
 
-          # The branch is build output: what is there is replaced, never merged into.
-          # A file the generator stops emitting has to stop being published.
-          git -C ../published rm -rq .
-          cp -R apps/docs/dist/. ../published/
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: apps/docs/dist
 
-          # Pages serves this branch through Jekyll otherwise, which drops any path
-          # beginning with an underscore — a set Docusaurus is free to emit into.
-          touch ../published/.nojekyll
-
-          git -C ../published add -A
-          if git -C ../published diff --quiet --cached; then
-            echo "The generated site is unchanged; nothing to publish."
-            exit 0
-          fi
-          git -C ../published commit -m "docs(site): publish ${GITHUB_SHA}"
-          git -C ../published push origin gh-pages
+      - id: deploy
+        uses: actions/deploy-pages@v5

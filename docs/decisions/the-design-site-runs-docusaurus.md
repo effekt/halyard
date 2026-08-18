@@ -15,15 +15,15 @@ override, and no search — the full list, with scale, is
 So the site is a workspace, `apps/docs`, running Docusaurus over the documents on `main` —
 they live once, [what the site publishes is settled
 separately](the-site-publishes-the-repositorys-markdown.md), and
-[generated output still goes only to `gh-pages`](generated-documents-live-only-on-gh-pages.md).
+[generated output is still committed nowhere](generated-documents-are-published-never-committed.md).
 Mermaid is an official plugin rather than a patched-in script; a broken link fails the
 build, and upstream maintains that check; and the site is React, which is what Nubbin
 renders — the strongest demo this project can have is a page on this site built from real
 Nubbin blocks, and a static generator forecloses it. That argument is the deciding one; the
 rest is quality of life.
 
-The site serves at `effekt.github.io/nubbin`, which is where GitHub Pages publishes the
-branch CI writes to, and the repository is the only thing that address depends on. Rejected:
+The site serves at `effekt.github.io/nubbin`, which is where GitHub Pages serves the
+artifact CI deploys, and the repository is the only thing that address depends on. Rejected:
 a path on [the canonical origin](one-origin-serves-both-audiences.md) — that origin serves
 one hand-written file today, so the documentation would reach it through a second host and a
 rewrite, buying a nicer address at the cost of a hop nobody asked for and a deploy path that
