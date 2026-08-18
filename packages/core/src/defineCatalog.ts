@@ -1,4 +1,5 @@
 import { resolveHintPaths } from "./adapters/resolveHintPaths";
+import { assertDataHintAddressable } from "./assertDataHintAddressable";
 import { assertValidDefaults } from "./assertValidDefaults";
 import type { Catalog, CatalogEntry } from "./catalog.types";
 
@@ -11,6 +12,7 @@ export function defineCatalog(entries: Record<string, CatalogEntry>): Catalog {
   for (const [blockName, entry] of Object.entries(entries)) {
     if (entry.ui?.fields !== undefined) {
       resolveHintPaths(blockName, entry.schema, entry.ui.fields);
+      assertDataHintAddressable(blockName, entry.ui.fields);
     }
     if (entry.defaults !== undefined) {
       assertValidDefaults(blockName, entry.schema, entry.defaults);
