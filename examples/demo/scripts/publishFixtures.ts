@@ -5,6 +5,7 @@ import { publishFixture } from "./publishFixture";
 const PREBUILD_ROUTES = [
   "/",
   "/pricing",
+  "/about",
   "/promotions/summer",
   "/promotions/winter",
   "/live/pulse",

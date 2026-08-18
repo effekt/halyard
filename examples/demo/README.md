@@ -6,7 +6,7 @@ status: reference
 
 # Demo marketing site
 
-A marketing site for a fictional scheduling product, Tidewell, built from nine components
+A marketing site for a fictional scheduling product, Tidewell, built from twelve components
 whose shape already matches what a block requires. It exists so `defineBlock` has something
 real to register — ordinary application code first, a Nubbin fixture second.
 
@@ -16,16 +16,17 @@ artifacts from the fs store; the components themselves know nothing about it.
 
 ## What "block-shaped" means here
 
-Each of the nine components in `src/blocks/` follows the constraints a block will need to
+Each of the twelve components in `src/blocks/` follows the constraints a block will need to
 satisfy:
 
 - **One root element.** A renderer that attaches an id to the DOM node needs exactly one node
   to attach it to.
 - **Serializable props only.** An image is `{ url, alt }`, never a `ReactNode`; a schema value
   is data a database could hold.
-- **A colocated zod schema, with props inferred from it.** `type HeroProps = z.infer<typeof
-  heroSchema>` — never a hand-written interface beside the schema.
-- **A `defaults` export that satisfies the schema.** `src/app/reference/home/page.tsx` renders every block's
+- **A colocated zod schema, with props inferred from it.** `type HeroProps = InferProps<typeof
+  heroSchema>`, with `InferProps` imported from `@nubbin/core` — never a hand-written interface
+  beside the schema.
+- **A `defaults` export that satisfies the schema.** `src/app/reference/home/page.tsx` renders eight blocks'
   `defaults` unmodified, which is the same content an author would see dropping a fresh block
   onto a canvas.
 - **Flat schemas.** A shared shape — a CTA, an image — is its own file in `src/blocks/shared/`
@@ -41,8 +42,7 @@ one; the rest are whatever the store has a pointer for.
   `FeatureGrid`, `StatBand`, `TestimonialQuote`, `FaqAccordion`, `CtaBanner`, `SiteFooter`.
 - `/reference/pricing` — reuses `Hero`, `FeatureGrid`, `FaqAccordion`, `CtaBanner`, and
   `SiteFooter` with different props, alongside a plan-comparison table that is ordinary page
-  content rather than a block — pricing tables are not one of the nine, and not everything on
-  a page has to be.
+  content rather than a block — not everything on a page has to be one.
 - `/reference/about`, `/reference/security`, `/reference/changelog` — coded originals that a
   published fixture of the same page is compared against.
 - Every published route, `/` included — `src/app/[[...slug]]/page.tsx` reads the route's

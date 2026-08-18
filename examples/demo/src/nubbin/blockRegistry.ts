@@ -7,6 +7,8 @@ export const blockRegistry = defineRegistry({
   LogoWall: () => import("../blocks/LogoWall").then((module) => module.LogoWall),
   FeatureGrid: () => import("../blocks/FeatureGrid").then((module) => module.FeatureGrid),
   PlanTiers: () => import("../blocks/PlanTiers").then((module) => module.PlanTiers),
+  Prose: () => import("../blocks/Prose").then((module) => module.Prose),
+  ProfileGrid: () => import("../blocks/ProfileGrid").then((module) => module.ProfileGrid),
   StatBand: () => import("../blocks/StatBand").then((module) => module.StatBand),
   TestimonialQuote: () =>
     import("../blocks/TestimonialQuote").then((module) => module.TestimonialQuote),
