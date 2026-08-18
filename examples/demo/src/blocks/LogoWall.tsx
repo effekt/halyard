@@ -5,7 +5,7 @@ import { TONE_SURFACE } from "./tone.constants";
 type LogoWallProps = InferProps<typeof logoWallSchema>;
 
 const TONE_STYLES = {
-  light: { section: TONE_SURFACE.light, heading: "text-marine/60" },
+  light: { section: TONE_SURFACE.light, heading: "text-marine/70" },
   dark: { section: TONE_SURFACE.dark, heading: "text-canvas/60" },
 } as const;
 

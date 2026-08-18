@@ -5,7 +5,7 @@ import { TONE_SURFACE } from "./tone.constants";
 type ProfileGridProps = InferProps<typeof profileGridSchema>;
 
 const TONE_CARD = {
-  light: { card: "border-brass/30 bg-white", muted: "text-marine/60", body: "text-marine/70" },
+  light: { card: "border-brass/30 bg-white", muted: "text-marine/70", body: "text-marine/80" },
   dark: {
     card: "border-teal-light/20 bg-white/5",
     muted: "text-canvas/60",

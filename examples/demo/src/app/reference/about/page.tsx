@@ -50,7 +50,7 @@ export default function AboutPage() {
             {TEAM.map((person) => (
               <li key={person.name} className="rounded-lg border border-brass/30 bg-white p-6">
                 <p className="font-semibold">{person.name}</p>
-                <p className="mt-1 text-sm text-marine/60">{person.role}</p>
+                <p className="mt-1 text-sm text-marine/70">{person.role}</p>
                 <p className="mt-4 text-sm text-marine/70">{person.bio}</p>
               </li>
             ))}

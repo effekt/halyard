@@ -7,7 +7,7 @@ type ChangelogListProps = InferProps<typeof changelogListSchema>;
 const TAG_LABELS = { added: "Added", improved: "Improved", fixed: "Fixed" } as const;
 
 const TONE_STYLES = {
-  light: { muted: "text-marine/60", body: "text-marine/70", tag: "border-teal text-teal" },
+  light: { muted: "text-marine/70", body: "text-marine/80", tag: "border-teal text-teal" },
   dark: {
     muted: "text-canvas/60",
     body: "text-canvas/70",

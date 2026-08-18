@@ -8,7 +8,7 @@ const TONE_STYLES = {
   light: {
     section: TONE_SURFACE.light,
     card: "border-brass/30",
-    muted: "text-marine/60",
+    muted: "text-marine/70",
   },
   dark: {
     section: TONE_SURFACE.dark,

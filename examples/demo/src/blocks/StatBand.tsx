@@ -5,7 +5,7 @@ import { TONE_ACCENT, TONE_SURFACE } from "./tone.constants";
 type StatBandProps = InferProps<typeof statBandSchema>;
 
 const TONE_STYLES = {
-  light: { section: TONE_SURFACE.light, value: TONE_ACCENT.light, label: "text-marine/60" },
+  light: { section: TONE_SURFACE.light, value: TONE_ACCENT.light, label: "text-marine/70" },
   dark: { section: TONE_SURFACE.dark, value: TONE_ACCENT.dark, label: "text-canvas/60" },
 } as const;
 
