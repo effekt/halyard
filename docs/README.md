@@ -43,8 +43,10 @@ content are deliberately not here:
 | Open design questions | [Issues labelled `design-question`](https://github.com/effekt/nubbin/issues/15) | They need a thread that closes. A document can hold a question but can never resolve one. |
 | Build order and phasing | [The roadmap](https://github.com/effekt/nubbin/issues/14) | Sequencing is tracked work, not a contract. A roadmap in prose goes stale the first time reality disagrees with it. |
 
-[The design site](https://effekt.github.io/nubbin/) is not a third home. It is generated from
-these documents and published by CI — see
+[The design site](https://effekt.github.io/nubbin/) is not a third home. It is generated and
+published by CI from [the repository's
+markdown](decisions.md#the-site-publishes-the-repositorys-markdown), these documents
+included — see
 [Generated documents live only on `gh-pages`](decisions.md#generated-documents-live-only-on-gh-pages).
 
 ## Keeping them honest
