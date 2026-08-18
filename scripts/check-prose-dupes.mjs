@@ -21,10 +21,10 @@
 //
 // Usage: node scripts/check-prose-dupes.mjs [--check] [--min-run=N]
 
-import { existsSync } from "node:fs";
-import { readdir, readFile, realpath } from "node:fs/promises";
+import { readFile, realpath } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -76,24 +76,12 @@ const COMMENT = /<!--[\s\S]*?-->/g;
 const WORD = /[a-z0-9][a-z0-9'-]*/g;
 const CLOSE = "-->";
 
-/** Markdown only — the corpus is prose, and a `.txt` or a `.json` beside it is not. */
-async function walk(dir, found) {
-  for (const entry of await readdir(dir, { withFileTypes: true })) {
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await walk(full, found);
-    else if (entry.name.endsWith(".md")) found.push(await realpath(full));
-  }
-  return found;
-}
-
-/** Every prose file under `SCAN`, deduplicated by real path so a symlink counts once. */
 async function corpusFiles() {
   const found = [];
-  for (const target of SCAN) {
-    const full = join(ROOT, target);
-    if (!existsSync(full)) continue;
-    if (full.endsWith(".md")) found.push(await realpath(full));
-    else await walk(full, found);
+  for (const path of trackedFiles(ROOT)) {
+    if (!path.endsWith(".md")) continue;
+    if (!SCAN.some((root) => path === root || path.startsWith(`${root}/`))) continue;
+    found.push(await realpath(join(ROOT, path)));
   }
   return [...new Set(found)].sort();
 }
