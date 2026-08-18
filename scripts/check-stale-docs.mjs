@@ -16,11 +16,11 @@
 // Usage: node scripts/check-stale-docs.mjs [--check]
 
 import { execFile } from "node:child_process";
-import { existsSync } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const run = promisify(execFile);
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -43,29 +43,12 @@ async function lastCommitted(file) {
   }
 }
 
-async function walk(dir, found) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (entry.name === "node_modules") continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await walk(full, found);
-    else if (entry.name.endsWith(".md")) found.push(full);
-  }
-  return found;
-}
-
-const files = [];
-for (const root of SCAN_ROOTS) {
-  const full = join(ROOT, root);
-  if (!existsSync(full)) continue;
-  if (full.endsWith(".md")) files.push(full);
-  else await walk(full, files);
-}
+// Asked of git, not walked: a directory listing has no ignore handling, so a scanned root that
+// gains gitignored content silently gives a contributor and a runner different corpora.
+const files = trackedFiles(ROOT)
+  .filter((path) => path.endsWith(".md"))
+  .filter((path) => SCAN_ROOTS.some((root) => path === root || path.startsWith(`${root}/`)))
+  .map((path) => join(ROOT, path));
 
 const times = new Map();
 for (const file of files) times.set(file, await lastCommitted(file));
