@@ -1,0 +1,7 @@
+/* The demo's stylesheet, not a copy of it: the preview renders the demo's blocks, and the
+   classes and theme tokens they were written against have one home. */
+@import "../../../../examples/demo/src/app/globals.css";
+
+/* Tailwind's auto-detection stops at this app's root; the preview's classes live in the
+   demo's sources. */
+@source "../../../../examples/demo/src";
