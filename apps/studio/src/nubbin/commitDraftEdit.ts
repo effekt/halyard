@@ -1,8 +1,9 @@
 import type { Artifact } from "@nubbin/core";
 import { setNodeProp } from "@nubbin/core";
 import { compileVersion } from "./compileVersion";
-import { editedDrafts } from "./editedDrafts";
+import { draftFilePath } from "./draftFilePath";
 import { readDraft } from "./readDraft";
+import { writeDraftFile } from "./writeDraftFile";
 
 /** What could not be found for an edit that named it: the route's draft, or the node in it.
  * A value rather than a throw because both name a client fault the endpoint answers for. */
@@ -13,7 +14,8 @@ export type DraftEditRejection = { missing: "draft" | "node" };
  * it compiled — the preview always renders, and a bad value surfaces as the thrown
  * `CompileError` instead of a broken page. The node is checked before `setNodeProp` because
  * this is the first caller holding both the document and the untrusted id — core's throw is
- * for callers that composed the id in code.
+ * for callers that composed the id in code. A kept edit is written to the route's draft
+ * file, so it outlives this process.
  */
 export function commitDraftEdit(
   route: string,
@@ -30,6 +32,6 @@ export function commitDraftEdit(
   }
   const edited = setNodeProp(draft, nodeId, path, value);
   const artifact = compileVersion(edited, route);
-  editedDrafts.set(route, edited);
+  writeDraftFile(draftFilePath(route), edited);
   return artifact;
 }

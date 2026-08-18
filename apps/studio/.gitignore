@@ -1,0 +1,4 @@
+# The studio's draft slot: one overwritten file per route, written by
+# src/nubbin/writeDraftFile.ts — local editing state, never content. It is not the
+# authoring store; that contract is the open design question #11.
+/.drafts/

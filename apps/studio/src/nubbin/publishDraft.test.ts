@@ -1,6 +1,13 @@
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import type { Artifact, ArtifactStore, RoutePointer } from "@nubbin/core";
-import { expect, test } from "vitest";
+import { beforeEach, expect, test } from "vitest";
 import { publishDraft } from "./publishDraft";
+
+beforeEach(() => {
+  process.env.NUBBIN_STUDIO_DRAFTS = mkdtempSync(join(tmpdir(), "nubbin-drafts-"));
+});
 
 /** In-memory implementation of the store interface, with the same publish precondition the
  * fs adapter enforces: a pointer may only name a written hash. */

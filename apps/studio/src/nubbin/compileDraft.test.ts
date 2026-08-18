@@ -1,6 +1,13 @@
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { fixtureRoutes } from "demo/fixtures/fixtureRoutes";
-import { expect, test } from "vitest";
+import { beforeEach, expect, test } from "vitest";
 import { compileDraft } from "./compileDraft";
+
+beforeEach(() => {
+  process.env.NUBBIN_STUDIO_DRAFTS = mkdtempSync(join(tmpdir(), "nubbin-drafts-"));
+});
 
 test("an unknown route compiles to nothing", () => {
   expect(compileDraft("/no-such-route")).toBeUndefined();
