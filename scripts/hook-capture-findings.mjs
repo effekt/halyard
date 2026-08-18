@@ -42,6 +42,12 @@ const SCAFFOLD = fileURLToPath(new URL("./scaffold-issue.mjs", import.meta.url))
 
 /** The scaffold's own sentence, so the count reported here is the count it read. */
 const SEARCH_LINE = /^Searched \d+ open issues[^\n]*?(?=\.?$)/m;
+
+/** The same sentence's repository, so a comment lands where the search looked and nowhere else. */
+const SEARCHED_REPO = /^Searched \d+ open issues in ([\w.-]+\/[\w.-]+)/m;
+
+/** The scaffold's refusal when a candidate scores and nothing has acknowledged it. */
+const HELD_LINE = /^❌ (#\d+(?:,\s*#\d+)*) may already cover this\./m;
 const CANDIDATE_LINE = /^\s*CANDIDATE\s+\d+%\s+#(\d+)/gm;
 
 const isDryRun = process.argv.includes("--dry-run");
@@ -222,18 +228,14 @@ function writeBodyFile(body) {
 /**
  * No label: this knows the tag a report carried and nothing about the surfaces a repository
  * labels by, and a wrong label is read as a decision someone made.
+ *
+ * No `--acknowledge-duplicates` either: that flag says a person read the candidate and judged it
+ * different, and a hook reads nothing. Where the search scores one, the finding is commented onto
+ * that issue instead — nothing is filed on an assertion nobody made, and the finding still lands
+ * where whoever reads that issue will see it.
  */
 function scaffoldArgs(title, bodyFile) {
-  return [
-    SCAFFOLD,
-    "--body-file",
-    bodyFile,
-    "--title",
-    title,
-    "--open",
-    "--acknowledge-duplicates",
-    "--advisory-validation",
-  ];
+  return [SCAFFOLD, "--body-file", bodyFile, "--title", title, "--open", "--advisory-validation"];
 }
 
 function candidatesIn(output) {
@@ -260,6 +262,46 @@ function describeStopped(route, searched, output) {
   return `${route} (FAILED — ${why}: ${lastLineOf(output) || "no output"})`;
 }
 
+/** The issues the scaffold refused to file past, nearest first, as it ranked them. */
+function heldCandidates(output) {
+  const line = output.match(HELD_LINE);
+  return line ? line[1].split(",").map((entry) => entry.trim().replace(/^#/, "")) : [];
+}
+
+function heldCommentBody(finding, payload, route, others) {
+  const alsoNear = others.length > 0 ? ` The search also scored ${others.join(", ")}.` : "";
+  return [
+    `A finding tagged \`${route}\` was reported by a \`${payload.agent_type ?? "subagent"}\` agent at exit.`,
+    `It is here rather than in a new issue because the duplicate search scored this one.${alsoNear}`,
+    "",
+    finding.lines.join("\n"),
+    "",
+    `Session ${payload.session_id ?? "unknown"}. If this is separate work, it wants its own issue.`,
+  ].join("\n");
+}
+
+/**
+ * A held finding goes onto the issue that covers its ground, because the alternative sinks are
+ * both lossy: this hook's `systemMessage` reaches no transcript and no log, and a report scrolls.
+ */
+function commentHeld(finding, payload, route, output, searched) {
+  const [nearest, ...others] = heldCandidates(output).map((number) => `#${number}`);
+  const repo = output.match(SEARCHED_REPO)?.[1];
+  if (!repo) return lostFinding(`${route} (held by ${nearest} — FAILED: the search named no repo)`);
+  const bodyFile = writeBodyFile(heldCommentBody(finding, payload, route, others));
+  const run = spawnSync(
+    "gh",
+    ["issue", "comment", nearest.replace("#", ""), "--repo", repo, "--body-file", bodyFile],
+    { encoding: "utf8" },
+  );
+  if (run.status !== 0) {
+    const why = `${run.stderr ?? ""}${run.error?.message ?? ""}`.trim() || "no output";
+    return lostFinding(`${route} (held by ${nearest} — FAILED to comment: ${why})`);
+  }
+  const alsoNear = others.length > 0 ? `, also near ${others.join(", ")}` : "";
+  return routed(`${route} (${searched}; not filed — commented on ${nearest}${alsoNear})`);
+}
+
 function routeToIssue(finding, payload, route) {
   const title = titleFor(finding);
   if (isDryRun) return routed(`${route} (dry run: would scaffold "${title}")`);
@@ -267,9 +309,11 @@ function routeToIssue(finding, payload, route) {
   const run = spawnSync(process.execPath, scaffoldArgs(title, bodyFile), { encoding: "utf8" });
   const output = `${run.stdout ?? ""}${run.stderr ?? ""}${run.error?.message ?? ""}`;
   const searched = output.match(SEARCH_LINE)?.[0].trim() ?? null;
-  if (run.status !== 0 || searched === null) {
-    return lostFinding(describeStopped(route, searched, output));
+  if (searched === null) return lostFinding(describeStopped(route, searched, output));
+  if (heldCandidates(output).length > 0) {
+    return commentHeld(finding, payload, route, output, searched);
   }
+  if (run.status !== 0) return lostFinding(describeStopped(route, searched, output));
   return routed(describeOpened(route, searched, output));
 }
 
