@@ -56,6 +56,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-plugins-lock.mjs` | `plugins-lock.json` and the installed plugins agree as a set, by name — versions are recorded but not compared, because a marketplace that publishes none reports `unknown` |
 | `check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
 | `check-gate-table.mjs` | every gate this table names is reachable from `pnpm verify`, and every gate `verify` runs has a row here — each direction with documented exceptions |
+| `check-ci-parity.mjs` | every gate `pnpm verify` reaches also runs in `.github/workflows/`, and every gate recorded CI-exempt does not — keyed on the script filename, which is the one spelling both sides share |
 | `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; a click handler on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 | `check-worktree.mjs` | an edit aimed at the primary worktree, or at a linked worktree whose gates cannot run |
 | `check-primary-tree.mjs` | an uncommitted path in the primary worktree, whatever wrote it there |
@@ -63,16 +64,22 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 `pnpm verify` runs every gate above except the four named below, and needs a full install.
 `check-gate-table.mjs` is what keeps that sentence true in both directions: it fails when a row
 here resolves to nothing `verify` reaches, and when `verify` runs a gate with no row here. CI
-runs the same set, split in two: one job runs the documentation, prose, accessibility and pinning
-gates against a bare checkout, and a second installs the workspace to run lint, typecheck, tests,
-build, boundaries, duplication, dead code, type coverage and the publishable gates.
+runs the same set bar one exemption, split in two: one job runs the documentation, prose,
+accessibility, pinning and tracker-hygiene gates against a bare checkout, and a second installs
+the workspace to run lint, typecheck, tests, build, boundaries, duplication, dead code, type
+coverage and the publishable gates. `check-ci-parity.mjs` is what keeps *that* sentence true —
+four gates had drifted out of the workflow while this paragraph still claimed otherwise, so a
+pull request opened from the web merged without them.
 
-**The two lockfile gates run locally and not in CI**, because the thing they compare against is
-not in a checkout. `.agents/` and the plugin cache are ignored the way `node_modules` is, so on
-a runner `check-skills-lock.mjs` finds nothing installed and takes its "nothing to compare"
-path — it exited 0 on every CI run it was ever wired into, which is the same shape as the gates
-in [`gates.md`](https://github.com/effekt/nubbin/blob/main/.claude/rules/gates.md) that passed while checking nothing. They belong to the
-contributor's machine, where the comparison is real.
+**Neither lockfile gate can compare against disk in CI**, because the thing they compare against
+is not in a checkout. `.agents/` and the plugin cache are ignored the way `node_modules` is, so on
+a runner each finds nothing installed. The two then differ, and the difference is why one runs in
+CI and the other does not. `check-skills-lock.mjs` still has a job there — it reads whether the
+lockfile is one a reinstall could use — so it runs, narrowed. `check-plugins-lock.mjs` has no such
+job: its no-manifest path exits 0 immediately, having compared nothing, which is the same shape as
+the gates in [`gates.md`](https://github.com/effekt/nubbin/blob/main/.claude/rules/gates.md) that
+passed while checking nothing. It is CI-exempt in `check-ci-parity.mjs`, with that reason, and
+belongs to the contributor's machine where its comparison is real.
 
 **The two worktree gates also stay out of `verify`**, for the reason that makes them worth
 having: a CI checkout is clean, so a run there would report nothing and read as a pass.

@@ -31,6 +31,7 @@ import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { captures, reachableFromVerify } from "./verifyReachability.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -69,54 +70,7 @@ const TOOL_ROWS = new Map([
   ["attw", "attw"],
 ]);
 
-const SCRIPT_FILE = /scripts\/([A-Za-z0-9._-]+\.mjs)/g;
-const PNPM_CALL = /pnpm (?:run )?([A-Za-z0-9:_-]+)/g;
-/** A binary invoked directly, as `pnpm exec biome` or at the head of a chained command. */
-const DIRECT_BINARY = /(?:^|&&|\|\|)\s*(?:pnpm exec )?([a-z-]+)/g;
-
 /** The capture group of every match, which is all any of the three patterns above needs. */
-function captures(text, pattern) {
-  return [...text.matchAll(pattern)].map((match) => match[1]);
-}
-
-/** Every name a command invokes, whether or not a script of that name exists. */
-function invokedNames(cmd) {
-  return [...captures(cmd, PNPM_CALL), ...captures(cmd, DIRECT_BINARY)];
-}
-
-/**
- * Records one command's script files and the names it invokes, and returns the script bodies
- * it newly reaches. Split out because the nesting, not the logic, is what carries the
- * complexity — the whole walk in one function scores past the cap.
- */
-function stepOnce(cmd, scripts, files, names) {
-  for (const file of captures(cmd, SCRIPT_FILE)) files.add(file);
-  const reached = [];
-  for (const name of invokedNames(cmd)) {
-    if (names.has(name)) continue;
-    names.add(name);
-    if (scripts[name]) reached.push(scripts[name]);
-  }
-  return reached;
-}
-
-/**
- * Every `scripts/*.mjs` and every script name `verify` reaches, at any depth.
- *
- * A queue rather than recursion, and no depth guard: `names` already admits each script once,
- * which is what bounds the walk.
- */
-function reachableFromVerify(scripts) {
-  const files = new Set();
-  const names = new Set();
-  const pending = [scripts.verify];
-  while (pending.length > 0) {
-    const cmd = pending.pop();
-    if (cmd) pending.push(...stepOnce(cmd, scripts, files, names));
-  }
-  return { files, names };
-}
-
 /**
  * The data rows under `| Gate | Enforces |`, to the first non-`|` line — the page carries
  * other tables, whose rows are not claims about `verify`. A missing header yields no rows,

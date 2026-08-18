@@ -70,12 +70,16 @@ jobs:
       - name: Script invocations
         run: node scripts/check-script-invocations.mjs --check
 
-      # Last of the bare-checkout gates because it is the one that checks the others: it fails
-      # when a row in docs/gates.md reaches nothing `verify` runs, and when `verify` runs a gate
-      # with no row. `check-plugins-lock.mjs` is deliberately not here — it compares against a
+      # The last two check the others rather than the tree. `check-gate-table.mjs` fails when a
+      # row in docs/gates.md reaches nothing `verify` runs, and when `verify` runs a gate with no
+      # row. `check-plugins-lock.mjs` is deliberately absent from both — it compares against a
       # plugin cache no runner has, so it would report success having read nothing.
       - name: Gate table
         run: node scripts/check-gate-table.mjs --check
+
+      # And the one that stops the gates above drifting back out of this job.
+      - name: CI parity
+        run: node scripts/check-ci-parity.mjs --check
 
       # Advisory: a document trailing something it links to is worth re-reading,
       # not worth failing a build over.
