@@ -95,8 +95,7 @@ An agent that only writes issues or a scratchpad needs no worktree — it cannot
 ### Audit the ticket before implementing it
 
 A ticket is a claim about work, written before the code existed. Read it against the code that
-exists now and report what does not hold **before** writing anything. Every ticket audited so far
-has failed this way, and the audit has never once come back empty:
+exists now and report what does not hold **before** writing anything. No audit has come back empty:
 
 | Ticket | What it said | What was true |
 |---|---|---|
@@ -108,6 +107,7 @@ has failed this way, and the audit has never once come back empty:
 | #55 | `compile(…, blockRegistry, …)` | `compile` wants the compile-side `Registry`; `blockRegistry` has no `fingerprint()` — #90 for the third time |
 | #56 | a marker `className` #53 "already gives" `SectionStack` | the component has no quoted literal at all, so no marker can be extracted for it |
 | #57 | four new dependency-cruiser rules | two already exist under those exact names, and a third bans an import the shipped render path depends on |
+| #23, #15 and seven others | docs/decisions.md, unstyled here because it is gone | it became the `docs/decisions/` directory; the tree is clean, so only issue bodies still cite the file |
 
 None was caught by review. Every one was found by an implementer, and only because they read
 before typing. **The naming is where it goes wrong most** — a ticket names a file, a type or a

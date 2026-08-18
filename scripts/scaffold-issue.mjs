@@ -36,7 +36,8 @@
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 /**
  * Well above the whole set — open and closed together — so a full-length result means something is
@@ -241,6 +242,31 @@ function validateDraft(text) {
  * is honest but stops the run, so the ceiling is raised rather than discovered again.
  */
 const GH_MAX_BUFFER = 64 * 1024 * 1024;
+
+/**
+ * A ticket naming a path that has moved sends its implementer to a file that is not there, and
+ * nine open issues cite `docs/decisions.md` — a file that became a directory — because no gate
+ * reads an issue body. `check-file-refs.mjs` already answers this for any file it is handed, so
+ * the draft is checked with the same rules the tree is, rather than a second copy of them.
+ */
+function danglingRefProblems(bodyFile) {
+  if (!bodyFile) return [];
+  const script = resolve(dirname(fileURLToPath(import.meta.url)), "check-file-refs.mjs");
+  try {
+    execFileSync(process.execPath, [script, "--check", bodyFile], { stdio: "pipe" });
+    return [];
+  } catch (error) {
+    // `check-file-refs.mjs` prints the file it read at two spaces and each dangling span at
+    // eight. Matching the indent rather than the content keeps the run's own absolute path —
+    // and its explanatory sentence — out of a message that may be read in public.
+    const named = `${error.stdout ?? ""}`
+      .split("\n")
+      .filter((line) => /^ {8}\S+$/.test(line))
+      .map((line) => line.trim());
+    if (named.length === 0) return [];
+    return [`Names a repository file that does not exist: ${named.join(", ")}`];
+  }
+}
 
 function runGh(args) {
   return execFileSync(GH_BIN, args, {
@@ -553,5 +579,8 @@ const nearest = rank(args.title, body, issues);
 console.log(`\nNearest ${nearest.length} of ${issues.length}, by weighted term overlap:\n`);
 reportNearest(nearest);
 
-reportDraft(validateDraft(body), args.advisoryValidation);
+reportDraft(
+  [...validateDraft(body), ...danglingRefProblems(args.bodyFile)],
+  args.advisoryValidation,
+);
 finish(repo, args, nearest);
