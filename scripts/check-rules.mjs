@@ -14,8 +14,9 @@
 
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, matchesGlob, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const RULES_DIR = join(ROOT, ".claude/rules");
@@ -43,6 +44,8 @@ async function collectTargets(explicit) {
   return entries.filter((name) => name.endsWith(".md")).map((name) => join(RULES_DIR, name));
 }
 
+const tracked = trackedFiles(ROOT);
+const anticipated = [];
 const args = process.argv.slice(2);
 const targets = (await collectTargets(args.filter((arg) => !arg.startsWith("--")))).filter((file) =>
   file.includes(`${RULES_DIR}/`),
@@ -72,6 +75,23 @@ for (const file of targets) {
     }
     // Without `paths` the rule loads at session start and spends context on every unrelated edit.
     if (keys.get("paths") === "") problems.push(`${rel}  empty paths glob`);
+
+    // A glob that matches nothing loads the rule for no edit, and reads exactly like one that
+    // governs the whole tree. `block-authoring.md` globbed `packages/**` and `apps/**` while
+    // every block in the repository was authored under `examples/`, so the rule mandating
+    // per-block tests reached none of the fourteen. Anticipating a directory is legitimate, so
+    // a single dead glob is reported; a rule whose every glob is dead governs nothing and fails.
+    const globs = (keys.get("paths") ?? "")
+      .replace(/^"|"$/g, "")
+      .split(",")
+      .map((glob) => glob.trim())
+      .filter(Boolean);
+    const dead = globs.filter((glob) => !tracked.some((file) => matchesGlob(file, glob)));
+    if (globs.length > 0 && dead.length === globs.length) {
+      problems.push(`${rel}  every paths glob matches no tracked file: ${dead.join(", ")}`);
+    } else if (dead.length > 0) {
+      anticipated.push(`${rel}  ${dead.join(", ")}`);
+    }
   }
 
   if (!/^##\s+Checklist\s*$/m.test(text)) {
@@ -100,6 +120,13 @@ const ungated = (
 ).flat().length;
 
 if (problems.length === 0) {
+  if (anticipated.length > 0) {
+    console.log(
+      `\nℹ️  ${anticipated.length} rule(s) carry a glob matching no tracked file — a directory anticipated, or a stale path:`,
+    );
+    for (const line of anticipated) console.log(`  ${line}`);
+  }
+
   console.log(
     `✅ Rule files well-formed — ${targets.length} checked, ${ungated} rule(s) declare no gate.`,
   );
