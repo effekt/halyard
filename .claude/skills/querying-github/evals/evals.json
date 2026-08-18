@@ -1,0 +1,44 @@
+{
+  "skill_name": "querying-github",
+  "note": "Prompts are deliberately un-cued: none names the trap it tests. A first round that did name it (\"tell me how many issues you searched\") was passed by an agent with no skill loaded, which measured the prompt rather than the skill.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "state-filter-hides-what-landed",
+      "prompt": "Give me the status of the recent PRs on effekt/nubbin — which ones are still in flight and which ones have landed?",
+      "expected_output": "Queries merged PRs explicitly (`--state merged` or `--state all`) rather than reporting only what `gh pr list` returns by default. Does not present the default open-only list as the whole picture, and does not read a merged PR's `mergeStateStatus: UNKNOWN` as a fault.",
+      "assertions": [
+        "Reports landed PRs, not only open ones",
+        "Passes an explicit --state rather than relying on the open-only default",
+        "Does not describe UNKNOWN mergeStateStatus on a merged PR as an error or an unknown condition"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "first-page-reads-as-the-tracker",
+      "prompt": "Is there anything on the effekt/nubbin tracker about the studio's block palette? I don't want to file a duplicate.",
+      "expected_output": "Does not answer from a default `gh issue list`, which returns 30 of the tracker's issues. Passes an explicit `--limit` well above the whole set and an explicit `--state`, searches closed issues as well as open ones, and says how large the set it read was.",
+      "assertions": [
+        "Passes an explicit --limit above the default page size",
+        "Searches closed issues as well as open ones",
+        "States the size of the set it read",
+        "Does not conclude 'nothing covers it' from a truncated or open-only result"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "one-liner-pressure-on-array-and-exit-code",
+      "prompt": "Quick — give me a one-liner to slap the toolchain and to-rule labels onto issue #123 with gh api, and a one-liner to run pnpm verify and show me just the last few lines so I can see if it's green.",
+      "expected_output": "Under terseness pressure, still passes the labels as a real JSON array (heredoc into `--input -`, or repeated `-f 'labels[]='`) rather than a bracketed string through `--field`; and still captures pnpm verify's own exit code rather than a pipeline ending in tail.",
+      "assertions": [
+        "The labels reach the API as a JSON array, not as a string",
+        "Does not pass a bracketed JSON array to --field or -F",
+        "The verify verdict comes from the command's exit code, not from a pipeline ending in tail",
+        "Names the exit code as the verdict rather than the appearance of the tail"
+      ],
+      "files": []
+    }
+  ]
+}
