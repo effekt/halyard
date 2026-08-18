@@ -11,8 +11,8 @@
 // announcing the file path — an empty `alt=""` is the correct, deliberate marking for a
 // decorative image and is never flagged. An `alt` that is a filename or names the medium
 // ("image", "logo") occupies the slot without filling it, which is worse than absent because
-// nothing downstream can tell it is missing. `onClick` on a plain element is unreachable by
-// keyboard and announced as nothing. A positive `tabIndex` reorders the whole document, not
+// nothing downstream can tell it is missing. A click handler — `onClick` in JSX, `onclick`
+// in HTML — on a plain element is unreachable by keyboard and announced as nothing. A positive `tabIndex` reorders the whole document, not
 // just its own element. An `<a>` with no `href` is not focusable and is not announced as a
 // link. Removing the focus outline with no focus style near it makes the page unusable by
 // keyboard while looking identical to everyone using a mouse.
@@ -24,22 +24,24 @@
 // They belong to the `PostToolUse` accessibility reviewer and to `.claude/rules/accessibility.md`.
 //
 // A tag carrying a props spread is skipped entirely — `{...props}` can supply the very
-// attribute being checked, and a gate that cannot see it must not guess.
+// attribute being checked, and a gate that cannot see it must not guess. In HTML the alt
+// checks read only a double-quoted value, so a single-quoted or unquoted `alt` is read as
+// empty and passes.
 //
 // No dependencies, so it runs against a bare checkout in CI alongside the prose gates.
 //
-// Pass explicit paths to check those; pass none to scan SCAN_ROOTS. `--check` exits 1.
+// Pass explicit paths to check those; pass none to scan every markup or stylesheet file git
+// would publish. `--check` exits 1.
 
 import { existsSync } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = ["packages", "apps", "examples"];
-const JSX_EXT = /\.(tsx|jsx)$/;
-const SCANNED_EXT = /\.(tsx|jsx|css)$/;
-const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", "generated"]);
+const MARKUP_EXT = /\.(tsx|jsx|html)$/;
+const SCANNED_EXT = /\.(tsx|jsx|html|css)$/;
 const EXEMPT_LINE = /a11y-ok/;
 const SNIPPET_CHARS = 96;
 const FOCUS_WINDOW = 5;
@@ -150,7 +152,7 @@ function tabIndexProblem(attrs) {
 }
 
 function clickProblem(name, attrs) {
-  if (!/(?:^|\s)onClick\s*=/.test(attrs)) return null;
+  if (!/(?:^|\s)onclick\s*=/i.test(attrs)) return null;
   if (!/^[a-z]/.test(name) || INTERACTIVE.has(name)) return null;
   if (hasAttribute(attrs, "role") || hasAttribute(attrs, "tabindex")) return null;
   return `onClick on <${name}> — unreachable by keyboard; use <button> or <a>`;
@@ -220,41 +222,22 @@ function exempt(lines, line) {
 
 function problemsIn(file, text) {
   const lines = text.split("\n");
-  const found = JSX_EXT.test(file)
+  const found = MARKUP_EXT.test(file)
     ? [...jsxProblems(text, lines), ...outlineProblems(lines)]
     : outlineProblems(lines);
   return found.filter((problem) => !exempt(lines, problem.line));
 }
 
-async function walk(dir, found) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (EXCLUDED_DIRS.has(entry.name)) continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await walk(full, found);
-    else if (SCANNED_EXT.test(entry.name)) found.push(full);
-  }
-  return found;
-}
-
-async function collectTargets(explicit) {
-  if (explicit.length > 0) {
-    return explicit
-      .map((file) => resolve(ROOT, file))
-      .filter((file) => existsSync(file) && SCANNED_EXT.test(file));
-  }
-  const found = [];
-  for (const root of SCAN_ROOTS) await walk(join(ROOT, root), found);
-  return found;
+function collectTargets(explicit) {
+  const paths =
+    explicit.length > 0
+      ? explicit.map((file) => resolve(ROOT, file))
+      : trackedFiles(ROOT).map((path) => join(ROOT, path));
+  return paths.filter((file) => existsSync(file) && SCANNED_EXT.test(file));
 }
 
 const args = process.argv.slice(2);
-const targets = await collectTargets(args.filter((arg) => !arg.startsWith("--")));
+const targets = collectTargets(args.filter((arg) => !arg.startsWith("--")));
 
 const hits = [];
 for (const file of targets) {

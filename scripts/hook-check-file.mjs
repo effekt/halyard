@@ -7,6 +7,7 @@
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { dirname } from "node:path";
+import { isBinaryPath } from "./isBinaryPath.mjs";
 
 /**
  * The gates resolve their arguments against the working directory, and a hook inherits the
@@ -75,18 +76,16 @@ try {
 if (!filePath) process.exit(0);
 
 const isCode = /\.tsx?$/.test(filePath);
-const isMarkup = /\.(tsx|jsx|css)$/.test(filePath);
+const isMarkup = /\.(tsx|jsx|html|css)$/.test(filePath);
 const isProse = /\.(md|mdx)$/.test(filePath);
 const isManifest = filePath.endsWith("package.json");
 
 /**
- * Every extension the vendor scanner reads. Deliberately wider than code and prose: the one
- * leak that survived four hand sweeps was a comment in a `.grit` file, which nothing scanned
- * because it was neither.
+ * Everything but the certainly-binary, matching the vendor scanner's own sweep. An allowlist
+ * of extensions here once hid a leak in a `.grit` comment that nothing scanned because the
+ * list predated the file type — the same blindness would meet the next new extension.
  */
-const isScannable = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/.test(
-  filePath,
-);
+const isScannable = !isBinaryPath(filePath);
 
 const perFile = [
   ...(isCode ? CODE_GATES : []),
