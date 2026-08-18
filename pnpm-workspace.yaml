@@ -68,7 +68,6 @@ catalog:
   "@changesets/cli": 3.0.0
   publint: 0.3.23
   "@arethetypeswrong/cli": 0.18.5
-  repomix: 1.18.0
 
   # Types
   "@types/node": 25.9.2

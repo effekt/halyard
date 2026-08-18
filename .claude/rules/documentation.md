@@ -107,15 +107,10 @@ status: draft | stable | reference
 ---
 ```
 
-`pnpm catalog` renders every document as one line — path, status, summary — which is how an
-agent or a new contributor sees what exists without reading it all. The summary is the only
-thing a reader sees about a document they have not opened, so it says what the document is
-*for*, never restating the title.
-
-**The catalog is derived, never committed.** A checked-in index conflicts on every branch
-that adds a file and goes stale between regenerations; frontmatter lives beside the content
-it describes, so there is nothing separate to drift. `pnpm map:docs` writes the JSON form
-into the gitignored `.repomix/`.
+The summary is the only thing a reader sees about a document they have not opened, so it says
+what the document is *for*, never restating the title. It is also what a generated index
+quotes: `.claude/CATALOG.md` renders every rule's `paths` and `summary` as a row, so a rule
+that describes itself badly reads badly everywhere.
 
 The `docs/README.md` table is a separate, hand-written reading order — **gate:**
 `check-docs.mjs` verifies every file appears in it; the accuracy of a status line is on you.

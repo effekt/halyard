@@ -15,6 +15,12 @@
 // `const KEYS = [...]` is data. Type-only exports do NOT count, so `export function compile`
 // beside `export type CompileResult` is one unit.
 //
+// What the count buys beyond decomposition: with one unit per file and Biome holding the
+// filename to that unit's name, filename → symbol is invertible. That is what lets
+// `scripts/catalog.mjs` derive a package's table from its own source instead of anyone
+// maintaining one. Relaxing this does not just permit a crowded file — it takes the catalog
+// with it.
+//
 // Usage: node scripts/check-single-export.mjs <files...> [--check]
 
 import { existsSync, readFileSync } from "node:fs";

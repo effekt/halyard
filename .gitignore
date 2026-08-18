@@ -12,10 +12,6 @@ dist/
 coverage/
 .nubbin/
 
-# Generated on demand by `pnpm map` — a committed codebase map goes stale and
-# conflicts on every branch that adds a unit.
-.repomix/
-
 # jscpd report output
 report/
 

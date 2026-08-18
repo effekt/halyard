@@ -123,7 +123,8 @@ built on top of that assumption.
 | [`docs/api.md`](docs/api.md) | The API shape |
 | [Open design questions](https://github.com/effekt/nubbin/issues/15) | What is still undecided — the best place to disagree |
 
-`pnpm catalog` prints every document with a one-line summary.
+Every package carries a generated [`CATALOG.md`](packages/core/CATALOG.md) — one row per
+file, naming the export, its kind, and its own first line of documentation.
 
 ## Contributing
 

@@ -8,8 +8,9 @@ status: stable
 
 `main` holds hand-written source. CI generates the site from it and deploys the result to
 GitHub Pages as a build artifact, so the published copy exists on no branch and is never
-hand-edited. Generated output that serves a developer rather than a reader goes to a
-gitignored path on demand, as [the codebase catalog does](no-committed-catalog-of-the-codebase.md).
+hand-edited. This governs documents that have a published copy; a derived index that serves a
+developer in the tree is
+[generated and committed instead](catalogs-are-generated-and-committed.md).
 
 A published copy that nothing generates has nothing to compare itself against, which is how
 the documents carrying the same name in two places diverged, and how the site came to publish
@@ -23,9 +24,8 @@ publish was refused outright, because a ruleset required three status checks tha
 on build output. An artifact has no such conflict — nothing about it looks like a branch, so
 nothing guarding branches applies.
 
-Rejected: committing generated documents to `main` so that `pnpm docs:generate && git diff
---exit-code` can check them. It reverses the catalog decision above and reintroduces the
-per-branch conflicts that decision exists to avoid; worse, while nothing generated is
-committed it passes without examining anything, which is a gate reporting success for work it
-never did. Idempotence is proven by generating twice and comparing the outputs; drift by
-comparing generated output against what is published.
+Rejected: committing the site's generated documents to `main` so that `pnpm docs:generate &&
+git diff --exit-code` can check them. A published document already has a copy to compare
+against, so committing a third is a per-branch conflict bought for nothing. Idempotence is
+proven by generating twice and comparing the outputs; drift by comparing generated output
+against what is published.
