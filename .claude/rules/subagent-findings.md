@@ -43,8 +43,8 @@ home lives there rather than twice.
 
 | Tag | Home | What `scripts/hook-capture-findings.mjs` does |
 |---|---|---|
-| `[rule]` | `.claude/rules/`, plus a gate | Opens an issue through the scaffold, carrying the finding. A hook can write prose but not a gate, and a rule shipped without one is the failure [`gates.md`](gates.md) catalogues |
-| `[issue]` | A GitHub issue | Opens it through the scaffold |
+| `[rule]` | `.claude/rules/`, plus a gate | Opens an issue through the scaffold, or comments on the issue the search scored. A hook can write prose but not a gate, and a rule shipped without one is the failure [`gates.md`](gates.md) catalogues |
+| `[issue]` | A GitHub issue | Opens it through the scaffold, or comments on the issue the search scored |
 | `[memory]` | The session's memory directory | Writes the memory beside the others and adds it to `MEMORY.md` |
 | `[task-local]` | Nowhere | Drops it, and says that it dropped it |
 
@@ -61,9 +61,16 @@ through the second one, and nothing about that reads as wrong from either side.
 A captured finding is one sentence, so the hook runs the scaffold with `--advisory-validation`:
 the four parts a sentence cannot carry are reported as warnings instead of refusing the finding.
 The search is not softened alongside them — it runs above the check that is, so nothing reaches an
-open unsearched. Where the search surfaces a nearby issue the finding is opened anyway and that
-issue's number goes into its body, because whether two issues are the same work is a judgement for
-whoever reads them, and a run's output scrolls away while an issue body does not.
+open unsearched.
+
+**Where the search scores a candidate, the finding is commented onto that issue instead of filed.**
+`--acknowledge-duplicates` states that a person read the candidate and judged the work different,
+and a hook reads nothing; passing it made every capture assert a judgement nobody had made. The
+finding still lands where whoever reads that issue will see it, which is the property that matters
+— this hook's `systemMessage` reaches no transcript and no log, so a finding held in a report alone
+is a finding gone. Rejected: filing anyway with the candidate's number in the body, which is what
+this did until the tracker had filled with pairs nobody could tell apart; and holding it in the
+report, which loses it outright.
 
 It passes no label. The hook knows which tag a report used and nothing about the surfaces this
 repository labels by, and a wrong label reads as a decision someone made.
@@ -73,7 +80,8 @@ repository labels by, and a wrong label reads as a decision someone made.
 ```
 subagent capture: saw a 17 line(s) report from a `builder` subagent
 captured 4 finding(s): 1 -> rule, 1 -> issue, 1 -> memory, 1 -> dropped (task-local)
-  issue (Searched 57 open issues in effekt/nubbin (--limit 200; corroborated by search/issues: 57); may duplicate #212; https://github.com/effekt/nubbin/issues/300)
+  issue (Searched 57 open issues in effekt/nubbin (--limit 200; corroborated by search/issues: 57); https://github.com/effekt/nubbin/issues/300)
+  rule (Searched 57 open issues in effekt/nubbin (--limit 200; corroborated by search/issues: 57); not filed — commented on #212)
 ```
 
 A capture that quietly captures nothing reads exactly like one with nothing to capture, which is
