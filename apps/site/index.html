@@ -468,7 +468,7 @@
      through the act. */
   body.story:not(.dim) #studio .panel,
   body.story:not(.dim) #studio .canvas-region,
-  body.story:not(.dim) #studio .pop{opacity:0; animation:none}
+  body.story:not(.dim) #studio .pop{opacity:.15; animation:none}
   /* Lit, not live: a panel at full brightness is the palette that invited clicks,
      so the act holds lit panels under 1 — legible, but not something to reach for. */
   body.story:not(.dim) #studio[data-lit~="bar"] .toolbar,
@@ -1729,10 +1729,11 @@
       const CUT_MS = 480;
       const SHEEN_MS = 1300;
       const LIGHT_OUT_MS = 600;
+      const GHOST_HOLD_MS = 2000;
       const PAUSE = {
         open: 1400,
         hesitate: 900,
-        consequence: 1400,
+        consequence: 3000,
         fade: 1600,
         headline: 3400,
         arrive: 1500,
@@ -2165,6 +2166,7 @@
       // group arrival. The climax runs once per visit; the page rests with the brand
       // group fixed while the ambient session works faintly behind it.
       const ARC = [
+        { op: "wait", ms: GHOST_HOLD_MS },
         { op: "lit", v: "canvas outline" },
         { op: "wait", ms: PAUSE.open },
         { op: "beat", n: 1 },
