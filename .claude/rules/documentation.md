@@ -35,7 +35,7 @@ them was internally plausible, which is why nothing caught them.
 
 A design document that has stopped changing has a job to do: move its conclusion into
 a file under `docs/decisions/` and leave a link. Two documents describing one decision is how they diverge.
-**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence. The budget is zero: a non-zero allowance would silently grow as the corpus duplicates itself, catching whoever next adds prose rather than catching the duplication.
+**Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence. The budget is zero: a non-zero allowance would silently grow as the corpus duplicates itself, catching whoever next adds prose rather than catching the duplication. It reads `docs/` and `AGENTS.md`, so a claim copied between two files in this directory is caught by a reader or not at all.
 
 ## Rules
 
