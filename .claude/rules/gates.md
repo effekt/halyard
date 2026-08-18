@@ -103,7 +103,7 @@ Claiming full coverage is how the next gap is missed. `check-installable.mjs` re
 
 ### A tuned threshold is not a waived one
 
-Where a gate fires on something legitimate, tune the scope and record the reason — do not raise the threshold to accommodate it. A contract suite constructs a fresh store per test deliberately, so `src/testing/` is excluded from duplication; the rest of the corpus stayed at 0.92% against a 1% threshold rather than the threshold moving.
+Where a gate fires on something legitimate, tune the scope and record the reason — do not raise the threshold to accommodate it. A contract suite constructs a fresh store per test deliberately, so `src/testing/` is excluded from duplication; the rest of the corpus stayed at 0.92% against a 1% threshold rather than the threshold moving. `examples/` is excluded for the same reason: demo blocks share a shape on purpose — composition is what they demonstrate — so token similarity there measures the demo, not a defect.
 
 ### Have someone else run the check against real inputs
 
