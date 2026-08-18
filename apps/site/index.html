@@ -261,6 +261,13 @@
   .slot-tag{position:absolute; top:-4px; left:14px; background:var(--teal); color:#fff;
     font-size:11px; font-weight:700; padding:2px 9px; border-radius:99px; font-family:var(--sans); z-index:2}
   .slot-body{position:relative}
+  /* With every block cut the body slot collapses to zero height, so the insertion
+     point lands flush against the top edge of the canvas and the drag ghost — which
+     hangs 72px above the line — renders outside it, over the toolbar. An empty page
+     has no position to indicate except its middle, so the slot holds the canvas open
+     and the line sits at the centre of it. Cleared by the swap, which restores the
+     pristine tree. */
+  #studio.empty .slot-body{padding:336px 0}
   .drop-line{position:relative; height:0; z-index:3}
   .drop-line .bar{position:absolute; left:16px; right:16px; top:-2px; height:4px; border-radius:99px;
     background:var(--sel); box-shadow:0 0 0 3px rgba(191,65,29,.18)}
@@ -447,9 +454,16 @@
   body{background:#071F25; overflow:hidden}
   .backdrop{position:fixed; inset:0; z-index:0; display:grid; place-items:center;
     overflow:hidden; pointer-events:none}
+  /* Contain, not cover. `max()` here scaled the studio until it filled the viewport
+     and cropped whichever axis overflowed — and since the narrow bail-out only fires
+     below 3:2 while the studio's own ratio is 1440/860, every aspect between the two
+     lost its left and right edges. The publish control sits at the top right with the
+     cursor beside it, so the climax was the first thing cropped on a 16:10 screen.
+     Letterboxing costs nothing here: the ground behind it is the same colour as the
+     blackout already covering it. */
   .studio{position:relative; pointer-events:none; width:1440px; height:860px; flex:none;
     display:flex; flex-direction:column; gap:10px;
-    scale:max(calc(100vw / 1440px), calc(100vh / 860px))}
+    scale:min(calc(100vw / 1440px), calc(100vh / 860px))}
   /* The blackout is the page's ground: dark from the first frame, total at the
      climax, and settled at a dim that reads the studio as atmosphere at rest. */
   .blackout{position:fixed; inset:0; z-index:1; pointer-events:none; background:#04141A;
@@ -661,6 +675,12 @@
     background:rgba(4,20,26,.78); color:#C7D3D6; border:1px solid #1E535C;
     border-radius:99px; padding:8px 16px; font-size:12.5px; font-weight:600}
   body.story:not(.brand) .skip{display:block}
+  /* The same control, relabelled: while the story runs it skips, and once the page
+     has rested it replays. A second button in the same corner would compete with
+     the affordance the eye has already learned. `played` is set only by a sequence
+     that actually ran, so reduced motion and narrow viewports — which render the
+     rested composition without ever playing — get no replay control. */
+  body.played .skip{display:block}
   .skip:hover{color:#F1F4F3; border-color:#4FB3C7}
   .skip:focus-visible{outline:2px solid var(--teal-light); outline-offset:2px;
     box-shadow:0 0 0 2px #04141A}
@@ -1828,6 +1848,8 @@
       // rather than a flicker, and the whole prologue costs less than one glide
       // across the studio.
       const PROLOGUE = { fume: 2200, think: 1500, idea: 1400, shrink: 900 };
+      const SKIP_LABEL = "Skip animation";
+      const REPLAY_LABEL = "Replay animation";
       const ISSUE_LABEL = "Fix 1 issue";
       const ISSUE_BADGE = "1";
       const ISSUE_CHIP = "1 to fix before publish";
@@ -1896,6 +1918,7 @@
       const pairNow = () => COPY[copyIndex % COPY.length];
 
       const blackout = document.querySelector(".blackout");
+      const skipBtn = document.querySelector(".skip");
 
       const placeCursor = (x, y) => {
         at = { x, y };
@@ -2265,6 +2288,10 @@
         },
         // Beat 9: the pristine studio dims in behind the brand group and the
         // original editing choreography plays verbatim, looping on its own.
+        rested: (_step, done) => {
+          rested();
+          done();
+        },
         ambient: (_step, done) => {
           studio.classList.add("ambient", "idle");
           studio.querySelector(".cols").append(clone("tpl-quote-inspector"));
@@ -2328,6 +2355,7 @@
         { op: "cut", sel: ".m-footer, .m-note", rows: ["#row-columns"] },
         { op: "text", to: "#chip-body", value: "0 of 12" },
         { op: "text", to: "#outline-sub", value: "0 blocks" },
+        { op: "cls", add: "empty" },
         { op: "wait", ms: PAUSE.settle },
         { op: "beat", n: 3 },
         { op: "lit", v: "blocks" },
@@ -2392,6 +2420,7 @@
         { op: "mark", to: "body", add: "dim" },
         { op: "wait", ms: PAUSE.settle },
         { op: "ambient" },
+        { op: "rested" },
       ];
 
       const runArc = (index) => {
@@ -2412,8 +2441,33 @@
       // viewports render on arrival, and what a mid-story switch to either jumps
       // to. No cursor, no session, nothing advancing.
       const finish = () => {
-        document.body.classList.remove("story", "black", "hl", "asking");
+        document.body.classList.remove("story", "black", "hl", "asking", "played");
         document.body.classList.add("dim", "brand");
+      };
+
+      // Both ways of reaching the rested page — playing the arc out, and skipping —
+      // leave the same control behind.
+      const rested = () => {
+        document.body.classList.add("played");
+        skipBtn.textContent = REPLAY_LABEL;
+      };
+
+      // A replay is a cold start, not a rewind: the studio comes back from the
+      // pristine clone, so a second run cannot inherit a half-edited tree from the
+      // first. The copy index advances, so the headline it types is a different one.
+      const replay = () => {
+        clearTimeout(timer);
+        cancelAnimationFrame(raf);
+        dropCaret();
+        retireCursor();
+        swapStudio();
+        document.body.classList.remove("brand", "dim", "black", "hl", "asking", "played");
+        document.body.classList.add("story");
+        studio.querySelector(".blk.dragging").classList.remove("dragging");
+        skipBtn.textContent = SKIP_LABEL;
+        copyIndex += 1;
+        spawnCursor();
+        runArc(0);
       };
 
       const start = () => {
@@ -2444,11 +2498,14 @@
         swapStudio();
         document.body.classList.remove("black", "hl", "asking");
         document.body.classList.add("dim", "brand");
+        rested();
         OPS.ambient({}, () => document.querySelector(".card").focus());
       };
 
       captureOpening();
-      document.querySelector(".skip").addEventListener("click", skipToEnd);
+      skipBtn.addEventListener("click", () =>
+        document.body.classList.contains("brand") ? replay() : skipToEnd(),
+      );
       const settle = () => (reduced.matches || narrow.matches ? stop() : start());
       reduced.addEventListener("change", settle);
       narrow.addEventListener("change", settle);
