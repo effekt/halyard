@@ -1,0 +1,15 @@
+# zizmor configuration — https://docs.zizmor.sh/configuration/
+#
+# The pinning policy for every action this repository uses. It is inert until something
+# runs zizmor: no workflow invokes it yet, deliberately, because `.github/workflows/` is
+# being changed elsewhere and a gate landed here would conflict with that. Landing the
+# policy on its own makes the wiring a one-line change later.
+rules:
+  unpinned-uses:
+    # GitHub owns `actions/*` and enforces tag immutability on those releases, so a
+    # major-version ref there is as strong a claim as a SHA. Everything else is a
+    # third-party publisher who can move a tag under us, and must name a full commit SHA.
+    config:
+      policies:
+        "actions/*": ref-pin
+        "*": hash-pin
