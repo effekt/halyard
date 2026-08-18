@@ -1,13 +1,15 @@
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { CompileError } from "@nubbin/core";
 import { about } from "demo/fixtures/about";
-import { afterEach, expect, test } from "vitest";
+import { beforeEach, expect, test } from "vitest";
 import { commitDraftEdit } from "./commitDraftEdit";
 import { compileDraft } from "./compileDraft";
-import { editedDrafts } from "./editedDrafts";
 import { readDraft } from "./readDraft";
 
-afterEach(() => {
-  editedDrafts.clear();
+beforeEach(() => {
+  process.env.NUBBIN_STUDIO_DRAFTS = mkdtempSync(join(tmpdir(), "nubbin-drafts-"));
 });
 
 test("a committed edit changes what the route compiles to", () => {

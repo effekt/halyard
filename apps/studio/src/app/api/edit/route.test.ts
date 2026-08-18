@@ -1,5 +1,7 @@
-import { afterEach, expect, test } from "vitest";
-import { editedDrafts } from "../../../nubbin/editedDrafts";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { beforeEach, expect, test } from "vitest";
 import { POST } from "./route";
 
 function post(body: unknown) {
@@ -8,8 +10,8 @@ function post(body: unknown) {
   );
 }
 
-afterEach(() => {
-  editedDrafts.clear();
+beforeEach(() => {
+  process.env.NUBBIN_STUDIO_DRAFTS = mkdtempSync(join(tmpdir(), "nubbin-drafts-"));
 });
 
 test("a valid edit answers 200 with the new hash", async () => {
