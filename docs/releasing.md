@@ -11,6 +11,9 @@ Four packages publish from this repository: `@nubbin/core`, `@nubbin/react`, `@n
 
 ## Versions are generated, never edited
 
+Which tool does that, and what it was picked over, is
+[Changesets owns versions](decisions/changesets-owns-versions.md).
+
 A change that should ship carries a changeset:
 
 ```bash
