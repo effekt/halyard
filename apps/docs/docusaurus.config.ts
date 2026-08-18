@@ -7,10 +7,11 @@ import { codeTheme } from "./codeTheme";
 const config: Config = {
   title: "Nubbin",
   tagline: "Your components. Their pages. A page builder that lives inside your codebase.",
-  // The canonical origin and the documentation's path on it — both recorded in
-  // docs/decisions/ ("One origin serves both audiences", "The design site runs Docusaurus").
-  url: "https://nubbin.io",
-  baseUrl: "/docs/",
+  // Where GitHub Pages serves the branch CI publishes, recorded in docs/decisions/
+  // ("The design site runs Docusaurus"). The address is the repository's own, so it moves
+  // when the decision does and not when a domain is bought.
+  url: "https://effekt.github.io",
+  baseUrl: "/nubbin/",
   organizationName: "effekt",
   projectName: "nubbin",
   onBrokenLinks: "throw",

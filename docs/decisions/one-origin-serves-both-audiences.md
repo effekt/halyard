@@ -26,6 +26,7 @@ Holding `nubbin.io` also settles the collision recorded in
 [#74](https://github.com/effekt/nubbin/issues/74), which rested on that name belonging to someone
 else.
 
-Where the documentation sits under this origin is settled with the generator, in
-[the design-site entry](the-design-site-runs-docusaurus.md), because a path and a generator
-constrain each other.
+The documentation's address is settled with the generator, in
+[the design-site entry](the-design-site-runs-docusaurus.md), because a host and a generator
+constrain each other. It is served from GitHub Pages until this origin has more than a
+landing page on it.

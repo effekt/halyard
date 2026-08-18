@@ -1,0 +1,71 @@
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# `pnpm install` runs `prepare`, which installs lefthook's git hooks — and this job
+# pushes, so without this the publish drags the whole pre-push suite along behind it.
+env:
+  LEFTHOOK: "0"
+
+# The branch is a shared artifact rather than a per-ref build, so publishes queue rather
+# than run together, and a running one is never cancelled: a half-written push is a
+# broken site until the next merge.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  # No `paths:` filter. The site renders the documents, the workspace and the lockfile,
+  # and a filter listing those goes stale the first time an input moves — where the
+  # failure is a site that silently stops updating. Building every merge costs a minute
+  # and short-circuits below when the output is unchanged.
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # The publish commits onto `gh-pages`, whose history a shallow checkout omits.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # `onBrokenLinks: throw` makes this the gate on every link between documents.
+      - name: Build the site
+        run: pnpm --filter docs-site run build
+
+      - name: Publish to gh-pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin gh-pages
+          git worktree add -B gh-pages ../published origin/gh-pages
+
+          # The branch is build output: what is there is replaced, never merged into.
+          # A file the generator stops emitting has to stop being published.
+          git -C ../published rm -rq .
+          cp -R apps/docs/dist/. ../published/
+
+          # Pages serves this branch through Jekyll otherwise, which drops any path
+          # beginning with an underscore — a set Docusaurus is free to emit into.
+          touch ../published/.nojekyll
+
+          git -C ../published add -A
+          if git -C ../published diff --quiet --cached; then
+            echo "The generated site is unchanged; nothing to publish."
+            exit 0
+          fi
+          git -C ../published commit -m "docs(site): publish ${GITHUB_SHA}"
+          git -C ../published push origin gh-pages
