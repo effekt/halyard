@@ -71,7 +71,7 @@ build, boundaries, duplication, dead code, type coverage and the publishable gat
 not in a checkout. `.agents/` and the plugin cache are ignored the way `node_modules` is, so on
 a runner `check-skills-lock.mjs` finds nothing installed and takes its "nothing to compare"
 path — it exited 0 on every CI run it was ever wired into, which is the same shape as the gates
-in [`gates.md`](../.claude/rules/gates.md) that passed while checking nothing. They belong to the
+in [`gates.md`](https://github.com/effekt/nubbin/blob/main/.claude/rules/gates.md) that passed while checking nothing. They belong to the
 contributor's machine, where the comparison is real.
 
 **The two worktree gates also stay out of `verify`**, for the reason that makes them worth
@@ -104,7 +104,7 @@ without it a version bump can publish artifacts that misreport what produced the
 on the release path notices.
 
 **The gates cannot catch everything.** A logger that formats its own timestamp —
-[the canonical violation](../.claude/rules/single-concern.md#the-canonical-violation) — sits
+[the canonical violation](https://github.com/effekt/nubbin/blob/main/.claude/rules/single-concern.md#the-canonical-violation) — sits
 under every threshold in the table and is still wrong, because a threshold bounds how large a
 violation can grow and says nothing about whether one is there. That judgment lives in
 `.claude/rules/single-concern.md`, and a `PostToolUse` hook reviews for it. Rules auto-load by
