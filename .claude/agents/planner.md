@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Audits an issue against the code before anyone implements it — says whether it is still valid, gathers the paths, and returns an ordered plan. Decides nothing. Use before dispatching a builder.
-model: haiku
+model: opus
 tools: Read, Grep, Glob, Bash
 ---
 
