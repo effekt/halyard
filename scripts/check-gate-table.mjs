@@ -20,6 +20,11 @@
 // gate wired in at any depth counts and a gate wired in nowhere does not. It cannot tell you a
 // reachable gate checks the right thing — `attw` was reachable throughout.
 //
+// One row is outside every direction here: `noUnknownCast.grit` · `booleanNaming.grit` runs as
+// biome plugins, and reading which plugins `biome.jsonc` requires means parsing JSONC — a
+// dependency one row does not justify. Deleting that row is silent, and catching it belongs to
+// review rather than to this script.
+//
 // Usage: node scripts/check-gate-table.mjs [--check]
 
 import { existsSync } from "node:fs";
@@ -112,18 +117,28 @@ function reachableFromVerify(scripts) {
   return { files, names };
 }
 
-/** The first cell of a markdown table row, or null where the line is not one. */
-function gateCell(line) {
-  if (!line.startsWith("|") || line.includes("---")) return null;
-  return line.split("|")[1] ?? "";
+/**
+ * The data rows under `| Gate | Enforces |`, to the first non-`|` line — AGENTS.md carries
+ * other tables, whose rows are not claims about `verify`. A missing header yields no rows,
+ * which the row-presence direction then reports as every mapped gate rowless.
+ */
+function gateTableRows(agents) {
+  const lines = agents.split("\n");
+  const header = lines.indexOf("| Gate | Enforces |");
+  if (header === -1) return [];
+  const rows = [];
+  for (const line of lines.slice(header + 2)) {
+    if (!line.startsWith("|")) break;
+    rows.push(line);
+  }
+  return rows;
 }
 
-/** The gate column of every table row in AGENTS.md, as script filenames and tool names. */
+/** The gate column of every gate-table row in AGENTS.md, as script filenames and tool names. */
 function namedGates(agents) {
   const gates = new Set();
-  for (const line of agents.split("\n")) {
-    const cell = gateCell(line);
-    if (cell === null) continue;
+  for (const line of gateTableRows(agents)) {
+    const cell = line.split("|")[1] ?? "";
     for (const token of captures(cell, /`([^`]+)`/g)) {
       const name = token.trim();
       if (name.endsWith(".mjs") || TOOL_ROWS.has(name)) gates.add(name);
@@ -132,22 +147,28 @@ function namedGates(agents) {
   return gates;
 }
 
+/** Whether `verify` reaches a gate — by script file for `.mjs` names, by binary otherwise. */
+function reachesGate(gate, files, names) {
+  return gate.endsWith(".mjs") ? files.has(gate) : names.has(TOOL_ROWS.get(gate) ?? gate);
+}
+
 const scripts = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8")).scripts ?? {};
 const agents = await readFile(join(ROOT, "AGENTS.md"), "utf8");
 const { files, names } = reachableFromVerify(scripts);
 const gates = namedGates(agents);
+const reachedGates = [...gates].filter((gate) => reachesGate(gate, files, names));
 
-const unreached = [];
-for (const gate of gates) {
-  const reached = gate.endsWith(".mjs") ? files.has(gate) : names.has(TOOL_ROWS.get(gate) ?? gate);
-  if (reached) continue;
-  if (EXCEPTIONS.has(gate)) continue;
-  unreached.push(gate);
-}
+const unreached = [...gates].filter(
+  (gate) => !reachesGate(gate, files, names) && !EXCEPTIONS.has(gate),
+);
 
 // The other direction: a gate `verify` runs with no row is enforced against contributors who
 // were never told it exists. Four were, which is why this half exists.
 const unlisted = [...files].filter((file) => !gates.has(file) && !UNLISTED.has(file));
+
+// Exceptions and tool binaries sit outside both directions above, so deleting one's row would
+// be silent; the maps that already name them double as the required-row list.
+const rowless = [...EXCEPTIONS.keys(), ...TOOL_ROWS.keys()].filter((gate) => !gates.has(gate));
 
 // A rule that names a gate reads as enforced. `writing-rules.md` already requires each rule to
 // declare its gate status for that reason, and naming one that does not exist is worse than
@@ -184,11 +205,12 @@ const staleExceptions = [...EXCEPTIONS.keys()].filter((gate) => files.has(gate))
 if (
   unreached.length === 0 &&
   unlisted.length === 0 &&
+  rowless.length === 0 &&
   staleExceptions.length === 0 &&
   phantomCitations.length === 0
 ) {
   console.log(
-    `✅ Gate table honest — ${gates.size} gate(s) named, ${gates.size - EXCEPTIONS.size} reached by verify, ${EXCEPTIONS.size} documented exception(s); all ${files.size} script(s) verify runs have a row; ${ruleFiles.length} rule file(s) name only gates and skills that exist.`,
+    `✅ Gate table honest — ${gates.size} gate(s) named, ${reachedGates.length} reached by verify, ${EXCEPTIONS.size} documented exception(s); all ${files.size} script(s) verify runs have a row; ${ruleFiles.length} rule file(s) name only gates and skills that exist.`,
   );
   process.exit(0);
 }
@@ -203,6 +225,11 @@ if (unlisted.length > 0) {
   console.log("  Run by verify, absent from the table:");
   for (const gate of unlisted.sort()) console.log(`        ${gate}`);
   console.log("        → give it a row, or add it to UNLISTED here with a reason\n");
+}
+if (rowless.length > 0) {
+  console.log("  Named in EXCEPTIONS or TOOL_ROWS here, absent from the table:");
+  for (const gate of rowless.sort()) console.log(`        ${gate}`);
+  console.log("        → restore its row, or drop it from the map that names it\n");
 }
 for (const gate of staleExceptions.sort()) {
   console.log(`  ${gate}  is listed as an exception but verify now reaches it`);
