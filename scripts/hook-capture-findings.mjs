@@ -158,18 +158,36 @@ function memoryDoc(finding, payload, slug) {
   ].join("\n");
 }
 
+/** A routing outcome carries the loss as a property, so nothing downstream parses a marker string. */
+function routed(line) {
+  return { line, wasLost: false };
+}
+
+function lostFinding(line) {
+  return { line, wasLost: true };
+}
+
 function routeToMemory(finding, payload, memoryDir) {
-  if (!memoryDir) return "memory (no memory directory for this session — not written)";
+  if (!memoryDir) return lostFinding("memory (no memory directory for this session — not written)");
   const slug = slugFor(finding);
   const file = join(memoryDir, `${slug}.md`);
-  if (existsSync(file)) return `memory (already present: ${slug}.md)`;
-  if (isDryRun) return `memory (dry run: would write ${file})`;
-  mkdirSync(memoryDir, { recursive: true });
-  writeFileSync(file, memoryDoc(finding, payload, slug));
-  const index = join(memoryDir, "MEMORY.md");
-  const entry = `- [${headline(finding)}](${slug}.md)\n`;
-  writeFileSync(index, existsSync(index) ? readFileSync(index, "utf8") + entry : entry);
-  return `memory (${file})`;
+  if (existsSync(file)) return routed(`memory (already present: ${slug}.md)`);
+  if (isDryRun) return routed(`memory (dry run: would write ${file})`);
+  return writeMemory(finding, payload, memoryDir, slug, file);
+}
+
+/** Guarded: an unwritable memory directory is a lost finding, not a crash that skips the ledger. */
+function writeMemory(finding, payload, memoryDir, slug, file) {
+  try {
+    mkdirSync(memoryDir, { recursive: true });
+    writeFileSync(file, memoryDoc(finding, payload, slug));
+    const index = join(memoryDir, "MEMORY.md");
+    const entry = `- [${headline(finding)}](${slug}.md)\n`;
+    writeFileSync(index, existsSync(index) ? readFileSync(index, "utf8") + entry : entry);
+  } catch (error) {
+    return lostFinding(`memory (FAILED — not written: ${error.message})`);
+  }
+  return routed(`memory (${file})`);
 }
 
 /** An issue title cut at a word rather than mid-word, since it is read in a list. */
@@ -244,17 +262,19 @@ function describeStopped(route, searched, output) {
 
 function routeToIssue(finding, payload, route) {
   const title = titleFor(finding);
-  if (isDryRun) return `${route} (dry run: would scaffold "${title}")`;
+  if (isDryRun) return routed(`${route} (dry run: would scaffold "${title}")`);
   const bodyFile = writeBodyFile(issueBody(finding, payload, route));
   const run = spawnSync(process.execPath, scaffoldArgs(title, bodyFile), { encoding: "utf8" });
   const output = `${run.stdout ?? ""}${run.stderr ?? ""}${run.error?.message ?? ""}`;
   const searched = output.match(SEARCH_LINE)?.[0].trim() ?? null;
-  if (run.status !== 0 || searched === null) return describeStopped(route, searched, output);
-  return describeOpened(route, searched, output);
+  if (run.status !== 0 || searched === null) {
+    return lostFinding(describeStopped(route, searched, output));
+  }
+  return routed(describeOpened(route, searched, output));
 }
 
 function routeOne(finding, payload, memoryDir) {
-  if (finding.route === "task-local") return "dropped (task-local)";
+  if (finding.route === "task-local") return routed("dropped (task-local)");
   if (finding.route === "memory") return routeToMemory(finding, payload, memoryDir);
   return routeToIssue(finding, payload, finding.route);
 }
@@ -284,7 +304,7 @@ function shingles(words) {
 }
 
 function markdownIn(dir) {
-  if (!dir || !existsSync(dir)) return [];
+  if (!dir || !existsSync(dir) || !statSync(dir).isDirectory()) return [];
   return readdirSync(dir)
     .filter((name) => name.endsWith(".md"))
     .map((name) => join(dir, name))
@@ -380,11 +400,44 @@ function contextOf(payload) {
   };
 }
 
+/** Each finding's text rides beside its status, so a loss is re-filable from the ledger alone. */
+function ledgerFindings(findings, outcomes) {
+  return findings.map((finding, index) => ({
+    route: finding.route,
+    text: finding.lines.join("\n"),
+    result: outcomes[index].line,
+    wasLost: outcomes[index].wasLost,
+  }));
+}
+
 /** Stops a second firing for the same agent opening the same issue twice. */
-function record(ledger, payload, saw, results, unrouted) {
+function record(ledger, payload, capture) {
   if (!ledger || isDryRun) return;
-  const entry = { agentId: payload.agent_id, at: new Date().toISOString(), saw, results, unrouted };
+  const entry = {
+    agentId: payload.agent_id,
+    at: new Date().toISOString(),
+    saw: capture.saw,
+    results: capture.outcomes.map((outcome) => outcome.line),
+    findings: ledgerFindings(capture.findings, capture.outcomes),
+    unrouted: capture.unrouted,
+  };
   writeFileSync(ledger, `${JSON.stringify(entry, null, 2)}\n`);
+}
+
+/**
+ * The moment-of-failure notice scrolls away; the ledger is the durable half. This names what was
+ * lost, points at the ledger, and warns that a replay would re-route the successes too.
+ */
+function lossLine(findings, outcomes, ledger) {
+  const lost = findings.filter((_, index) => outcomes[index].wasLost);
+  if (lost.length === 0) return null;
+  const where = ledger
+    ? `their full text is in the ledger (${ledger}) — re-file them by hand`
+    : "no ledger path for this agent, so this notice is the only record of them";
+  return [
+    `${lost.length} finding(s) LOST — ${where}; replaying this hook re-routes the successes too, so a replay must be deliberate`,
+    ...lost.map((finding) => `  LOST [${finding.route}] ${headline(finding)}`),
+  ].join("\n");
 }
 
 function emit(lines, context) {
@@ -416,13 +469,15 @@ async function main() {
   const report = reportFrom(payload);
   const lines = report.trim() ? findingLines(report) : null;
   const { findings, unrouted } = lines ? parseFindings(lines) : { findings: [], unrouted: [] };
-  const results = findings.map((finding) => routeOne(finding, payload, context.memoryDir));
+  const outcomes = findings.map((finding) => routeOne(finding, payload, context.memoryDir));
+  const results = outcomes.map((outcome) => outcome.line);
   const saw = sawLine(payload, report, lines);
-  record(context.ledger, payload, saw, results, unrouted);
+  record(context.ledger, payload, { saw, findings, outcomes, unrouted });
   emit(
     [
       `subagent capture: ${saw}`,
       countsLine(findings, results, unrouted) ?? (lines ? "captured 0 finding(s)" : null),
+      lossLine(findings, outcomes, context.ledger),
     ],
     context,
   );
