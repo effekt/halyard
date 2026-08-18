@@ -20,3 +20,10 @@ test("an edited route reads the in-process edit instead", () => {
 test("an unknown route reads nothing", () => {
   expect(readDraft("/no-such-route")).toBeUndefined();
 });
+
+test.each(["constructor", "__proto__", "toString"])(
+  "a route named after Object.prototype's %s reads nothing",
+  (route) => {
+    expect(readDraft(route)).toBeUndefined();
+  },
+);
