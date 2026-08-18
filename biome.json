@@ -126,6 +126,25 @@
   },
   "overrides": [
     {
+      "includes": ["apps/site/index.html"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useSemanticElements": "off",
+            "noNoninteractiveElementToInteractiveRole": "off",
+            "useHeadingContent": "off"
+          },
+          "complexity": {
+            "noImportantStyles": "off"
+          },
+          "style": {
+            "noExcessiveLinesPerFile": "off",
+            "useFilenamingConvention": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.config.*", "**/*.d.ts", "packages/*/src/index.ts"],
       "linter": {
         "rules": {
