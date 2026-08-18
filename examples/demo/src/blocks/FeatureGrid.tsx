@@ -19,6 +19,15 @@ const TONE_STYLES = {
   },
 } as const;
 
+/** Full class names per column count, because Tailwind only compiles classes it can read. */
+const COLUMN_STYLES: Record<number, string> = {
+  2: "lg:grid-cols-2",
+  3: "lg:grid-cols-3",
+  4: "lg:grid-cols-4",
+};
+const DEFAULT_COLUMNS = 4;
+const DEFAULT_COLUMN_STYLE = "lg:grid-cols-4";
+
 /** One fixed glyph per closed icon name — a plain lookup, not a branch, so it stays data. */
 const ICON_PATHS: Record<FeatureGridProps["items"][number]["icon"], string> = {
   chart: "M4 19V9m6 10V5m6 14v-7",
@@ -27,13 +36,17 @@ const ICON_PATHS: Record<FeatureGridProps["items"][number]["icon"], string> = {
   layers: "M12 3 3 8l9 5 9-5-9-5zM3 14l9 5 9-5M3 11l9 5 9-5",
 };
 
-export function FeatureGrid({ heading, tone, items }: FeatureGridProps) {
+export function FeatureGrid({ heading, tone, columns, compact, items }: FeatureGridProps) {
   const styles = TONE_STYLES[tone];
+  const columnStyle = COLUMN_STYLES[columns ?? DEFAULT_COLUMNS] ?? DEFAULT_COLUMN_STYLE;
   return (
-    <section data-nubbin-block="FeatureGrid" className={`${styles.section} px-6 py-24`}>
+    <section
+      data-nubbin-block="FeatureGrid"
+      className={`${styles.section} px-6 ${compact ? "py-10" : "py-24"}`}
+    >
       <div className="mx-auto max-w-6xl">
         <h2 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight">{heading}</h2>
-        <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className={`mt-12 grid gap-6 sm:grid-cols-2 ${columnStyle}`}>
           {items.map((item) => (
             <li key={item.title} className={`${styles.card} rounded-lg border p-6`}>
               <svg
