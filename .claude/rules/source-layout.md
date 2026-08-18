@@ -34,8 +34,8 @@ Plain data `const`s are not units — a module-private `const FNV_PRIME = 0x1000
 data. Type-only exports are not units either, so `export function compile` beside
 `export type CompileResult` is one unit.
 
-`scripts/check-single-export.mjs` enforces this on every agent edit and on staged files at
-pre-commit. Run it directly while working: `node scripts/check-single-export.mjs <file>`.
+`tests/oneUnitPerFile.test.mjs` holds every source file to it, wherever the suite runs. Run that
+one alone while working: `pnpm exec vitest run --project repo tests/oneUnitPerFile.test.mjs`.
 
 ### Filename equals the export
 

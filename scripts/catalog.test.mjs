@@ -1,5 +1,4 @@
-import { readFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
@@ -53,12 +52,11 @@ describe("firstSentence", () => {
     expect(firstSentence("Fields, e.g. a string. The rest.")).toBe("Fields, e.g. a string.");
   });
 
-  it("truncates at a word boundary past the limit", () => {
-    const long = `${"word ".repeat(40)}end.`;
-    const cut = firstSentence(long, 40);
-    expect(cut.length).toBeLessThanOrEqual(41);
-    expect(cut.endsWith("…")).toBe(true);
-    expect(cut).not.toMatch(/wor…$/);
+  it("keeps a long sentence whole rather than cutting it mid-clause", () => {
+    const long = `${"word ".repeat(40)}end. The rest.`;
+    const cut = firstSentence(long);
+    expect(cut).toBe(`${"word ".repeat(40)}end.`);
+    expect(cut).not.toContain("…");
   });
 
   it("escapes a pipe so a summary cannot break the table", () => {
@@ -283,14 +281,24 @@ describe("generate", () => {
   });
 });
 
-describe("the committed catalogs", () => {
-  it("match a fresh generation", async () => {
+// Nothing is committed any more, so "the committed files match a fresh generation" has no
+// subject — it would compare a generated file against the generator that wrote it moments
+// earlier and pass by construction. What is still real, and is what a reader depends on, is that
+// the generator runs against this tree at all and answers the same way twice: `pnpm install`
+// regenerates these on every machine, so an unstable generator would hand two contributors two
+// different indexes of one commit.
+describe("the generator, against this repository", () => {
+  it("produces every catalog without throwing", async () => {
     const written = await generate(ROOT);
-    const drifted = [];
+    expect([...written.keys()].sort()).toEqual(
+      CATALOGS.map(({ dir }) => `${dir}/CATALOG.md`).sort(),
+    );
     for (const [path, content] of written) {
-      const onDisk = await readFile(join(ROOT, path), "utf8").catch(() => null);
-      if (onDisk !== content) drifted.push(path);
+      expect(content, path).toMatch(/^# /m);
     }
-    expect(drifted).toEqual([]);
+  });
+
+  it("answers the same way twice", async () => {
+    expect([...(await generate(ROOT))]).toEqual([...(await generate(ROOT))]);
   });
 });

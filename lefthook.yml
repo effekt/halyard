@@ -2,6 +2,11 @@
 min_version: 2.1.6
 lefthook: pnpm exec lefthook
 
+# A glob here is not decoration: lefthook filters `{staged_files}` by it AND skips the command
+# outright when nothing staged matches, whether or not the command interpolates them. Proven on
+# 2.1.10 — `lefthook run pre-commit --command docs --file package.json` reported
+# `docs (skip) no matching staged files`. So a corpus-wide command still wants a glob: it says
+# which edits are worth paying for, and without one it runs on every commit.
 pre-commit:
   parallel: false
   commands:
@@ -10,91 +15,38 @@ pre-commit:
       run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
 
-    # One unit per file — counts value exports AND module-private functions.
-    # Biome's filenameCases:["export"] checks the NAME; this checks the COUNT.
-    # Pre-commit only, never CI: it blocks the commit that touches a file, so the
-    # author decomposes what they are already editing.
-    single-export:
-      glob: "*.{ts,tsx}"
-      run: node scripts/check-single-export.mjs --check {staged_files}
+    # The whole repository suite, not `vitest related`. These assertions read files as *data*
+    # rather than importing them, so `related` selects none of them for any staged file — the
+    # selection would be empty and the run would be a tick over nothing. The `repo` project is
+    # milliseconds; `release` is not, and runs from `pnpm publishable` instead.
+    repo-suite:
+      glob: "*.{ts,tsx,mjs,md,json,jsonc,yml,yaml}"
+      run: pnpm exec vitest run --project repo
 
-    junk-filenames:
-      glob: "*.{ts,tsx}"
-      run: node scripts/check-structure.mjs --check {staged_files}
-
-    # Regenerate the catalogs and stage them, so an index cannot describe code that moved.
-    # `scripts/catalog.test.mjs` asserts the committed files equal a fresh generation; this is
-    # what keeps that assertion green without a manual step.
-    #
-    # No glob, deliberately. A table is a whole package's units, not the ones a commit touched,
-    # so there is nothing to filter — and a glob on a command that never interpolates
-    # `{staged_files}` does not gate it anyway: lefthook 2.1.10 runs `docs` (glob `*.md`) for a
-    # staged `.ts` file. A glob here would say it was scoped while running every time.
-    catalog:
-      run: pnpm catalog && git add packages/*/CATALOG.md apps/studio/CATALOG.md .claude/CATALOG.md
-
-    # A large schema is one declaration with no branching, so every complexity gate
-    # scores it zero. This is the only thing that catches it.
-    schema-depth:
-      glob: "*.{ts,tsx}"
-      run: node scripts/check-schema-depth.mjs --check {staged_files}
-
-    # Corpus-wide, so no {staged_files}. The threshold is a ratio, and a ratio over
-    # whatever happens to be staged is not a measurement: ten small files sharing one
-    # function signature exceed 1% of themselves while being 0.88% of the repository.
-    duplication:
-      glob: "{packages,apps}/**/*.{ts,tsx}"
-      run: pnpm dupes
-
-    # Nobody on the team reports an accessibility defect, because the person who can
-    # see it is the one who cannot use the page. It has to be caught at the edit.
+    # Nobody on the team reports an accessibility defect, because the person who can see it is
+    # the one who cannot use the page. It has to be caught at the edit.
     accessibility:
       glob: "*.{tsx,jsx,html,css}"
       run: node scripts/check-a11y.mjs --check {staged_files}
 
-    # Ranges auto-install unreviewed code; minimumReleaseAge only delays it.
-    pinned-deps:
-      glob: "{package.json,**/package.json}"
-      run: node scripts/check-pinned-deps.mjs --check {staged_files}
-
-    # Corpus-wide: whether a peer is used depends on source files, not on the manifest that
-    # declares it, so a staged-manifest run would answer the wrong question.
-    peer-deps:
-      glob: "{package.json,**/package.json}"
-      run: pnpm peer-deps
-
-    # Corpus-wide, so no {staged_files}: a link is only broken relative to every
-    # other document.
-    docs:
-      glob: "*.md"
-      run: node scripts/check-docs.mjs --check
-
-    # Corpus-wide like docs: a filename in one document may name a file another commit moved.
-    file-refs:
-      glob: "*.md"
-      run: node scripts/check-file-refs.mjs --check
-
-    # Per-file, unlike the two above: an unciteable measurement or a filler phrase is
-    # wrong on its own line, with no reference to the rest of the corpus.
+    # Per-file, unlike the suite above: an unciteable measurement or a filler phrase is wrong on
+    # its own line, with no reference to the rest of the corpus.
     prose:
       glob: "*.md"
       run: node scripts/check-prose.mjs --check {staged_files}
 
-    # Corpus-wide, like docs: a claim is a duplicate only relative to where else it is
-    # written, and the second copy is as often in the file nobody staged.
-    prose-dupes:
-      glob: "*.md"
-      run: pnpm run prose-dupes
+    # Ranges auto-install unreviewed code; minimumReleaseAge only delays it. Corpus-wide because
+    # a manifest's specifier is only exact relative to the catalog it resolves through.
+    pinned-deps:
+      glob: "{package.json,**/package.json,pnpm-workspace.yaml}"
+      run: pnpm pinned-deps
 
-    # A plan committed as a file has no close condition, so nothing ever deletes it.
-    plan-files:
-      glob: "docs/*.md"
-      run: node scripts/check-plan-files.mjs --check {staged_files}
-
-    # A rule file is re-read on every matching edit, so its length is a running cost.
-    rule-files:
-      glob: ".claude/rules/*.md"
-      run: node scripts/check-rules.mjs --check {staged_files}
+    # Corpus-wide, so no {staged_files}. The threshold is a ratio, and a ratio over whatever
+    # happens to be staged is not a measurement: ten small files sharing one function signature
+    # exceed 1% of themselves while being 0.88% of the repository.
+    duplication:
+      glob: "{packages,apps}/**/*.{ts,tsx}"
+      run: pnpm dupes
 
 commit-msg:
   commands:
@@ -112,14 +64,8 @@ pre-push:
       run: pnpm boundaries
     dead-code:
       run: pnpm knip
-    stale-docs:
-      run: pnpm stale-docs
     type-coverage:
       run: pnpm type-coverage
-    # Pre-push, not pre-commit: installing a skill and forgetting to record it stages
-    # nothing, so there is no file the commit hook could glob on.
-    skills-lock:
-      run: pnpm skills-lock
 
     # Reports and cannot fail: it reads the primary worktree, which the person pushing from a
     # linked one may not own. Pre-push rather than pre-commit because a stray artifact is worth

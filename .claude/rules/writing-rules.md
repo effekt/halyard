@@ -54,7 +54,7 @@ only thing standing between them and the mistake.
 
 ## Gates
 
-`check-rules.mjs` enforces this file against every rule: frontmatter keys, a non-empty `paths`
+`tests/ruleFiles.test.mjs` enforces this file against every rule: frontmatter keys, a non-empty `paths`
 glob, the 150-line cap, a closing checklist, and that each rule declares its own gate status.
 That last one exists because six rules said nothing at all, and a rule that never says whether
 it is enforced reads as enforced. **Gate:** none for whether a rule traces to a real failure —

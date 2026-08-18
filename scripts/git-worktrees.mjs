@@ -70,5 +70,9 @@ export function primaryWorktreeRoot(cwd) {
 export function statusEntries(root) {
   const status = gitIn(root, ["-c", "core.quotePath=false", "status", "--porcelain"]);
   if (status === null || status.length === 0) return [];
-  return status.split("\n").map((line) => ({ code: line.slice(0, 2), path: line.slice(3) }));
+  // `git status --porcelain` writes a two-character status, a space, then the path.
+  const CODE_WIDTH = 2;
+  return status
+    .split("\n")
+    .map((line) => ({ code: line.slice(0, CODE_WIDTH), path: line.slice(CODE_WIDTH + 1) }));
 }

@@ -11,7 +11,7 @@ status: stable
 
 ## Why schemas need their own rule
 
-A large schema evades every other gate. It is one declaration, so `check-single-export`
+A large schema evades every other gate. It is one declaration, so the one-unit-per-file test
 counts one unit. It has no control flow, so cognitive complexity scores ~0. It is not a
 function, so the 50-line function cap does not apply. A 90-line `z.object({…})` passes
 everything while being precisely the god-object the rules exist to prevent.
@@ -40,7 +40,7 @@ export const heroSchema = z.object({
 });
 ```
 
-`scripts/check-schema-depth.mjs` enforces this on every agent edit and at pre-commit. It
+`tests/schemaDepth.test.mjs` enforces this in `pnpm test`, and at pre-commit with it. It
 matches any callee named `object`, so it holds for zod, valibot, or anything else a
 consumer brings.
 
@@ -84,7 +84,7 @@ an open door that puts arbitrary values in published artifacts.
 
 | Gate | Limit |
 |---|---|
-| `check-schema-depth.mjs` | zero nested object schemas |
+| `tests/schemaDepth.test.mjs` | zero nested object schemas |
 | `noExcessiveLinesPerFile` (`*.schema.ts` override) | 60 lines |
 | `jscpd` | `minTokens: 15`, 1% — catches a shape copied between blocks |
 
@@ -92,7 +92,7 @@ A schema file over 60 lines is inlining sub-schemas that want names.
 
 ## Gates
 
-`check-schema-depth.mjs` rejects a nested object schema, and `check-single-export.mjs` keeps one
+`tests/schemaDepth.test.mjs` rejects a nested object schema, and `tests/oneUnitPerFile.test.mjs` keeps one
 sub-schema per file. Neither can see openness: a `z.string()` where the values are a closed set
 typechecks and passes both. **Gate:** none for that — it is the review judgment this rule exists
 to carry, and [#9](https://github.com/effekt/nubbin/issues/9) asks whether a primitive would

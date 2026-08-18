@@ -8,9 +8,8 @@ status: stable
 
 `main` holds hand-written source. CI generates the site from it and deploys the result to
 GitHub Pages as a build artifact, so the published copy exists on no branch and is never
-hand-edited. This governs documents that have a published copy; a derived index that serves a
-developer in the tree is
-[generated and committed instead](catalogs-are-generated-and-committed.md).
+hand-edited. The same holds for a derived index that never leaves the tree —
+[the catalogs](no-committed-catalog-of-the-codebase.md) are generated on install and ignored.
 
 A published copy that nothing generates has nothing to compare itself against, which is how
 the documents carrying the same name in two places diverged, and how the site came to publish

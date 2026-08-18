@@ -80,7 +80,7 @@ Mechanical, and will block you:
 - `noExcessiveLinesPerFunction` — 50 lines. A function over the cap is doing several things.
 - `noExcessiveCognitiveComplexity` — 10. Branching depth is concerns in disguise.
 - `jscpd` at `minTokens: 15`, 1% threshold — catches the duplicate once it exists.
-- `check-single-export.mjs` — counts declarations, including module-private helpers.
+- `tests/oneUnitPerFile.test.mjs` — counts declarations, including module-private helpers.
 
 None of these catch the example above. It is one declaration, zero private functions,
 eight lines, complexity 1 — every gate passes. **This rule is the judgment the gates
@@ -89,7 +89,7 @@ cannot encode**, which is why it is written down and why a `PostToolUse` hook re
 ## Gates
 
 `biome` caps complexity at 10, functions at 50 lines and files at 200, and
-`check-single-export.mjs` allows one unit per file. Those bound the size of a violation, never
+`tests/oneUnitPerFile.test.mjs` allows one unit per file. Those bound the size of a violation, never
 its existence: a function that formats a date inline is one declaration, eight lines and
 complexity 1. **Gate:** none for that — a `PostToolUse` reviewer reads for it on every edit,
 which is a judgment, not a check.

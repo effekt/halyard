@@ -27,7 +27,7 @@ link-checked, and published.
 
 ## What that beat
 
-**A `gates` skill.** `check-gate-table.mjs` reads the gate table to hold it and `pnpm verify` in
+**A `gates` skill.** A script once read the gate table to hold it and `pnpm verify` in
 agreement. Repo-owned skills are becoming ignored by git and installed from elsewhere, and a file
 a script depends on is then absent from any checkout where the install has not run. The script
 finds nothing, reports agreement, and the reassurance is indistinguishable from a real one.
@@ -35,7 +35,7 @@ finds nothing, reports agreement, and the reassurance is indistinguishable from 
 **A `.claude/reference/` directory.** It is reachable only through whatever happens to link to
 it, so it earns none of the automatic loading that makes a rule or a skill worth separating out.
 
-**Folding it into `.claude/rules/`.** `check-rules.mjs` requires `paths` frontmatter, a ceiling
+**Folding it into `.claude/rules/`.** `tests/ruleFiles.test.mjs` requires `paths` frontmatter, a ceiling
 of 150 lines, and a closing checklist. A table enumerating gates satisfies none of those, and
 forcing the shape onto it would describe reference material as judgment a reviewer applies.
 

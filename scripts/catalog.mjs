@@ -11,9 +11,10 @@
 // An export with no doc comment gets an empty cell rather than a placeholder. That blank is the
 // only pressure on TSDoc coverage in this repository, and a "TODO" would read as filled in.
 //
-// The bijection this rests on is three gates, not a convention: `check-single-export.mjs` holds a
+// The bijection this rests on is three gates, not a convention: `tests/oneUnitPerFile.test.mjs` holds a
 // file to one unit, Biome's `useFilenamingConvention` with `filenameCases: ["export"]` holds the
-// filename to that unit's name, and `check-structure.mjs` refuses a name that describes nothing.
+// filename to that unit's name, and `tests/junkDrawerFilenames.test.mjs` refuses a name that
+// describes nothing.
 // Together they make filename → symbol invertible, which is what lets a table be derived rather
 // than written.
 //
@@ -37,7 +38,6 @@ export const CATALOGS = [
   { dir: ".claude", kind: "claude" },
 ];
 
-const SUMMARY_LIMIT = 120;
 const UNIT = /\.tsx?$/;
 const NOT_A_UNIT = /\.test\.tsx?$|(?:^|\/)index\.ts$/;
 
@@ -78,20 +78,19 @@ function sentenceEnd(text) {
   return text.length;
 }
 
-/** Cut back to a word boundary, so a truncated summary never ends mid-word. */
-function truncate(text, limit) {
-  if (text.length <= limit) return text;
-  const head = text.slice(0, limit);
-  const lastSpace = head.lastIndexOf(" ");
-  return `${(lastSpace > 0 ? head.slice(0, lastSpace) : head).trimEnd()}…`;
-}
-
-/** The first sentence of a doc comment, on one line, safe to put in a table cell. */
-export function firstSentence(text, limit = SUMMARY_LIMIT) {
+/**
+ * The first sentence of a doc comment, whole, on one line, safe to put in a table cell.
+ *
+ * Never truncated. Cutting at a character count ended a summary mid-clause under an ellipsis,
+ * which reads as an unfinished thought and hides which clause was lost — and there is no length
+ * at which that is not true, so there is no limit worth choosing. A row that runs long is
+ * visible pressure on the TSDoc it quotes, which is where the fix belongs.
+ */
+export function firstSentence(text) {
   if (!text) return "";
   const flat = text.replace(/\s+/g, " ").trim();
   if (flat === "") return "";
-  return escapeCell(truncate(flat.slice(0, sentenceEnd(flat)), limit));
+  return escapeCell(flat.slice(0, sentenceEnd(flat)));
 }
 
 /** Doc comment body with its leading asterisks and indentation removed. */

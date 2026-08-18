@@ -1,6 +1,6 @@
 ---
 name: worktree
-description: Create an isolated worktree that can run this repository's gates, before editing anything. Use when starting a change, dispatching a file-editing agent, or when check-worktree.mjs refuses an edit.
+description: Creates an isolated worktree that can run this repository's gates, before editing anything. Use when starting a change, dispatching a file-editing agent, or when check-worktree.mjs refuses an edit.
 ---
 
 # Work in a worktree
@@ -48,7 +48,7 @@ node scripts/check-worktree.mjs
 ```
 
 Then watch a gate reject something, rather than assuming the install fixed them. Append a range
-specifier to a manifest, which `check-pinned-deps.mjs` refuses, stage it, and watch the commit be
+specifier to a manifest, which `syncpack` refuses, stage it, and watch the commit be
 turned away:
 
 ```bash

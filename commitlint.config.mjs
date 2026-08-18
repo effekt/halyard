@@ -5,7 +5,7 @@ export default {
     "scope-enum": [
       2,
       "always",
-      ["docs", "repo", "deps", "examples", "core", "next", "react", "store-fs"],
+      ["docs", "repo", "deps", "examples", "studio", "site", "core", "next", "react", "store-fs"],
     ],
   },
 };

@@ -33,7 +33,7 @@ Rejected: staying on a static generator and accepting a patch per theme defect. 
 the site was a handful of documents nobody styled; the defect list is what ended it.
 
 The dependency surface is not an exception to
-[the pinning discipline](pinned-versions-and-a-3-day-cooldown.md). `check-pinned-deps.mjs`
+[the pinning discipline](pinned-versions-and-a-3-day-cooldown.md). `syncpack`
 reads every manifest git tracks plus the workspace catalog, and never walks the transitive
 tree — so exactly pinning the site's direct dependencies
 satisfies it in full, and the transitive tree answers to the lockfile,

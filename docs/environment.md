@@ -16,7 +16,7 @@ Two things are tracked separately, for the same reason `pnpm-lock.yaml` is commi
 
 | Layer | Tracked | Why |
 |---|---|---|
-| **References** — what to install, from where, at what version | `skills-lock.json`, `plugins-lock.json`, and this file | Small, ours to publish, and enough to rebuild the set |
+| **References** — what to install, from where, at what version | `skills-lock.json` and this file | Small, ours to publish, and enough to rebuild the set |
 | **Content** — the skills and plugins themselves | Ignored (`.agents/`, `.claude/skills/*`), or outside the repository entirely (`~/.claude/plugins`) | Third-party work. Not ours to redistribute, and skills arrive as symlinks git would follow |
 
 ## Language toolchain
@@ -35,29 +35,18 @@ shell rather than missing.
 
 ## Plugins
 
-Installed with `claude plugin install <name>@<marketplace>`. **`plugins-lock.json` is the
-authority on which ones**, and on which marketplaces they come from — a table here would be a
-second list, and the one in prose is the one nobody updates.
+Installed with `claude plugin install <name>@<marketplace>`. There is no lockfile for them, and
+that is deliberate: the one that existed compared a recorded set against `~/.claude/plugins`,
+which a runner does not have, so its only reachable path in CI was the one that read nothing and
+exited 0. `claude plugin list` on a contributor's machine answers the same question honestly.
 
-```bash
-pnpm plugins-lock --write     # record the installed set
-pnpm plugins-lock             # check the record against it
-```
-
-What the lockfile cannot tell you is why any of it is there, so: three of these change what an
+Why any of it is there is the part no listing gives you, so: three of these change what an
 agent *produces*, and the rest change how fast it gets there. A browser driver and an
 accessibility engine mean contrast failures and missing landmarks get found rather than
 shipped. A documentation fetcher means library APIs come from the library instead of from
 training data. Design and writing skills change the shape of what gets written — a page built
 with one does not resemble the same page built without it, and that difference is why the set
 is recorded rather than left to whoever is at the keyboard.
-
-`check-plugins-lock.mjs` compares by name only. The plugin manifest records a version of
-`"unknown"` for anything installed from a marketplace that does not publish one, so a gate
-comparing versions would fail for a reason a contributor cannot act on; version and commit are
-recorded beside each entry as evidence, not as assertions. It skips where no manifest exists,
-so a fresh clone passes. **It runs locally and not in CI** — a runner has no plugins installed,
-so the only path it could take there is the one that checks nothing.
 
 A marketplace being present is not the same as a plugin being installed from it. Browsing a
 marketplace repository shows skills that will not load until the plugin carrying them is
@@ -77,15 +66,21 @@ path, so a rename and a moved paragraph both register. Hashing the entry point a
 of the 298 files installed, and appending an instruction to a `rules/*.md` file passed as
 "matches, name and content".
 
-`check-skills-lock.mjs` fails a commit where the lockfile and the installed set disagree in
-either direction. Without it the lockfile is a claim about a machine no reader can see: an
-entry nobody installed sends a contributor after a skill the work never used, and an
-installed skill missing from the lockfile is a result nobody else can reproduce.
+`tests/skillsLock.test.mjs` fails where the lockfile and the installed set disagree in either
+direction. Without it the lockfile is a claim about a machine no reader can see: an entry nobody
+installed sends a contributor after a skill the work never used, and an installed skill missing
+from the lockfile is a result nobody else can reproduce.
 
-Where no skills are installed — a fresh clone, and CI — the comparison against disk cannot run,
-so the gate checks the half that needs no disk instead: that the lockfile parses, and that every
-entry carries the fields a reinstall reads. Skipping outright is what it used to do, and a
-`skills-lock.json` replaced with `{ this is not valid json` exited 0 on every CI run.
+Where no skills are installed — a fresh clone, and CI — that comparison cannot run, and vitest
+reports it as *skipped* rather than passed. What still runs anywhere is the half needing no disk:
+the lockfile parses, and every entry carries the fields a reinstall reads. A `skills-lock.json`
+replaced with `{ this is not valid json` used to exit 0 on every CI run under a tick describing a
+content hash nothing had computed.
+
+`pnpm skills:record` rewrites the lockfile from what is installed. The first-party `skills` CLI
+writes the same file without `contentHash`, and cannot stand in: `skills experimental_install`
+against a lockfile whose recorded hash had been corrupted installed anyway and rewrote the hash to
+match upstream, so it records a fetch rather than constraining one.
 
 **They install into the project directory** — content under `.agents/skills/`, symlinked from
 `.claude/skills/`. Both are ignored. Check `git status` after installing one: three hundred
@@ -101,7 +96,7 @@ Committed, and loaded automatically:
 | `.claude/rules/*` | Judgment no gate encodes. Auto-load by path glob, so only the relevant ones cost context |
 | `.claude/skills/decision` | Recording a decision so it survives — cause, reason, decision, and what it beat |
 | `.claude/agents/*` | Named agents with a fixed model: `builder`, `adversary`, `scout` |
-| `.claude/settings.json` | The `PostToolUse` chain — `hook-check-file.mjs`, which runs the gates that read one file, then prompt reviewers judging what no gate can encode |
+| `.claude/settings.json` | The `PostToolUse` chain — `hook-check-file.mjs`, which runs the per-file gates and the `repo` test project, then prompt reviewers judging what no gate can encode |
 
 The reviewers are read when a session starts. A session that began before they existed runs
 without them, and no reload command reaches them — restart to pick them up.
@@ -112,15 +107,7 @@ without them, and no reload command reaches them — restart to pick them up.
 nvm install && nvm use
 corepack enable pnpm && pnpm install
 
-# every marketplace the lockfile names, then every plugin in it
-node -p 'Object.values(require("./plugins-lock.json").marketplaces).join("\n")' |
-  xargs -I{} claude plugin marketplace add {}
-node -p 'Object.keys(require("./plugins-lock.json").plugins).join("\n")' |
-  xargs -I{} claude plugin install {}
-
-pnpm plugins-lock             # confirms the record and your machine agree
-
-pnpm run skills:install       # rebuilds every skill in skills-lock.json
+pnpm run skills:install       # rebuilds every skill in skills-lock.json, digest-checked first
 ```
 
 Then **restart the session** so the hooks load. A plugin or hook enabled part-way through a

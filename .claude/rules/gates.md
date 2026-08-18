@@ -1,5 +1,5 @@
 ---
-paths: "scripts/**, .dependency-cruiser.cjs, biome.jsonc, knip.jsonc, lefthook.yml, .github/workflows/**"
+paths: "scripts/**, tests/**, vitest.config.mts, .dependency-cruiser.cjs, biome.jsonc, knip.jsonc, .syncpackrc.json, lefthook.yml, .github/workflows/**"
 title: Gates
 summary: How to add or change a gate so it actually catches what it claims
 status: stable
@@ -7,7 +7,7 @@ status: stable
 
 # Gates
 
-> **A gate you have not watched fail is a gate you have not tested. Seed the violation, watch it exit non-zero, restore, and paste the output.**
+> **A repository invariant is a vitest test; a general-purpose concern is a maintained tool. Nothing in between — and a gate you have not watched fail is a gate you have not tested.**
 
 ## Why
 
@@ -17,14 +17,11 @@ A gate that passes because it scanned zero files reads exactly like one that pas
 |---|---|
 | the vendor-reference scanner | `walk()` only handled directories, so top-level files were never scanned |
 | its term list | gitignored and absent, so it ran with zero terms |
-| three scanners | omitted `examples/` from `SCAN_ROOTS` |
-| the same three scanners | each carried an extension list narrower than its gate-table row claims, so a machine path in an `.svg`, a `.css` or an `.html` sat under a green tick |
-| `check-single-export`, `check-schema-depth` | accepted only explicit paths, so `verify` ran both against nothing |
-| `check-file-refs` | its five roots omitted `apps/` and `examples/`, so a code span naming a missing file in either was never read |
+| three scanners | omitted `examples/` from `SCAN_ROOTS`, and each carried an extension list narrower than its documented row, so a machine path in an `.svg`, a `.css` or an `.html` sat under a green tick |
+| the file-reference and one-unit scanners | one's five roots omitted `apps/` and `examples/`; the others accepted only explicit paths, so `verify` ran them against nothing |
 | `core-imports-no-framework` | matched a resolved `node_modules` path that never occurs, so the rule guarding the central invariant had never fired |
 | `publint`, `attw` | installed, documented as gates, wired to nothing |
-| `check-skills-lock` | compared names and ignored the content hash it stores |
-| `check-docs` inside `verify` | invoked as `pnpm docs`, which the package manager claims — it opened a homepage and exited 0 |
+| the skills lockfile gate | compared names and ignored the content hash it stores |
 
 None was carelessness. Each looked right and printed a tick.
 
@@ -47,16 +44,19 @@ Both directions matter. A gate narrowed to remove a false positive must still fi
 
 **Gate:** none — this is judgment. The pull request template carries it as a checklist item.
 
-### A clean exit is not a result
+### The runner owns the verdict
 
-`pnpm <name>` reaches your script only while the package manager has no command of that name.
-`pnpm docs` opened a package homepage, printed nothing and exited 0, so `verify` skipped the
-documentation gate entirely and every local pass was made without it. Use `pnpm run <name>` —
-unambiguous whatever the tool adds later. **Gate:** `check-script-invocations.mjs`.
+Write a repository invariant as a test in `tests/`, never as a script that decides its own exit
+code. Every failure above is a version of choosing wrong: printing a report and exiting 0,
+exiting 0 having read no files, or being invoked under a name the package manager claimed — as
+`pnpm docs` was, opening a homepage and exiting 0 while `verify` skipped documentation entirely.
+A test has no exit code to choose, and a suite that ran nothing reports zero tests.
 
-Read the same way anywhere a gate is quiet: a gate that found nothing and a gate that ran
-nothing produce identical output. Make it say what it checked — a file count, a rule count, a
-package count — so silence becomes visible.
+Write each as a pair: a fixture proving the detector fires, and an assertion over the repository
+that also asserts its corpus size, so reading nothing fails. The fixture is the seeded violation
+kept permanently, so a detector that stops detecting fails there rather than passing over the
+corpus. A general-purpose concern goes to a maintained tool instead — `syncpack`, `jscpd`,
+`knip` — because something that already exists is something nobody here keeps honest.
 
 ### Seed every form of the thing, not the convenient one
 
@@ -79,10 +79,10 @@ confident and specific number. It reads exactly like a correct one. Six in a sin
 | four gates unreachable | the walker's `[a-z-]+` cannot match `a11y`, so it could not see a gate that was wired in fine |
 | `auto-close is broken` | every issue was hand-closed 2-9 minutes after its merge, before the observed 47-49s close could fire. The absence of an automatic close was then cited as proof one would never come |
 
-Four rules follow. **Assert on the thing, not a proxy** — an exit code or a class landing is one
-remove from what you care about. **Fix the measurement before writing a second fix**: a change
-that alters nothing is evidence about the instrument. **Assert on shape, not an exact figure**,
-where physics is involved. And **a check that changes what it measures cannot report a negative.**
+Four rules follow. **Assert on the thing, not a proxy.** **Fix the measurement before writing a
+second fix**: a change that alters nothing is evidence about the instrument. **Assert on shape,
+not an exact figure**, where physics is involved. And **a check that changes what it measures
+cannot report a negative.**
 
 **Gate:** none — a check that lies passes every gate. This is the judgment `verify` cannot hold.
 
@@ -90,7 +90,7 @@ where physics is involved. And **a check that changes what it measures cannot re
 
 A gate that enumerates extensions or directories is blind to every file type nobody thought of
 when the list was written, and the blindness is silent — the tick over the files it did read is
-indistinguishable from a complete one. `scripts/trackedFiles.mjs` asks `git ls-files` for
+indistinguishable from a complete one. `tests/support/trackedFiles.mjs` asks `git ls-files` for
 everything committed plus everything untracked and not ignored, which is exactly the set a
 contributor is about to publish; a scanner needing a narrower slice filters that set down
 rather than building its own. It throws instead of falling back to a directory walk, because a
@@ -99,7 +99,7 @@ is how a scanner is built, which no gate over the scanner can see.
 
 ### Say what the gate cannot catch
 
-Claiming full coverage is how the next gap is missed. `check-installable.mjs` records that it cannot see an unused peer dependency, because the package imports perfectly well — it just drags something along. That sentence is why `check-peer-deps.mjs` exists.
+Claiming full coverage is how the next gap is missed. The tarball install records that it cannot see an unused peer dependency, because the package imports perfectly well — it just drags something along. That sentence is why `tests/peerDependencies.test.mjs` exists.
 
 ### A tuned threshold is not a waived one
 
@@ -107,36 +107,35 @@ Where a gate fires on something legitimate, tune the scope and record the reason
 
 ### Have someone else run the check against real inputs
 
-A check is written from a model of how the thing fails, and that model is the same one its
-author used to decide what to check. So its misses are exactly the cases the model does not
-contain, and they stay invisible to the author no matter how carefully they re-read it. A second
-person brings a different model — that is the whole of the mechanism, and why looking harder is
-not a substitute.
+A check is written from a model of how the thing fails, and that model is the same one its author
+used to decide what to check. Its misses are exactly the cases the model does not contain, and
+they stay invisible to the author however carefully they re-read it. A second person brings a
+different model — which is why looking harder is not a substitute.
 
-Reading the design is not enough either. Both defects below were found by running the check
-against real inputs and watching what it did, not by reviewing it:
+Reading the design is not enough. Both defects below were found by running the check against
+real inputs, not by reviewing it:
 
 | Proposed check | What running it showed |
 |---|---|
 | a `PreToolUse` hook matching `Write|Edit|MultiEdit`, to keep the primary worktree clean | files written by an MCP server never meet it — [#211](https://github.com/effekt/nubbin/issues/211) |
-| a pattern over gate-table rows, to find rows over-claiming their surface | the only rows stating a surface are ``publint``·``attw`` and `check-plan-files.mjs`, and both state it correctly — so it fires on the honest rows and passes the rest |
+| a pattern over gate-table rows, to find rows over-claiming their surface | the only two rows stating a surface stated it correctly, so it fired on the honest rows and passed the rest |
 
 Open [`docs/gates.md`](../../docs/gates.md) and grep the table for a scope literal to check the second yourself. Both authors had argued against this failure in the same breath as proposing it.
 
-So: hand the check to whoever did not design it, and ask them to run it against the corpus it
-will meet — the same standard as seeding a gate, one level up.
+So hand the check to whoever did not design it, to run against the corpus it will meet — the
+same standard as seeding a gate, one level up.
 
 **Gate:** none — nothing can tell whether the person seeding a check is the person who wrote it.
 
 ### Put the property in the shape, not in a rule someone remembers
 
-A check whose correctness rests on a convention fails silently the first time someone edits around it, and every gate still passes. Put it where the code cannot work without it. `scaffold-issue.mjs` runs its duplicate search *above* the validation a flag softens, so no flag can reach an issue-open unsearched — the invariant is the statement order, not a note asking callers to search first. `anchorsOf` returns the directories that qualify a path rather than a boolean saying one did, so the existence test cannot drift from the classification test it depends on.
+A check whose correctness rests on a convention fails silently the first time someone edits around it, and every gate still passes. Put it where the code cannot work without it. `scaffold-issue.mjs` runs its duplicate search *above* the validation a flag softens, so no flag can reach an issue-open unsearched — the invariant is the statement order, not a note asking callers to search first.
 
 Ask what a careless edit would have to do to break the check, and whether anything would notice. Where the answer is "delete a line nobody reads", the property is in the wrong place.
 
 ### Check the artifact, not only the source
 
-A gate reading `src/` cannot see what packing, publishing and installing do. Four defects reached the registry with every source gate green. `check-tarball`, `check-package-metadata` and `check-installable` read the packed manifest, the package directory and the installed package respectively, because those are three different questions.
+A gate reading `src/` cannot see what packing, publishing and installing do. Four defects reached the registry with every source gate green. The `release` vitest project reads the packed manifest and then the installed package, and `tests/packageMetadata.test.mjs` reads the package directory, because those are three different questions.
 
 ## Checklist
 
@@ -148,3 +147,4 @@ A gate reading `src/` cannot see what packing, publishing and installing do. Fou
 - [ ] The check asserts on the thing itself, at a defined moment, not on a proxy for it
 - [ ] Someone who did not design the check seeded the violation against it
 - [ ] The property lives in the code's shape, not in a convention a later edit can drop
+- [ ] A repository invariant went into `tests/`; a general-purpose concern went to a pinned tool

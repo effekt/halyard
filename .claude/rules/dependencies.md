@@ -41,7 +41,8 @@ ordinary bump — [the decision](../../docs/decisions/pinned-versions-and-a-3-da
 ```
 
 `workspace:*`, `catalog:`, `link:` and `file:` are exact by construction and allowed.
-`scripts/check-pinned-deps.mjs` enforces this at pre-commit and on every agent edit.
+`syncpack lint` (`pnpm pinned-deps`) enforces this at pre-commit and in CI, over the manifests
+and over the workspace catalog they resolve through.
 
 ### peerDependencies are the exception
 
@@ -80,7 +81,7 @@ either.
 
 ## Gates
 
-`check-pinned-deps.mjs` rejects a range where an exact version belongs and a duplicate of
+`syncpack` rejects a range where an exact version belongs and a duplicate of
 something the catalog already pins. **Gate:** none for the three-day minimum age — `pnpm`'s
 `minimumReleaseAge` enforces it at install time, so nothing in this repository re-checks a
 lockfile that already satisfied it.
