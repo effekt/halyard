@@ -47,7 +47,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-file-refs.mjs` | a repository file named inside a code span exists, or is gitignored on purpose |
 | `check-stale-docs.mjs` | a document last touched before something it links to is flagged for review — advisory, reported without blocking |
 | `check-plan-files.mjs` | no plan-shaped file under `docs/` — a `plans/` directory, a date-stamped filename, or a stem that is the word itself |
-| `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
+| `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist, declare a gate, and glob at least one tracked file |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 | `check-prose-dupes.mjs` | one claim, one home — a run of 12 words written into two documents, measured after fences, comments and tables are stripped out |
 | `check-pinned-deps.mjs` | no range specifier — every dependency version is exact, so an upgrade arrives only in a commit someone wrote |

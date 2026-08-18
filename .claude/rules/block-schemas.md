@@ -1,5 +1,5 @@
 ---
-paths: "packages/**/*.schema.ts, packages/**/blocks/**, apps/**/blocks/**"
+paths: "packages/**/*.schema.ts, examples/**/*.schema.ts, packages/**/blocks/**, apps/**/blocks/**, examples/**/blocks/**"
 title: Block Schema Rules
 summary: How to compose a block's schema from named sub-schemas without duplication
 status: stable

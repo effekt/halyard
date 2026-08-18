@@ -1,5 +1,5 @@
 ---
-paths: "packages/**/*.block.ts, apps/**/*.block.ts, packages/**/blocks/**, apps/**/blocks/**"
+paths: "packages/**/*.block.ts, apps/**/*.block.ts, examples/**/*.block.ts, packages/**/blocks/**, apps/**/blocks/**, examples/**/blocks/**"
 title: Block Authoring Rules
 summary: How to define a whole block correctly — defaults, slots, version, docs
 status: stable
