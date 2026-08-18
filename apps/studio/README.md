@@ -26,9 +26,8 @@ A Next.js app that does four things end to end, against the demo:
 Drafts start as the demo's committed fixtures, and edits live in this process's memory and
 nowhere else — a restart returns every draft to its fixture, and a second process never sees
 them — because the authoring store is the open design question
-[#11](https://github.com/effekt/nubbin/issues/11). The studio runs unauthenticated behind
-whatever gate the deployment provides
-([#85](https://github.com/effekt/nubbin/issues/85)).
+[#11](https://github.com/effekt/nubbin/issues/11). The studio
+[runs unauthenticated behind whatever gate the deployment provides](../../docs/decisions/the-studio-does-not-own-identity.md).
 
 ## Running it
 

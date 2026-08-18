@@ -163,9 +163,8 @@ function setAtPath(
 
 `setNodeProp` is the first document operation: a new `DocumentVersion` with one prop set on
 one node, copy-on-write, every untouched node kept by reference. It lives beside `compile`
-rather than inside an editor, so every caller — a studio, a script, an agent — writes a
-document through one definition of the write
-([#134](https://github.com/effekt/nubbin/issues/134)).
+rather than inside an editor, so every caller — a studio, a script, an agent —
+[writes a document through one definition of the write](../decisions/document-operations-live-in-core-beside-compile.md).
 
 Three deliberate absences. It does not validate the value — that is `compile`'s job at the
 next compile, which reports an `invalid-props` issue at the offending path. It does not bump
