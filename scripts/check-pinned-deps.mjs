@@ -18,37 +18,21 @@
 // Usage: node scripts/check-pinned-deps.mjs [files...] [--check]
 
 import { existsSync } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = ["packages", "apps", "examples"];
 const CHECKED_FIELDS = ["dependencies", "devDependencies", "optionalDependencies"];
 const EXACT_VERSION = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 const ALLOWED_PROTOCOL = /^(workspace:|catalog:|link:|file:)/;
 
-async function findManifests(dir, found) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (entry.name === "node_modules") continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await findManifests(full, found);
-    else if (entry.name === "package.json") found.push(full);
-  }
-  return found;
-}
-
-async function collectTargets(explicit) {
+function collectTargets(explicit) {
   if (explicit.length > 0) return explicit.map((file) => resolve(ROOT, file)).filter(existsSync);
-  const found = [join(ROOT, "package.json")];
-  for (const root of SCAN_ROOTS) await findManifests(join(ROOT, root), found);
-  return found;
+  return trackedFiles(ROOT)
+    .filter((path) => path === "package.json" || path.endsWith("/package.json"))
+    .map((path) => join(ROOT, path));
 }
 
 /** Every unpinned entry in one manifest, as `field.name → "specifier"` rows. */
@@ -104,7 +88,7 @@ async function unpinnedCatalogEntries(file) {
 const args = process.argv.slice(2);
 const check = args.includes("--check");
 const explicit = args.filter((arg) => !arg.startsWith("--"));
-const targets = await collectTargets(explicit);
+const targets = collectTargets(explicit);
 
 const offenders = [];
 for (const file of targets) {

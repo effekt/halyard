@@ -15,29 +15,13 @@
 // Usage: node scripts/check-no-vendor-refs.mjs [files...] [--check]
 
 import { existsSync } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TERMS_FILE = join(ROOT, "scripts/vendor-terms.txt");
-// Directories are walked recursively; every file at the repository root is scanned as well.
-// Enumerating root files by name is how the last leak survived — a `.grit` file nobody had
-// added to the list — so the root is swept wholesale instead.
-// `.changeset` ships verbatim into the public CHANGELOG, which is exactly where a leaked
-// employer or client name would be hardest to retract.
-const SCAN_ROOTS = [
-  "docs",
-  "packages",
-  "apps",
-  "examples",
-  ".claude",
-  "scripts",
-  ".github",
-  ".changeset",
-];
-const SCANNED_EXT = /\.(md|mdx|ts|tsx|js|mjs|cjs|json|jsonc|ya?ml|toml|grit|txt|sh)$/;
-const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", ".repomix"]);
 
 /** Home-directory paths leak a machine layout and are always wrong in a public repo. */
 const ALWAYS_DENIED = [/\/Users\/[a-z]/i, /\/home\/[a-z]/i, /C:\\Users\\/i];
@@ -52,39 +36,9 @@ async function loadTerms() {
     .map((term) => new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i"));
 }
 
-async function walk(dir, found) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (EXCLUDED_DIRS.has(entry.name)) continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await walk(full, found);
-    else if (SCANNED_EXT.test(entry.name)) found.push(full);
-  }
-  return found;
-}
-
-/** Files sitting directly at the repository root, which no directory root would reach. */
-async function rootFiles() {
-  const entries = await readdir(ROOT, { withFileTypes: true });
-  return entries
-    .filter((entry) => entry.isFile() && SCANNED_EXT.test(entry.name))
-    .map((entry) => join(ROOT, entry.name));
-}
-
-async function collectTargets(explicit) {
+function collectTargets(explicit) {
   if (explicit.length > 0) return explicit.map((file) => resolve(ROOT, file)).filter(existsSync);
-  const found = await rootFiles();
-  for (const root of SCAN_ROOTS) {
-    const full = join(ROOT, root);
-    if (!existsSync(full)) continue;
-    await walk(full, found);
-  }
-  return [...new Set(found)];
+  return trackedFiles(ROOT).map((path) => join(ROOT, path));
 }
 
 /** The denylist is the one file allowed to contain every denied term. */
@@ -93,13 +47,17 @@ const isTermsFile = (file) => resolve(file) === TERMS_FILE;
 const args = process.argv.slice(2);
 const check = args.includes("--check");
 const patterns = [...ALWAYS_DENIED, ...(await loadTerms())];
-const targets = (await collectTargets(args.filter((arg) => !arg.startsWith("--")))).filter(
+const targets = collectTargets(args.filter((arg) => !arg.startsWith("--"))).filter(
   (file) => !file.endsWith("check-no-vendor-refs.mjs") && !isTermsFile(file),
 );
 
 const hits = [];
 for (const file of targets) {
-  const lines = (await readFile(file, "utf8")).split("\n");
+  const raw = await readFile(file);
+  // A file the extension test could not name as binary still may be — skip on the first NUL
+  // byte rather than pattern-matching mojibake.
+  if (raw.includes(0)) continue;
+  const lines = raw.toString("utf8").split("\n");
   lines.forEach((line, index) => {
     const pattern = patterns.find((candidate) => candidate.test(line));
     if (pattern) hits.push(`${relative(ROOT, file)}:${index + 1}  matches ${pattern}`);

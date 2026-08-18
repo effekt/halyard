@@ -88,8 +88,9 @@ generated file. Generate when you need the whole picture; otherwise read the tre
 
 Every row in the table below is enforced by a gate that runs on every agent edit
 (`.claude/settings.json`), at pre-commit (`lefthook.yml`), or at pre-push. The gates that
-read prose check every document; the ones that read code check `packages/`, `apps/` and
-`examples/`.
+read prose check every document; the ones that sweep for accessibility, vendor references and
+unpinned versions read every file git would publish, so a new file type or a new directory is
+covered without anyone extending a list.
 
 **Not every rule in `.claude/rules/` has one.** Where a rule states a gate, that gate exists
 and has been seen to fail on a violation. Where it says *Gate: none*, the rule is judgment a
@@ -126,7 +127,7 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-plugins-lock.mjs` | `plugins-lock.json` and the installed plugins agree as a set, by name — versions are recorded but not compared, because a marketplace that publishes none reports `unknown` |
 | `check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
 | `check-gate-table.mjs` | every gate this table names is reachable from `pnpm verify`, and every gate `verify` runs has a row here — each direction with documented exceptions |
-| `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; `onClick` on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
+| `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; a click handler on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 
 `pnpm verify` runs every gate above except the two named below, and needs a full install.
 `check-gate-table.mjs` is what keeps that sentence true in both directions: it fails when a row

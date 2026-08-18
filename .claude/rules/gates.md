@@ -18,6 +18,7 @@ A gate that passes because it scanned zero files reads exactly like one that pas
 | `check-no-vendor-refs.mjs` | `walk()` only handled directories, so top-level files were never scanned |
 | its term list | gitignored and absent, so it ran with zero terms |
 | three scanners | omitted `examples/` from `SCAN_ROOTS` |
+| the same three scanners | each carried an extension list narrower than its gate-table row claims, so a machine path in an `.svg`, a `.css` or an `.html` sat under a green tick |
 | `check-single-export`, `check-schema-depth` | accepted only explicit paths, so `verify` ran both against nothing |
 | `core-imports-no-framework` | matched a resolved `node_modules` path that never occurs, so the rule guarding the central invariant had never fired |
 | `publint`, `attw` | installed, documented as gates, wired to nothing |
@@ -83,6 +84,17 @@ fix**: a change that alters nothing is evidence about the instrument, not the su
 easing curve does not read as a defect.
 
 **Gate:** none — a check that lies passes every gate. This is the judgment `verify` cannot hold.
+
+### A scanner's scope is asked of git, not listed
+
+A gate that enumerates extensions or directories is blind to every file type nobody thought of
+when the list was written, and the blindness is silent — the tick over the files it did read is
+indistinguishable from a complete one. `scripts/trackedFiles.mjs` asks `git ls-files` for
+everything committed plus everything untracked and not ignored, which is exactly the set a
+contributor is about to publish; a scanner needing a narrower slice filters that set down
+rather than building its own. It throws instead of falling back to a directory walk, because a
+fallback nobody exercises is where a gate quietly stops reading anything. **Gate:** none — this
+is how a scanner is built, which no gate over the scanner can see.
 
 ### Say what the gate cannot catch
 
