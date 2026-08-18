@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { createElement, Fragment } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, test } from "vitest";
@@ -29,6 +30,13 @@ describe("invokeBlock", () => {
 
   test("rejects a Fragment root, naming the block — there is nothing to stamp", async () => {
     const Bad = () => createElement(Fragment, null, createElement("h1"), createElement("p"));
+    await expect(invokeBlock(Bad, {}, node)).rejects.toThrow(/Hero/);
+  });
+
+  test("rejects a composite root — a cloned prop is dropped, and the stamp with it", async () => {
+    const Card = ({ children }: { children?: ReactNode }) =>
+      createElement("article", null, children);
+    const Bad = () => createElement(Card, null, "body");
     await expect(invokeBlock(Bad, {}, node)).rejects.toThrow(/Hero/);
   });
 

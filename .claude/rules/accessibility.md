@@ -101,13 +101,13 @@ that control flattens into text.
 | White on `#BF411D` (`orange-deep`) | 5.26:1 | The accessible twin of `orange`; buttons use it |
 | `#4FB3C7` (`teal-light`) on `#0B2B33` | 6.11:1 | The accessible twin of `teal` on dark |
 | `#04141A` (`ink`) on `#4FB3C7` | 7.68:1 | Text on a `teal-light` fill — the ground, not white |
+| `marine/60` on `#F1F4F3` (`canvas`) | 4.00:1 | Fails AA — muted body ink starts at `marine/70` (5.40:1) |
 
 A new pair is computed before its token is committed. **Gate:** none.
 
-**A pair is accessible only on the ground it actually lands on.** Two rows above were added after
-a dark theme shipped white on a `teal-light` fill (2.44:1) and `orange` as text on `marine`
-(4.05:1) — both reasoned against `--bg` while the element sat on a fill or `--panel`. Read the
-composited background off the rendered DOM, never the token it inherits from.
+**A pair is accessible only on the ground it lands on, and an alpha composite has no second token
+to look up.** `text-marine/60` shipped in seven blocks reasoned from `marine`'s own 12.2:1; painted
+it is 4.00:1 on `canvas`, 4.15:1 on white. Read the ground off the rendered DOM, not the token.
 
 ### Interactive elements are `button` or `a`, never a `div` with a handler
 

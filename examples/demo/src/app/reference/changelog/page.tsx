@@ -30,7 +30,7 @@ export default function ChangelogPage() {
                   {TAG_LABELS[entry.tag]}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-marine/60">
+              <p className="mt-1 text-sm text-marine/70">
                 <time dateTime={entry.date}>{entry.date}</time>
               </p>
               {entry.paragraphs.map((paragraph) => (

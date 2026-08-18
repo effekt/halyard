@@ -112,16 +112,18 @@ Artifacts are immutable and content-addressed (invariant 3) — frozen props wer
 
 `<Name>.block.ts` beside `<Name>.tsx` registers a block, implicitly, off the file's existence ([`api.md`](../../docs/api.md)). Add `docs: { figma, storybook }` too — one line, cheap. Ships with: the schema's accept/reject test ([`block-schemas.md`](block-schemas.md#checklist)), a test that `defaults` validates, and a component test if props branch the render ([`testing.md`](testing.md)).
 
-### A block renders one root element
+### A block renders one root HTML element
 
 ```tsx
 // WRONG — two roots; nothing for the renderer to attach data-nubbin-node to
 export function Hero() { return (<><h1>{title}</h1><p>{body}</p></>); }
+// WRONG — one root, but a component: the attribute arrives as a prop Card discards
+export function Hero() { return (<Card><h1>{title}</h1></Card>); }
 // CORRECT — one element the renderer can mark
 export function Hero() { return (<section><h1>{title}</h1><p>{body}</p></section>); }
 ```
 
-The studio learns about the page only through the DOM, so block roots carry `data-nubbin-node`. A Fragment leaves nothing to attach it to. **Gate:** `invokeBlock` throws at render, naming the block and the node — static analysis was rejected as redundant, see [the decision](../../docs/decisions/one-root-element-per-block-enforced-at-render.md). A block must also be a server component: a client reference cannot be invoked, so it cannot render at all.
+The studio learns about the page only through the DOM, so block roots carry `data-nubbin-node`. Only a host element becomes an attribute; a Fragment has nothing to attach it to and a composite root swallows it. Reach for a wrapper you own, and put the composite inside it. **Gate:** `invokeBlock` throws at render, naming the block and the node — static analysis was rejected as redundant, see [the decision](../../docs/decisions/one-root-element-per-block-enforced-at-render.md). A block must also be a server component: a client reference cannot be invoked, so it cannot render at all.
 
 ## Checklist
 
@@ -134,4 +136,4 @@ The studio learns about the page only through the DOM, so block roots carry `dat
 - [ ] Rich text fields use the marked rich-text type, not a plain string
 - [ ] `docs` links are present if they exist; a schema-shape change bumped `version`
 - [ ] `<Name>.block.ts` exists beside the component; defaults and schema each have a test
-- [ ] The component returns exactly one root element
+- [ ] The component returns exactly one root HTML element, not a component

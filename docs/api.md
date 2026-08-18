@@ -341,7 +341,7 @@ no coded home page doubles the brackets, and `routeFromSlug` maps an absent slug
 
 `Renderer` is an async server component. It loads the blocks `blockVersions` names, fills each
 node's holes, and stamps `data-nubbin-node` on the root element the block returns — so a block
-is a server component with exactly one root, and nothing wraps it. A route whose artifact
+is a server component whose one root is an HTML element, and nothing wraps it. A route whose artifact
 declares holes passes a `resolveHole` resolver; a fully static one needs none.
 
 ## Package boundary this implies

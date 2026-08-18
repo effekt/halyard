@@ -15,9 +15,9 @@ export function PlanCard({ plan }: PlanCardProps) {
         )}
       </p>
       <h3 className="mt-4 text-xl font-semibold">{plan.name}</h3>
-      <p className="mt-1 text-sm text-marine/60">{plan.description}</p>
+      <p className="mt-1 text-sm text-marine/70">{plan.description}</p>
       <p className="mt-6 text-3xl font-semibold">{plan.price}</p>
-      <p className="text-sm text-marine/60">{plan.unit}</p>
+      <p className="text-sm text-marine/70">{plan.unit}</p>
       <ul className="mt-6 space-y-2 text-sm">
         {plan.features.map((feature) => (
           <li key={feature}>{feature}</li>

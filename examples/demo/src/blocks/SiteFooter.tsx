@@ -5,7 +5,7 @@ import { TONE_SURFACE } from "./tone.constants";
 type SiteFooterProps = InferProps<typeof siteFooterSchema>;
 
 const TONE_STYLES = {
-  light: { section: TONE_SURFACE.light, muted: "text-marine/60" },
+  light: { section: TONE_SURFACE.light, muted: "text-marine/70" },
   dark: { section: TONE_SURFACE.dark, muted: "text-canvas/50" },
 } as const;
 

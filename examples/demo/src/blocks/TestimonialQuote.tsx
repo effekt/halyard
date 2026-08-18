@@ -5,7 +5,7 @@ import { TONE_SURFACE } from "./tone.constants";
 type TestimonialQuoteProps = InferProps<typeof testimonialQuoteSchema>;
 
 const TONE_STYLES = {
-  light: { section: TONE_SURFACE.light, role: "text-marine/60" },
+  light: { section: TONE_SURFACE.light, role: "text-marine/70" },
   dark: { section: TONE_SURFACE.dark, role: "text-canvas/60" },
 } as const;
 

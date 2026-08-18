@@ -9,7 +9,12 @@ interface InspectorProps {
   commit: (nodeId: string, path: string, value: unknown) => Promise<string | undefined>;
 }
 
-/** The panel beside the canvas: pick a node, then edit its fields. */
+/** The panel beside the canvas: pick a node, then edit its fields.
+ *
+ * The fields section is keyed by the selected node. Every control below reads its value once,
+ * at mount, so switching nodes has to remount them or a control keeps the previous node's
+ * value. Keying here rather than on each control's own value is what lets a control that
+ * commits on change survive its own commit with focus intact. */
 export function Inspector({ nodes, selected, onSelect, commit }: InspectorProps) {
   return (
     <aside
@@ -20,7 +25,7 @@ export function Inspector({ nodes, selected, onSelect, commit }: InspectorProps)
       {selected === undefined ? (
         <p>Select a block — in the list above, or by clicking it in the preview.</p>
       ) : (
-        <section aria-label={`${selected.block} fields`}>
+        <section key={selected.id} aria-label={`${selected.block} fields`}>
           <h2 className="font-semibold">{selected.block}</h2>
           {selected.fields.map((field) => (
             <FieldControl
