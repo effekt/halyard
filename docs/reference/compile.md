@@ -1,6 +1,6 @@
 ---
 title: Compiling a Document
-summary: compile as shipped — the document shape it takes, the two validation passes, and every issue code CompileError can carry
+summary: compile and setNodeProp as shipped — the document shape, the two validation passes, and every issue code CompileError can carry
 status: reference
 ---
 
@@ -139,10 +139,42 @@ should treat a page of stacked sections — which has no single containing block
 design question [#60](https://github.com/effekt/nubbin/issues/60); this page documents the
 shapes as they ship and takes no position on it.
 
-How a `DocumentVersion` is produced and stored is the authoring path, which has open design
-questions of its own — [#11](https://github.com/effekt/nubbin/issues/11),
-[#134](https://github.com/effekt/nubbin/issues/134) — so the examples here construct one as a
-literal, the way the package's own tests do.
+How a `DocumentVersion` is stored is the authoring store, an open design question of its own
+([#11](https://github.com/effekt/nubbin/issues/11)) — so the examples here construct one as a
+literal, the way the package's own tests do. Editing one is
+[`setNodeProp`](#setnodeprop-and-setatpath).
+
+## `setNodeProp` and `setAtPath`
+
+```ts
+function setNodeProp(
+  version: DocumentVersion,
+  nodeId: string,
+  path: string,
+  value: unknown,
+): DocumentVersion;
+
+function setAtPath(
+  target: Record<string, unknown>,
+  path: string,
+  value: unknown,
+): Record<string, unknown>;
+```
+
+`setNodeProp` is the first document operation: a new `DocumentVersion` with one prop set on
+one node, copy-on-write, every untouched node kept by reference. It lives beside `compile`
+rather than inside an editor, so every caller — a studio, a script, an agent — writes a
+document through one definition of the write
+([#134](https://github.com/effekt/nubbin/issues/134)).
+
+Three deliberate absences. It does not validate the value — that is `compile`'s job at the
+next compile, which reports an `invalid-props` issue at the offending path. It does not bump
+`version` — appending a version belongs to the authoring store
+([#11](https://github.com/effekt/nubbin/issues/11)), not to one edit. And it throws on an
+unknown `nodeId` and on an `items[]` path, which names every array member rather than one.
+
+`setAtPath` is the copy-on-write descent it writes with — the same one the renderer uses to
+fill a resolved hole value into props at render time.
 
 ## `CompileError`
 

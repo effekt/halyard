@@ -1,0 +1,21 @@
+/** The edit endpoint's body, once its shape has been checked. */
+export interface DraftEdit {
+  route: string;
+  nodeId: string;
+  path: string;
+  value: unknown;
+}
+
+/** Checks an untrusted request body against the edit shape — `undefined` over a throw, so
+ * the endpoint answers a malformed body with its own status. */
+export function parseDraftEdit(body: unknown): DraftEdit | undefined {
+  if (typeof body !== "object" || body === null) {
+    return undefined;
+  }
+  const record = body as Record<string, unknown>;
+  const { route, nodeId, path } = record;
+  if (typeof route !== "string" || typeof nodeId !== "string" || typeof path !== "string") {
+    return undefined;
+  }
+  return { route, nodeId, path, value: record.value };
+}

@@ -5,3 +5,10 @@
 /* Tailwind's auto-detection stops at this app's root; the preview's classes live in the
    demo's sources. */
 @source "../../../../examples/demo/src";
+
+/* The block the editor has selected, marked by the editing shell; the negative offset keeps
+   the outline visible inside sections that clip their overflow. */
+[data-nubbin-selected] {
+  outline: 2px solid var(--color-teal-light);
+  outline-offset: -2px;
+}

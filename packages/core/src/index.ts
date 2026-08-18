@@ -28,3 +28,5 @@ export type { FieldKind, FieldNode, SchemaAdapter } from "./field.types";
 export { parseMatchKind } from "./parseMatchKind";
 export type { Registry } from "./registry.types";
 export type { RollbackCheck } from "./rollback.types";
+export { setAtPath } from "./setAtPath";
+export { setNodeProp } from "./setNodeProp";

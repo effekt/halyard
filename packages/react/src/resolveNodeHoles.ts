@@ -1,6 +1,6 @@
 import type { ArtifactNode, UnknownProps } from "@nubbin/core";
+import { setAtPath } from "@nubbin/core";
 import type { HoleResolver } from "./holes.types";
-import { setAtPath } from "./setAtPath";
 
 /**
  * The static path is the fast path: no holes means the frozen props object is returned as-is,
