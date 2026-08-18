@@ -1,9 +1,11 @@
 import { createRegistry } from "@nubbin/core";
+import { changelogListBlock } from "../blocks/ChangelogList.block";
 import { ctaBannerBlock } from "../blocks/CtaBanner.block";
 import { faqAccordionBlock } from "../blocks/FaqAccordion.block";
 import { featureGridBlock } from "../blocks/FeatureGrid.block";
 import { heroBlock } from "../blocks/Hero.block";
 import { logoWallBlock } from "../blocks/LogoWall.block";
+import { pageHeaderBlock } from "../blocks/PageHeader.block";
 import { planTiersBlock } from "../blocks/PlanTiers.block";
 import { profileGridBlock } from "../blocks/ProfileGrid.block";
 import { proseBlock } from "../blocks/Prose.block";
@@ -27,6 +29,8 @@ export const registry = createRegistry([
   testimonialQuoteBlock,
   faqAccordionBlock,
   ctaBannerBlock,
+  pageHeaderBlock,
+  changelogListBlock,
   siteFooterBlock,
   sectionStackBlock,
 ]);

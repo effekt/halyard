@@ -29,6 +29,16 @@ describe("fixtures", () => {
     expect(faq?.holes).toEqual({ items: { revalidate: 5 } });
   });
 
+  test("/changelog compiles to zero holes — it uses neither block with a data hint", () => {
+    const version = fixtureRoutes["/changelog"];
+    if (!version) {
+      throw new Error("missing fixture");
+    }
+    const artifact = compile(version, catalog, registry, "/changelog");
+    const nodes = [artifact.tree[0], ...(artifact.tree[0]?.slots?.sections ?? [])];
+    expect(nodes.every((node) => node?.holes === undefined)).toBe(true);
+  });
+
   test("marketing fixtures carry no holes at all — their pages must stay fully static", () => {
     for (const route of ["/promotions/summer", "/promotions/winter", "/promotions/flash"]) {
       const version = fixtureRoutes[route];

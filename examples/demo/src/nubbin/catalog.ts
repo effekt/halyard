@@ -1,5 +1,7 @@
 import { defineCatalog } from "@nubbin/core";
+import { changelogListSchema } from "../blocks/ChangelogList.schema";
 import { ctaBannerSchema } from "../blocks/CtaBanner.schema";
+import { changelogListDefaults } from "../blocks/changelogListDefaults";
 import { ctaBannerDefaults } from "../blocks/ctaBannerDefaults";
 import { faqAccordionSchema } from "../blocks/FaqAccordion.schema";
 import { featureGridSchema } from "../blocks/FeatureGrid.schema";
@@ -9,9 +11,11 @@ import { heroSchema } from "../blocks/Hero.schema";
 import { heroDefaults } from "../blocks/heroDefaults";
 import { logoWallSchema } from "../blocks/LogoWall.schema";
 import { logoWallDefaults } from "../blocks/logoWallDefaults";
+import { pageHeaderSchema } from "../blocks/PageHeader.schema";
 import { planTiersSchema } from "../blocks/PlanTiers.schema";
 import { profileGridSchema } from "../blocks/ProfileGrid.schema";
 import { proseSchema } from "../blocks/Prose.schema";
+import { pageHeaderDefaults } from "../blocks/pageHeaderDefaults";
 import { planTiersDefaults } from "../blocks/planTiersDefaults";
 import { profileGridDefaults } from "../blocks/profileGridDefaults";
 import { proseDefaults } from "../blocks/proseDefaults";
@@ -48,6 +52,8 @@ export const catalog = defineCatalog({
     ui: { fields: { items: { data: { revalidate: 5 } } } },
   },
   CtaBanner: { schema: ctaBannerSchema, defaults: ctaBannerDefaults },
+  PageHeader: { schema: pageHeaderSchema, defaults: pageHeaderDefaults },
+  ChangelogList: { schema: changelogListSchema, defaults: changelogListDefaults },
   SiteFooter: { schema: siteFooterSchema, defaults: siteFooterDefaults },
   SectionStack: { schema: sectionStackSchema, defaults: sectionStackDefaults },
 });
