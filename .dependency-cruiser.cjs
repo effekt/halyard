@@ -134,7 +134,7 @@ module.exports = {
     },
   ],
   options: {
-    doNotFollow: { path: "(^|/)(node_modules|dist|\\.next|coverage)($|/)" },
+    doNotFollow: { path: "(^|/)(node_modules|dist|\\.next|\\.docusaurus|coverage)($|/)" },
     exclude: {
       path: [
         "node_modules",
@@ -142,6 +142,9 @@ module.exports = {
         "__tests__/",
         "/dist/",
         "\\.next/",
+        // Docusaurus's generated route/state modules under apps/docs/.docusaurus — build
+        // output, not source, exactly as .next/ is for the example app.
+        "\\.docusaurus/",
         "/coverage/",
         "\\.d\\.ts$",
       ],

@@ -36,5 +36,8 @@ scripts/vendor-terms.txt
 # work with it, and ignored because a worktree is a checkout, not content.
 .worktrees/
 
+# Docusaurus generated state (apps/docs)
+.docusaurus/
+
 # Playwright MCP writes console logs and traces beside whatever it is driving.
 .playwright-mcp/

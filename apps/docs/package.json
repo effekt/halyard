@@ -1,0 +1,26 @@
+{
+  "name": "docs-site",
+  "private": true,
+  "version": "0.0.0",
+  "description": "The design site — Docusaurus rendering the documents in docs/, which stay canonical on main.",
+  "scripts": {
+    "dev": "docusaurus start",
+    "build": "docusaurus build --out-dir dist",
+    "serve": "docusaurus serve --dir dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@docusaurus/theme-mermaid": "3.10.2",
+    "@mermaid-js/layout-elk": "0.1.9",
+    "prism-react-renderer": "2.4.1",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@docusaurus/plugin-content-docs": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "typescript": "catalog:"
+  }
+}
