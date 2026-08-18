@@ -20,6 +20,7 @@ A gate that passes because it scanned zero files reads exactly like one that pas
 | three scanners | omitted `examples/` from `SCAN_ROOTS` |
 | the same three scanners | each carried an extension list narrower than its gate-table row claims, so a machine path in an `.svg`, a `.css` or an `.html` sat under a green tick |
 | `check-single-export`, `check-schema-depth` | accepted only explicit paths, so `verify` ran both against nothing |
+| `check-file-refs` | its five roots omitted `apps/` and `examples/`, so a code span naming a missing file in either was never read |
 | `core-imports-no-framework` | matched a resolved `node_modules` path that never occurs, so the rule guarding the central invariant had never fired |
 | `publint`, `attw` | installed, documented as gates, wired to nothing |
 | `check-skills-lock` | compared names and ignored the content hash it stores |

@@ -24,6 +24,12 @@ import { promisify } from "node:util";
 
 const run = promisify(execFile);
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+// These roots are the subject, not a filter. The heuristic is an edge in the reading-order
+// link graph, and that graph is what a contributor is pointed through — the reference
+// documents, the rules that auto-load beside them, and the two entry points. Asking git for
+// every markdown file instead pulls in changesets, agent and skill definitions and package
+// READMEs, which link to these documents without describing them; it adds advisory rows a
+// person then reads past, and a report worth ignoring is a report nobody opens.
 const SCAN_ROOTS = ["docs", ".claude/rules", "README.md", "AGENTS.md"];
 
 /** Commit time of a file's last change, or null when it has never been committed. */

@@ -15,6 +15,11 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+// These roots are the subject, not a filter. The catalog is an index of documents that
+// describe the system, and a row is only useful when the file carries the `summary:`
+// frontmatter this reads. Most markdown here does not — changesets, package READMEs and
+// generated CHANGELOGs carry none by design — so asking git for every markdown file would
+// bury the documents in rows saying "(no summary)".
 const SCAN_ROOTS = ["docs", ".claude/rules"];
 
 /** Minimal frontmatter reader — `key: value` pairs between the leading `---` fences. */

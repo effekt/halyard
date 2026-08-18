@@ -16,32 +16,16 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = ["docs", ".claude", ".github", ".changeset", "packages"];
 const TOP_LEVEL = new Set(readdirSync(ROOT));
 const CODE_SPAN = /`([^`\n]+)`/g;
 const EXTENSION = /\.(md|tsx?|m?[cj]s|jsonc?|ya?ml|grit|txt)$/;
 const NOT_A_PATH = /[*<>{}()\s,|]|^@|^node:|^https?:/;
-
-async function markdownFiles(dir, found = []) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (entry.name === "node_modules" || entry.name === "dist") continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await markdownFiles(full, found);
-    else if (entry.name.endsWith(".md")) found.push(full);
-  }
-  return found;
-}
 
 /** Root entries by stem, so `commitlint.config.js` can be recognised as meaning `.mjs`. */
 const ROOT_STEMS = new Set([...TOP_LEVEL].map((name) => name.replace(EXTENSION, "")));
@@ -92,12 +76,9 @@ const explicit = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
 const targets =
   explicit.length > 0
     ? explicit.map((file) => resolve(ROOT, file)).filter(existsSync)
-    : [
-        ...(await Promise.all(SCAN_ROOTS.map((root) => markdownFiles(join(ROOT, root))))).flat(),
-        ...readdirSync(ROOT)
-          .filter((name) => name.endsWith(".md"))
-          .map((name) => join(ROOT, name)),
-      ];
+    : trackedFiles(ROOT)
+        .filter((path) => path.endsWith(".md"))
+        .map((path) => join(ROOT, path));
 
 const offenders = [];
 for (const file of targets) {
