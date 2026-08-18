@@ -61,13 +61,16 @@ decide. Where the overlap is real, comment on the existing issue instead.
 pnpm run issue-scaffold --body-file /tmp/draft.md --title "…" --label enhancement --open
 ```
 
-Nothing is created until this run passes both the validation and the search. Where a candidate
-scored high enough to be labelled, `--acknowledge-duplicates` is how you say you looked at it
-and it is a different issue.
+Nothing is created until this run passes both the validation and the search. The search reads the
+open issues, the closed ones and every comment on both, because this repository settles as much in
+a comment as in a body. A `CANDIDATE` is open and refuses the run; `SETTLED` is closed and only
+warns, since a question that comes back is allowed to be asked again.
 
-`--advisory-validation` softens the draft check to warnings, and it is there for a caller whose
-whole input is one sentence — the `SubagentStop` capture. With a draft in front of you, fix the
-draft.
+Where a candidate is named, the first answer is a comment on it. `--acknowledge-duplicates` says
+you read it and this is separate work — it is not a way past the refusal.
+
+`--advisory-validation` softens the draft check to warnings. A referral from a subagent arrives as
+one sentence, and the caller writing it up is the one who turns it into four parts.
 
 ## What this cannot check
 

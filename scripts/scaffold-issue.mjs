@@ -38,8 +38,12 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-/** Well above the open set, so a full-length result means something is wrong rather than large. */
-const DEFAULT_LIMIT = 200;
+/**
+ * Well above the whole set — open and closed together — so a full-length result means something is
+ * wrong rather than large. The closed half only grows, so this is raised when the guard trips,
+ * never quietly removed: a truncated search reads exactly like a search that found nothing.
+ */
+const DEFAULT_LIMIT = 800;
 const NEAREST_SHOWN = 5;
 /** Sits in the gap between a restated issue and an unrelated one. It labels; it never filters. */
 const CANDIDATE_SCORE = 0.2;
@@ -231,8 +235,19 @@ function validateDraft(text) {
   return problems;
 }
 
+/**
+ * The default 1MB buffer overflows once comments are in the payload — 300 issues with their
+ * bodies and comments is several megabytes. `ENOBUFS` surfaces as "nothing was searched", which
+ * is honest but stops the run, so the ceiling is raised rather than discovered again.
+ */
+const GH_MAX_BUFFER = 64 * 1024 * 1024;
+
 function runGh(args) {
-  return execFileSync(GH_BIN, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  return execFileSync(GH_BIN, args, {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+    maxBuffer: GH_MAX_BUFFER,
+  });
 }
 
 /**
@@ -255,21 +270,38 @@ function currentRepo() {
   return gh(["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"]).trim();
 }
 
-function openIssues(repo, limit) {
-  const fields = "number,title,body,labels,url";
+/**
+ * Closed issues and every issue's comments are read alongside the open set, because that is where
+ * this repository actually settles things. A finding restating a question answered in a closed
+ * ticket's comment scored zero against titles and bodies alone, and forty-odd such issues were
+ * opened before anyone counted them.
+ *
+ * A closed issue informs; only an open one blocks. Refusing a draft because a closed issue once
+ * covered the ground would make a settled question unaskable when it comes back.
+ */
+function searchableIssues(repo, limit) {
+  const fields = "number,title,body,labels,url,state,comments";
   const raw = gh([
     "issue",
     "list",
     "--repo",
     repo,
     "--state",
-    "open",
+    "all",
     "--limit",
     String(limit),
     "--json",
     fields,
   ]);
-  return JSON.parse(raw);
+  return JSON.parse(raw).map((issue) => ({
+    ...issue,
+    isOpen: issue.state === "OPEN",
+    commentary: (issue.comments ?? []).map((comment) => comment.body ?? "").join("\n"),
+  }));
+}
+
+function openCount(issues) {
+  return issues.filter((issue) => issue.isOpen).length;
 }
 
 /**
@@ -303,11 +335,11 @@ function tokens(text) {
   return found;
 }
 
-/** How many open issues each term appears in, so common vocabulary stops dominating the rank. */
+/** How many issues each term appears in, so common vocabulary stops dominating the rank. */
 function termFrequency(issues) {
   const frequency = new Map();
   for (const issue of issues) {
-    for (const token of tokens(`${issue.title} ${issue.body ?? ""}`)) {
+    for (const token of tokens(`${issue.title} ${issue.body ?? ""} ${issue.commentary ?? ""}`)) {
       frequency.set(token, (frequency.get(token) ?? 0) + 1);
     }
   }
@@ -329,7 +361,7 @@ function emphasisOf(token, titleTokens) {
  */
 function scoreAgainst(draft, issue, frequency, total) {
   const titleTokens = tokens(issue.title);
-  const bodyTokens = tokens(issue.body ?? "");
+  const bodyTokens = tokens(`${issue.body ?? ""} ${issue.commentary ?? ""}`);
   const shared = [];
   let score = 0;
   let ceiling = 0;
@@ -360,11 +392,17 @@ function describeCorroboration(repo, count) {
   return `corroborated by search/issues: ${second}`;
 }
 
+function markFor(issue, score) {
+  if (score < CANDIDATE_SCORE) return "         ";
+  return issue.isOpen ? "CANDIDATE" : "SETTLED  ";
+}
+
 function reportNearest(nearest) {
   for (const { issue, score, shared } of nearest) {
     const percent = Math.round(score * PERCENT);
-    const mark = score >= CANDIDATE_SCORE ? "CANDIDATE" : "         ";
-    console.log(`  ${mark}  ${percent}%  #${issue.number}  ${issue.title}`);
+    const mark = markFor(issue, score);
+    const state = issue.isOpen ? "" : " (closed)";
+    console.log(`  ${mark}  ${percent}%  #${issue.number}${state}  ${issue.title}`);
     console.log(`             shared: ${shared.slice(0, 12).join(", ") || "nothing"}`);
   }
 }
@@ -462,14 +500,24 @@ function reportDraft(problems, isAdvisory) {
 }
 
 function finish(repo, args, nearest) {
-  const candidates = nearest.filter((entry) => entry.score >= CANDIDATE_SCORE);
+  const scoring = nearest.filter((entry) => entry.score >= CANDIDATE_SCORE);
+  const candidates = scoring.filter((entry) => entry.issue.isOpen);
+  const settled = scoring.filter((entry) => !entry.issue.isOpen);
+  if (settled.length > 0) {
+    const numbers = settled.map((entry) => `#${entry.issue.number}`).join(", ");
+    console.log(`\n⚠️  Closed ground: ${numbers} covered this and were closed. Read them before`);
+    console.log(
+      "   filing — a question already settled is answered by citing it, not by asking again.\n",
+    );
+  }
   if (!args.open) {
     printCommand(repo, args, args.bodyFile);
     return;
   }
   if (candidates.length > 0 && !args.acknowledgeDuplicates) {
     const numbers = candidates.map((entry) => `#${entry.issue.number}`).join(", ");
-    console.log(`\n❌ ${numbers} may already cover this. Say so with --acknowledge-duplicates.\n`);
+    console.log(`\n❌ ${numbers} may already cover this. Comment there instead, or say`);
+    console.log("   --acknowledge-duplicates if this is genuinely separate work.\n");
     process.exit(1);
   }
   createIssue(repo, args, bodyNamingCandidates(args.bodyFile, candidates));
@@ -492,11 +540,12 @@ requireArgs(args);
 const body = readFileSync(args.bodyFile, "utf8");
 const repo = args.repo ?? currentRepo();
 const limit = parseLimit(args.limit);
-const issues = openIssues(repo, limit);
-const corroboration = describeCorroboration(repo, issues.length);
+const issues = searchableIssues(repo, limit);
+const open = openCount(issues);
+const corroboration = describeCorroboration(repo, open);
 
 console.log(
-  `\nSearched ${issues.length} open issues in ${repo} (--limit ${limit}; ${corroboration}).`,
+  `\nSearched ${open} open issues in ${repo}, plus ${issues.length - open} closed and the comments on all of them (--limit ${limit}; ${corroboration}).`,
 );
 requireWholeSet(issues, limit, corroboration);
 
