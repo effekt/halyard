@@ -15,10 +15,14 @@ interface PreviewEditorProps {
 }
 
 /** The editing shell around the rendered draft: canvas left, inspector right, selection
- * shared between them, and a server re-render after every committed edit. */
+ * shared between them, and a server re-render after every committed edit.
+ *
+ * The canvas is a `div`, not a `main`. The draft rendered inside it brings its own landmarks —
+ * every fixture roots at a block that is itself a `main` — and a second one nests two main
+ * landmarks in one document. The chrome yields because the page is the content, not the shell. */
 export function PreviewEditor({ route, nodes, children }: PreviewEditorProps) {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
-  const canvasRef = useRef<HTMLElement | null>(null);
+  const canvasRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   useCanvasPick(canvasRef, setSelectedId);
   useSelectionMark(canvasRef, selectedId, nodes);
@@ -35,9 +39,9 @@ export function PreviewEditor({ route, nodes, children }: PreviewEditorProps) {
   const selected = selectedId === undefined ? undefined : nodes[selectedId];
   return (
     <div className="flex items-start">
-      <main ref={canvasRef} className="min-w-0 flex-1">
+      <div ref={canvasRef} className="min-w-0 flex-1">
         {children}
-      </main>
+      </div>
       <Inspector nodes={nodes} selected={selected} onSelect={setSelectedId} commit={commit} />
     </div>
   );
