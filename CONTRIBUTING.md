@@ -51,7 +51,7 @@ convincing objection to something in `docs/` is worth more right now than any pa
 deciding it late would cost, because that is usually what settles it. Comment on one, or open
 a new one with the Design question template.
 
-**A settled decision can be reopened.** [`docs/decisions.md`](docs/decisions.md) holds what's
+**A settled decision can be reopened.** [`docs/decisions/`](docs/decisions/README.md) holds what's
 already settled and why. If you think one was settled wrong, argue it — reopening a decision
 is not a lesser contribution than proposing a new one, it just needs to engage with the
 reasoning already on the page, not just the conclusion.

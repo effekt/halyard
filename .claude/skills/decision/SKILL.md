@@ -1,6 +1,6 @@
 ---
 name: decision
-description: Record or change a design decision so it survives — cause, reason, decision, and what it beat — then sweep every document that argued the old position. Use when settling an open question, reversing a prior choice, or writing anything into docs/decisions.md.
+description: Record or change a design decision so it survives — cause, reason, decision, and what it beat — then sweep every document that argued the old position. Use when settling an open question, reversing a prior choice, or writing a file into docs/decisions/.
 ---
 
 # Record a decision
@@ -35,7 +35,7 @@ Do not argue any part from a measurement a reader cannot open. See
 
 | Kind | Home |
 |---|---|
-| Settled, and someone would re-litigate it | `docs/decisions.md` |
+| Settled, and someone would re-litigate it | A new file in `docs/decisions/` |
 | Still undecided | A GitHub issue labelled `design-question` — it needs a thread that closes |
 | How the system works now | `docs/architecture.md`, `docs/domain-model.md`, or `docs/api.md` |
 | How to work in the repo | `.claude/rules/` |
@@ -45,21 +45,26 @@ diverge, and the reader cannot tell which is current.
 
 ## 3. Write it
 
+One file per decision: `docs/decisions/<slug>.md`, slugged from the title by the rule
+`check-docs.mjs` applies to headings, with the standard frontmatter and the title as an `# `
+heading. The filename is what an inbound link cites, so a title change is a file rename and
+step 5 applies.
+
 Present tense, no narrative. State the system, then compress the rejection to its reason.
 
 Never narrate the drafts that came before. <!-- prose-ok --> Write "Y, because Z. X was
 rejected: it breaks W."
 
-## 3b. Changing a decision that already has an entry
+## 3b. Changing a decision that already has a file
 
-Edit the entry. Do not add a second one beside it, and do not narrate the change in the prose
+Edit that file. Do not add a second one beside it, and do not narrate the change in the prose
 that describes the system — the system is what is true now, and the rejected alternative is what
 stops it being re-proposed. Nothing else survives.
 
 **The Choice part changes too.** The new decision beat something different from what the old one
 beat, and leaving the old alternative in place argues against a position nobody now holds.
 
-Where the original choice was never recorded, there are two honest options: add an entry, or say
+Where the original choice was never recorded, there are two honest options: add the file, or say
 nothing. A paragraph describing a change with no decision behind it leaves a reader unable to
 tell which reading is current, and no gate can tell them apart.
 
@@ -107,7 +112,7 @@ node scripts/check-prose.mjs --check  # no unciteable claims, no old names, no f
 ## Before finishing
 
 - [ ] All four parts are present, and Choice names a real alternative
-- [ ] A changed decision edited its entry rather than gaining a second one, and Choice was
+- [ ] A changed decision edited its file rather than gaining a second one, and Choice was
       re-checked against what the new decision actually beat
 - [ ] The decision lives in exactly one place; everywhere else links to it
 - [ ] Step 4's grep was actually run, and every hit was read

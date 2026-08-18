@@ -10,9 +10,9 @@ This page describes the shipped behaviour of `defineCatalog` and the types aroun
 `Catalog`, `CatalogEntry`, `BlockUi`, `FieldHint`, `FieldHintData`, `BlockDocs`, and the
 introspection contract `SchemaAdapter` with its `FieldNode` and `FieldKind`. Why the catalog
 exists apart from the registry is
-[Catalog and registry are separate](../decisions.md#catalog-and-registry-are-separate); why
+[Catalog and registry are separate](../decisions/catalog-and-registry-are-separate.md); why
 hints sit beside the schema rather than inside it is
-[Editing hints live beside the schema, not inside it](../decisions.md#editing-hints-live-beside-the-schema-not-inside-it).
+[Editing hints live beside the schema, not inside it](../decisions/editing-hints-live-beside-the-schema-not-inside-it.md).
 
 ## `defineCatalog`
 

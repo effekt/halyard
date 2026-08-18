@@ -18,7 +18,7 @@ failure modes are open questions rather than settled behavior, and are marked as
 **Steps:** choose a route (a literal path, e.g. `/promotions/summer`); pick a layout (a
 `Document` with `kind: "layout"`) or none; optionally start from a preset instead of blank.
 A preset is stored as `kind: "preset"`. Why it is not called a template is
-[in the decisions](decisions.md#a-copy-once-document-is-a-preset-not-a-template)
+[in the decisions](decisions/a-copy-once-document-is-a-preset-not-a-template.md)
 ([#7](https://github.com/effekt/nubbin/issues/7)).
 
 **System:**

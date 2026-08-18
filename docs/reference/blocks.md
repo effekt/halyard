@@ -9,7 +9,7 @@ status: reference
 This page describes the shipped behaviour of `defineBlock` and `createRegistry` and the types
 they take and return: `Block`, `InferProps`, `SlotConstraint`, `UnknownProps` and `Registry`.
 The source of record is `packages/core/src/index.ts`; the reasoning behind the shape lives in
-[`api.md`](../api.md) and [`decisions.md`](../decisions.md).
+[`api.md`](../api.md) and [the decisions](../decisions/README.md).
 
 ## `defineBlock`
 
@@ -21,7 +21,7 @@ function defineBlock<Schema extends StandardSchemaV1, Component>(
 
 At runtime it returns its argument unchanged. Its job is to fix the two generic parameters at
 the call site, so the component's props are derived from the schema — see
-[Props inferred from the schema, never declared](../decisions.md#props-inferred-from-the-schema-never-declared).
+[Props inferred from the schema, never declared](../decisions/props-inferred-from-the-schema-never-declared.md).
 
 Derived from `packages/core/src/defineBlock.test.ts` and the demo's
 `examples/demo/src/blocks/Hero.block.ts`:

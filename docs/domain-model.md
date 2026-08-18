@@ -229,7 +229,7 @@ CRDT sync layer left as a later swap.
 
 The same composition takes two shapes: authoring wants random access, rendering wants a
 self-contained tree. See
-[Flat while authoring, nested once published](decisions.md#flat-while-authoring-nested-once-published)
+[Flat while authoring, nested once published](decisions/flat-while-authoring-nested-once-published.md)
 for why.
 
 ```ts
@@ -284,7 +284,7 @@ where a deep object copy could silently share ids by accident.
 
 Naming these apart early is cheap; separating them later is a data migration. `preset` rather
 than `template` because Atomic Design's template is this model's Layout — see
-[the decision](decisions.md#a-copy-once-document-is-a-preset-not-a-template).
+[the decision](decisions/a-copy-once-document-is-a-preset-not-a-template.md).
 
 ## Output layer
 

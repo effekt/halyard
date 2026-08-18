@@ -27,14 +27,14 @@ them was internally plausible, which is why nothing caught them.
 
 | Document | Holds | Test |
 |---|---|---|
-| [`docs/decisions.md`](../../docs/decisions.md) | Settled choices and *why* | Would someone re-litigate this? Then it belongs here |
+| [`docs/decisions/`](../../docs/decisions/README.md) | Settled choices and *why* | Would someone re-litigate this? Then it belongs here |
 | GitHub issues labelled `design-question` | Undecided, with the cost of deciding late | Discussable, linkable, and closable — a document cannot be any of those |
 | `docs/domain-model.md`, `docs/api.md` | The contracts an agent writes code against | Would an implementer need this open beside them? |
 | `docs/architecture.md` | How the system works now | Never aspirational, never historical |
 | `.claude/rules/*` | How to work in the repo | Judgment a gate cannot encode |
 
 A design document that has stopped changing has a job to do: move its conclusion into
-`decisions.md` and leave a link. Two documents describing one decision is how they diverge.
+a file under `docs/decisions/` and leave a link. Two documents describing one decision is how they diverge.
 **Gate:** `check-prose-dupes.mjs` — twelve matching words is a copy, not coincidence. The budget is zero: a non-zero allowance would silently grow as the corpus duplicates itself, catching whoever next adds prose rather than catching the duplication.
 
 ## Rules
@@ -147,4 +147,4 @@ and `check-prose.mjs`.
 - [ ] A rename left no trace of the old name; future work became an issue, not a sentence
 - [ ] New links and anchors resolve
 - [ ] A new `docs/` file is in `docs/README.md` with an honest status
-- [ ] A settled decision graduated to `decisions.md` rather than living in two places
+- [ ] A settled decision graduated to `docs/decisions/` rather than living in two places

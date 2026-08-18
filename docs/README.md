@@ -19,7 +19,7 @@ produced them.
 | [`architecture.md`](architecture.md) | How the contract/content/output split and the compile-at-publish pipeline fit together. **Start here.** | stable |
 | [`environment.md`](environment.md) | The plugins, skills and toolchain this repository is worked on with, and how to reproduce them | stable |
 | [`releasing.md`](releasing.md) | How a version reaches npm, which tool must do it, and the two behaviours that surprise people | stable |
-| [`decisions.md`](decisions.md) | Settled choices and the reasoning behind them, so they are not re-litigated | stable |
+| [`decisions/`](decisions/README.md) | Settled choices and the reasoning behind them, one file per decision | stable |
 | [`domain-model.md`](domain-model.md) | Every entity, what owns it, and where it lives across the three layers | draft |
 | [`api.md`](api.md) | The shape of `defineBlock` through compile and render, and where UI hints live | draft |
 | [`authoring-flows.md`](authoring-flows.md) | What an author does step by step, and the failure modes each flow carries | draft |
@@ -45,9 +45,9 @@ content are deliberately not here:
 
 [The design site](https://effekt.github.io/nubbin/) is not a third home. It is generated and
 published by CI from [the repository's
-markdown](decisions.md#the-site-publishes-the-repositorys-markdown), these documents
+markdown](decisions/the-site-publishes-the-repositorys-markdown.md), these documents
 included — see
-[Generated documents live only on `gh-pages`](decisions.md#generated-documents-live-only-on-gh-pages).
+[Generated documents live only on `gh-pages`](decisions/generated-documents-live-only-on-gh-pages.md).
 
 ## Keeping them honest
 
