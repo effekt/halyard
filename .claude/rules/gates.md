@@ -68,7 +68,7 @@ A pattern that catches one spelling and misses another is the failure above wear
 ### The check needs checking before its output means anything
 
 A verification that measures the wrong thing, or the right thing at the wrong moment, produces a
-confident and specific number. It reads exactly like a correct one. Five in a single session:
+confident and specific number. It reads exactly like a correct one. Six in a single session:
 
 | The check said | What was actually wrong |
 |---|---|
@@ -77,12 +77,12 @@ confident and specific number. It reads exactly like a correct one. Five in a si
 | `PASS — it loops` | asserted the timer had fired, not that anything moved. It fired, the rewind took two frames against an 850ms transition, and nothing visibly replayed |
 | `collapses observed: 0` | required two adjacent samples to straddle the drop, which an 850ms transition sampled every 120ms never does |
 | four gates unreachable | the walker's `[a-z-]+` cannot match `a11y`, so it could not see a gate that was wired in fine |
+| `auto-close is broken` | every issue was hand-closed 2-9 minutes after its merge, before the observed 47-49s close could fire. The absence of an automatic close was then cited as proof one would never come |
 
-Three rules follow. **Assert on the thing, not a proxy** — a class landing, an exit code, a timer
-firing are all one remove from what you care about. **Fix the measurement before writing a second
-fix**: a change that alters nothing is evidence about the instrument, not the subject. And
-**assert on shape rather than an exact figure** where physics is involved, so an overshoot or an
-easing curve does not read as a defect.
+Four rules follow. **Assert on the thing, not a proxy** — an exit code or a class landing is one
+remove from what you care about. **Fix the measurement before writing a second fix**: a change
+that alters nothing is evidence about the instrument. **Assert on shape, not an exact figure**,
+where physics is involved. And **a check that changes what it measures cannot report a negative.**
 
 **Gate:** none — a check that lies passes every gate. This is the judgment `verify` cannot hold.
 
