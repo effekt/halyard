@@ -1712,8 +1712,9 @@
       const TYPE_MS = 55;
       const TYPE_JITTER_MS = 45;
       const ERASE_MS = 16;
-      const GLIDE_MIN_MS = 650;
-      const GLIDE_VAR_MS = 350;
+      const GLIDE_MIN_MS = 260;
+      const GLIDE_JITTER_MS = 120;
+      const GLIDE_PACE = 9;
       const ARC_MIN_PX = 40;
       const ARC_VAR_PX = 110;
       const HALF = 0.5;
@@ -1848,7 +1849,10 @@
           x: from.x + deltaX * HALF - (deltaY / length) * arc,
           y: from.y + deltaY * HALF + (deltaX / length) * arc,
         };
-        const durationMs = GLIDE_MIN_MS + Math.random() * GLIDE_VAR_MS;
+        // Transit is not content: duration grows with the square root of distance,
+        // so a long hop crosses at a higher speed than a short one and neither
+        // reads as the same scripted pace. The meaningful pauses live in PAUSE.
+        const durationMs = GLIDE_MIN_MS + GLIDE_PACE * Math.sqrt(length) + Math.random() * GLIDE_JITTER_MS;
         const began = performance.now();
         const tick = (now) => {
           const frac = Math.min((now - began) / durationMs, 1);
