@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
+  "globalDependencies": ["tsconfig.base.json", "biome.jsonc"],
   "tasks": {
     "dev": {
       "cache": false,
@@ -8,6 +9,16 @@
     },
     "build": {
       "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "demo#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".nubbin/**"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "docs-site#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/docs/**"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "test": {
