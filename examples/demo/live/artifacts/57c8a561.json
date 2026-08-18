@@ -1,0 +1,201 @@
+{
+  "route": "/security",
+  "documentId": "security",
+  "documentVersion": 1,
+  "registryFingerprint": "9f34ad01",
+  "blockVersions": {
+    "SectionStack": 1,
+    "Hero": 1,
+    "Prose": 1,
+    "FeatureGrid": 1,
+    "FaqAccordion": 1,
+    "CtaBanner": 1,
+    "SiteFooter": 1
+  },
+  "tree": [
+    {
+      "id": "stack",
+      "block": "SectionStack",
+      "props": {},
+      "slots": {
+        "sections": [
+          {
+            "id": "hero",
+            "block": "Hero",
+            "props": {
+              "eyebrow": "Security",
+              "headline": "Your schedule is your business",
+              "body": "Tidewell holds the one plan everyone trusts, so protecting it is not a feature tier — it is the product.",
+              "tone": "dark",
+              "cta": {
+                "label": "Read the practices",
+                "href": "#practices"
+              },
+              "image": {
+                "url": "/hero-board.svg",
+                "alt": "A Tidewell planning board showing three workstreams moving from backlog to done"
+              }
+            }
+          },
+          {
+            "id": "handled",
+            "block": "Prose",
+            "props": {
+              "heading": "How your data is handled",
+              "tone": "light",
+              "paragraphs": [
+                "Every schedule lives in one region, encrypted at rest and in transit. Exports are generated on demand and never cached; a deleted workstream is purged from backups on a fixed thirty-day cycle."
+              ]
+            }
+          },
+          {
+            "id": "access",
+            "block": "Prose",
+            "props": {
+              "heading": "Who can see what",
+              "tone": "light",
+              "paragraphs": [
+                "Access follows the schedule, not the org chart. A seat sees the workstreams it is invited to, a read-only link sees exactly one, and nobody at Tidewell can open your schedule without a recorded grant that you approve first."
+              ]
+            }
+          },
+          {
+            "id": "changes",
+            "block": "Prose",
+            "props": {
+              "heading": "When something changes",
+              "tone": "light",
+              "paragraphs": [
+                "Security-relevant changes ship the way everything here ships — versioned, reviewed, and announced. Recent ones are on the changelog, not in a quarterly PDF."
+              ]
+            }
+          },
+          {
+            "id": "practices",
+            "block": "FeatureGrid",
+            "props": {
+              "heading": "The practices behind that",
+              "tone": "dark",
+              "items": [
+                {
+                  "icon": "shield",
+                  "title": "Encrypted everywhere",
+                  "body": "TLS in transit, AES-256 at rest, and no plaintext copies in logs or exports."
+                },
+                {
+                  "icon": "layers",
+                  "title": "Tenant isolation",
+                  "body": "Every workstream is scoped to your organisation at the query layer, not the UI."
+                },
+                {
+                  "icon": "bolt",
+                  "title": "Revocable share links",
+                  "body": "A read-only link can be expired at any time, and every open is recorded."
+                },
+                {
+                  "icon": "chart",
+                  "title": "Audited access",
+                  "body": "Every read and write carries who, what, and when — exportable on request."
+                }
+              ]
+            }
+          },
+          {
+            "id": "faq",
+            "block": "FaqAccordion",
+            "props": {
+              "heading": "Security questions",
+              "tone": "light"
+            },
+            "holes": {
+              "items": {
+                "revalidate": 5
+              }
+            }
+          },
+          {
+            "id": "cta",
+            "block": "CtaBanner",
+            "props": {
+              "heading": "Questions we did not answer?",
+              "body": "Security review for a larger rollout? We will walk your team through the details.",
+              "tone": "dark",
+              "cta": {
+                "label": "Talk to us",
+                "href": "/pricing"
+              }
+            }
+          },
+          {
+            "id": "footer",
+            "block": "SiteFooter",
+            "props": {
+              "tagline": "One schedule. Read the same way by everyone on the team.",
+              "tone": "dark",
+              "columns": [
+                {
+                  "heading": "Product",
+                  "links": [
+                    {
+                      "label": "Features",
+                      "href": "/#features"
+                    },
+                    {
+                      "label": "Pricing",
+                      "href": "/pricing"
+                    },
+                    {
+                      "label": "Changelog",
+                      "href": "/#"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Company",
+                  "links": [
+                    {
+                      "label": "About",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Careers",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Contact",
+                      "href": "/#"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "links": [
+                    {
+                      "label": "Documentation",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Support",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Status",
+                      "href": "/#"
+                    }
+                  ]
+                }
+              ],
+              "legal": "© 2026 Tidewell. All rights reserved."
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "title": "Security — Tidewell",
+    "description": "Tidewell holds the one plan everyone trusts. How that plan is stored, who can see it, and what changes when the practices do."
+  },
+  "compiledWith": "0.1.0-rc.4",
+  "hash": "57c8a561"
+}

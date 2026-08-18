@@ -8,11 +8,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test": "vitest run",
+    "test": "vitest run --project unit",
+    "guardrail": "vitest run --project guardrail",
     "typecheck": "tsc --noEmit",
     "fixtures:publish": "tsx scripts/publishFixtures.ts",
     "serve:verify": "node scripts/verifyServing.mjs",
-    "publish:live": "tsx scripts/publishLive.ts"
+    "publish:live": "tsx scripts/publishLive.ts",
+    "live:record": "tsx scripts/recordLive.ts"
   },
   "dependencies": {
     "@nubbin/core": "workspace:*",

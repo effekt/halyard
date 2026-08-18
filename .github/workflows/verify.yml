@@ -67,6 +67,13 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # The compatibility guardrail, and the reason it is a step of its own rather than a row in
+      # `pnpm test`: its verdict depends on the contents of an artifact store, and the whole point
+      # of a store is that it holds state a task hash has no reason to see. It is registered as no
+      # turbo task, so a green run of it can never be replayed.
+      - name: Compatibility guardrail
+        run: pnpm guardrail
+
       - name: Pinned dependencies
         run: pnpm pinned-deps
 

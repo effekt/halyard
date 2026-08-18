@@ -58,6 +58,7 @@ porting them into the suite first would be a rewrite thrown away twice.
 | `tests/skillsLock.test.mjs` | `skills-lock.json` is one a reinstall could use, and — where the skills are on disk — agrees with them by name and by a hash over every file in each skill directory |
 | `tests/trackedFiles.test.mjs` | the corpus every assertion above reads is what git would publish, and nothing else |
 | `tests/release/packagesInstallFromTarball.test.mjs` | every package packs with no `catalog:`, `workspace:` or `link:` specifier surviving, installs from its own tarball into an empty project, and imports |
+| `examples/demo/guardrail/liveCompatibility.test.ts` | no block a page already published depends on has changed version or left the registry — the product guardrail, run against a committed artifact store |
 | `scripts/check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 | `scripts/check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; a click handler on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
 | `scripts/check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
@@ -70,8 +71,9 @@ this table: `pnpm test` reaches every row in `tests/` by including the directory
 wired in by existing, and a deleted one is a deleted file rather than a silently dropped step.
 
 CI splits the same set in two. One job runs the two remaining zero-dependency scripts against a bare
-checkout; the second installs the workspace and runs lint, typecheck, the suites, build, pinning,
-boundaries, duplication, dead code, type coverage and the publishable gates.
+checkout; the second installs the workspace and runs lint, typecheck, the suites, build, the
+compatibility guardrail, pinning, boundaries, duplication, dead code, type coverage and the
+publishable gates.
 
 **Three gates stay out of `verify`.** The two worktree gates stay out for the reason that makes them
 worth having: a CI checkout is clean, so a run there would report nothing and read as a pass.
@@ -92,6 +94,15 @@ rather than the source. Run it before publishing anything; `verify` includes it.
 is its own vitest project, `release`, because its verdict depends on the registry: no cache key can
 see that, so it is invoked directly and is registered as no turbo task, and a green run of it can
 never be replayed.
+
+**One row above is not a repository invariant.** The compatibility guardrail is a product
+feature — the claim that merging cannot break a page already live — held to the same standard as
+the gates around it. It is a vitest project in `examples/demo`, not a file in `tests/`, because
+what it reads is that site's published artifacts; `pnpm guardrail` invokes it, `verify` and the
+`verify` workflow both run it, and it is registered as no turbo task. A task hash cannot see
+inside an artifact store, so a cacheable form of this check could report green having read a
+store from another commit. What it cannot catch: a block whose *component* changed behaviour
+without its version moving, since the artifact records versions and nothing else.
 
 `pnpm core-version` runs **first**, ahead of the build, because `NUBBIN_VERSION` is compiled into
 `dist/` and stamped into every artifact as `compiledWith`. It is the one release gate that reads

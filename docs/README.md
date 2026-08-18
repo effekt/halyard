@@ -31,7 +31,7 @@ produced them.
 | [`reference/compile.md`](reference/compile.md) | `compile` as shipped — the document shape, the two validation passes, and every issue code | reference |
 | [`reference/renderer.md`](reference/renderer.md) | `@nubbin/react` as shipped — the `Renderer` server component, the registry types, and the hole resolver | reference |
 | [`reference/next.md`](reference/next.md) | `@nubbin/next` as shipped — route resolution, static params, hole fetch options, and the two publish calls | reference |
-| [`reference/artifacts.md`](reference/artifacts.md) | The `Artifact` and `ArtifactStore` contracts as shipped, with `checkRollback` and `parseMatchKind` | reference |
+| [`reference/artifacts.md`](reference/artifacts.md) | The `Artifact` and `ArtifactStore` contracts as shipped, with the compatibility and rollback checks | reference |
 
 `draft` means the shape is expected to move. `stable` means changing it is a design change,
 not an edit. `reference` means the page describes the shipped surface — it changes when the
