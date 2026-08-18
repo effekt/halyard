@@ -39,6 +39,11 @@ const EXCEPTIONS = new Map([
     "check-release-tag.mjs",
     "release path only; every local version is a prerelease, so it would fail every run",
   ],
+  ["check-worktree.mjs", "PreToolUse hook; there is no tool call to refuse during a verify run"],
+  [
+    "check-primary-tree.mjs",
+    "dispatch hook and pre-push; a CI checkout is clean, so a verify run would pass vacuously",
+  ],
 ]);
 
 /**

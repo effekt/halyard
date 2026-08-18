@@ -128,8 +128,10 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-release-tag.mjs` | a prerelease version cannot be published to the `latest` dist-tag |
 | `check-gate-table.mjs` | every gate this table names is reachable from `pnpm verify`, and every gate `verify` runs has a row here — each direction with documented exceptions |
 | `check-a11y.mjs` | an `img` with no `alt`; alt that is a filename or names the medium; a click handler on a plain element; positive `tabIndex`; an `a` with no `href`; a focus outline removed with nothing in its place |
+| `check-worktree.mjs` | an edit aimed at the primary worktree, or at a linked worktree whose gates cannot run |
+| `check-primary-tree.mjs` | an uncommitted path in the primary worktree, whatever wrote it there |
 
-`pnpm verify` runs every gate above except the two named below, and needs a full install.
+`pnpm verify` runs every gate above except the four named below, and needs a full install.
 `check-gate-table.mjs` is what keeps that sentence true in both directions: it fails when a row
 here resolves to nothing `verify` reaches, and when `verify` runs a gate with no row here. CI
 runs the same set, split in two: one job runs the documentation, prose, accessibility and pinning
@@ -142,6 +144,14 @@ a runner `check-skills-lock.mjs` finds nothing installed and takes its "nothing 
 path — it exited 0 on every CI run it was ever wired into, which is the same shape as the gates
 in [`gates.md`](.claude/rules/gates.md) that passed while checking nothing. They belong to the
 contributor's machine, where the comparison is real.
+
+**The two worktree gates also stay out of `verify`**, for the reason that makes them worth
+having: a CI checkout is clean, so a run there would report nothing and read as a pass.
+`check-worktree.mjs` fires at a `Write`, `Edit` or `MultiEdit` and refuses those three tool
+calls, which is a mechanism — a `>` redirect inside a shell command never meets it, and three
+untracked files reached the primary tree while it was active. `check-primary-tree.mjs` asks the
+outcome instead, at agent dispatch and at pre-push, and reports without blocking because it
+cannot tell whose file it found.
 
 One exception is deliberate and recorded in `check-gate-table.mjs` so it cannot pass as an
 oversight: `check-release-tag.mjs` runs only on the release path — every local version is a

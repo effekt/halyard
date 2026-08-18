@@ -17,46 +17,17 @@
 // Usage: node scripts/check-worktree.mjs [path...] [--check]
 //        node scripts/check-worktree.mjs --hook     (PreToolUse, reads JSON on stdin)
 
-import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { commonDirOf, gitIn, isPrimaryWorktree } from "./git-worktrees.mjs";
 
 /** Set when the primary tree is genuinely the right place — creating the first worktree. */
 const ESCAPE = "NUBBIN_MAIN_TREE_OK";
 /** PreToolUse blocks by exiting 2; stderr is what reaches the agent. */
 const BLOCK = 2;
 
-/** `null` where `cwd` is not inside a repository, which every caller treats as "not mine". */
-function gitIn(cwd, args) {
-  try {
-    return execFileSync("git", args, {
-      cwd,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-    }).trim();
-  } catch {
-    return null;
-  }
-}
-
-/** Absolute common directory for `cwd`, shared by a repository's primary tree and its worktrees. */
-function commonDirOf(cwd) {
-  const common = gitIn(cwd, ["rev-parse", "--git-common-dir"]);
-  return common === null ? null : resolve(cwd, common);
-}
-
 const OWN_COMMON_DIR = commonDirOf(dirname(fileURLToPath(import.meta.url)));
-
-/**
- * A linked worktree has its own git dir under the common one; the primary tree has them equal.
- * Comparing resolved paths rather than parsing `git worktree list` keeps it correct when the
- * repository itself has moved, which has already happened here.
- */
-function isPrimaryWorktree(cwd) {
-  const dir = gitIn(cwd, ["rev-parse", "--git-dir"]);
-  return dir !== null && resolve(cwd, dir) === commonDirOf(cwd);
-}
 
 /**
  * `pnpm exec lefthook` resolves from the worktree's own `node_modules`, so a worktree without

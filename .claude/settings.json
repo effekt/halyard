@@ -65,6 +65,17 @@
             "statusMessage": "Checking worktree"
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/check-primary-tree.mjs --hook",
+            "timeout": 15,
+            "statusMessage": "Reading primary worktree"
+          }
+        ]
       }
     ]
   }

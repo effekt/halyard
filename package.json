@@ -71,6 +71,7 @@
     "skills:install": "node scripts/installAgentSkills.mjs",
     "issue-scaffold": "node scripts/scaffold-issue.mjs",
     "worktree-check": "node scripts/check-worktree.mjs --check",
+    "primary-tree": "node scripts/check-primary-tree.mjs --check",
     "plan-files": "node scripts/check-plan-files.mjs --check"
   },
   "devDependencies": {
