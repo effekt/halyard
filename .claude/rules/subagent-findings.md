@@ -7,7 +7,7 @@ status: stable
 
 # Subagent findings
 
-> **A finding leaves a subagent only in its final report. Tag it and the `SubagentStop` hook routes it; leave it untagged and it goes nowhere.**
+> **A finding leaves a subagent only in its final report. Tag it and the `SubagentStop` hook routes it — onto the issue that already covers it, or back to whoever dispatched the agent. Leave it untagged and it goes nowhere.**
 
 ## Why
 
@@ -44,8 +44,8 @@ home lives there rather than twice.
 
 | Tag | Home | What `scripts/hook-capture-findings.mjs` does |
 |---|---|---|
-| `[rule]` | `.claude/rules/`, plus a gate | Opens an issue through the scaffold, or comments on the issue the search scored. A hook can write prose but not a gate, and a rule shipped without one is the failure [`gates.md`](gates.md) catalogues |
-| `[issue]` | A GitHub issue | Opens it through the scaffold, or comments on the issue the search scored |
+| `[rule]` | `.claude/rules/`, plus a gate | Comments on the issue the search scored, or refers it to the caller. A hook can write prose but not a gate, and a rule shipped without one is the failure [`gates.md`](gates.md) catalogues |
+| `[issue]` | A GitHub issue the caller opens | Comments on the issue the search scored, or refers it marked `REFER` or `HOLD` |
 | `[memory]` | The session's memory directory | Writes the memory beside the others and adds it to `MEMORY.md` |
 | `[task-local]` | Nowhere | Drops it, and says that it dropped it |
 
@@ -107,15 +107,17 @@ tree before filing, or let it go.
 ```
 subagent capture: saw a 17 line(s) report from a `builder` subagent
 captured 4 finding(s): 1 -> rule, 1 -> issue, 1 -> memory, 1 -> dropped (task-local)
-  issue (Searched 57 open issues in effekt/nubbin (--limit 200; corroborated by search/issues: 57); https://github.com/effekt/nubbin/issues/300)
-  rule (Searched 57 open issues in effekt/nubbin (--limit 200; corroborated by search/issues: 57); not filed — commented on #212)
+  issue (Searched 148 open issues …; not filed — commented on #212)
+  rule (Searched 148 open issues …; nothing scored — HOLD, yours to file)
+      NO HARM STATED — name who is hurt and how, or it is `[task-local]`
 ```
 
 A capture that quietly captures nothing reads exactly like one with nothing to capture, which is
 the failure [`gates.md`](gates.md) exists to stop. So a report with no findings says so, a report
 that never arrived says that instead, and every routed finding prints the size of the set searched
-and the issue URL, or the file it became. A search that could not run prints `NO DUPLICATE SEARCH
-RAN` and no URL, which is the one thing a capture must not be able to hide.
+and where it went — the issue it commented on, the file it became, or the verdict it came back
+with. A search that could not run prints `NO DUPLICATE SEARCH RAN`, which is the one thing a
+capture must not be able to hide.
 
 **Gate:** none — nothing can tell a finding written as a paragraph from ordinary prose, so a
 report that buries its findings outside the section is captured as zero. The hook reports the
