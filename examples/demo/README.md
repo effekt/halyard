@@ -25,7 +25,7 @@ satisfy:
   is data a database could hold.
 - **A colocated zod schema, with props inferred from it.** `type HeroProps = z.infer<typeof
   heroSchema>` — never a hand-written interface beside the schema.
-- **A `defaults` export that satisfies the schema.** `src/app/page.tsx` renders every block's
+- **A `defaults` export that satisfies the schema.** `src/app/reference/home/page.tsx` renders every block's
   `defaults` unmodified, which is the same content an author would see dropping a fresh block
   onto a canvas.
 - **Flat schemas.** A shared shape — a CTA, an image — is its own file in `src/blocks/shared/`
@@ -34,17 +34,22 @@ satisfy:
 
 ## Pages
 
-Two are hand-written, and the rest are whatever the store has a pointer for.
+Five are hand-written, under `src/app/reference/` so that no literal route shadows a published
+one; the rest are whatever the store has a pointer for.
 
-- `/` — eight blocks assembled into one marketing page: `Hero`, `LogoWall`, `FeatureGrid`,
-  `StatBand`, `TestimonialQuote`, `FaqAccordion`, `CtaBanner`, `SiteFooter`.
-- `/pricing` — reuses `Hero`, `FeatureGrid`, `FaqAccordion`, `CtaBanner`, and `SiteFooter` with
-  different props, alongside a plan-comparison table that is ordinary page content rather than
-  a block — pricing tables are not one of the nine, and not everything on a page has to be.
-- Every published route — `src/app/[...slug]/page.tsx` reads the route's pointer from the fs
-  store and renders the artifact it names. A route with no pointer is a real 404. The brackets
-  are single because `/` is taken above; an app with no hand-written home page doubles them and
-  the same file serves `/` too.
+- `/reference/home` — eight blocks assembled into one marketing page: `Hero`, `LogoWall`,
+  `FeatureGrid`, `StatBand`, `TestimonialQuote`, `FaqAccordion`, `CtaBanner`, `SiteFooter`.
+- `/reference/pricing` — reuses `Hero`, `FeatureGrid`, `FaqAccordion`, `CtaBanner`, and
+  `SiteFooter` with different props, alongside a plan-comparison table that is ordinary page
+  content rather than a block — pricing tables are not one of the nine, and not everything on
+  a page has to be.
+- `/reference/about`, `/reference/security`, `/reference/changelog` — coded originals that a
+  published fixture of the same page is compared against.
+- Every published route, `/` included — `src/app/[[...slug]]/page.tsx` reads the route's
+  pointer from the fs store and renders the artifact it names. A route with no pointer is a
+  real 404. The brackets are doubled because only the optional form matches `/`: a pointer at
+  the root yields an empty slug, which the required form cannot accept, and no hand-written
+  page competes for `/` any more.
 
 ## Serving
 
@@ -81,4 +86,4 @@ pnpm install
 pnpm --filter demo dev
 ```
 
-Then open `http://localhost:3000`.
+Then open `http://localhost:3000/reference/home`.

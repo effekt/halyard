@@ -6,10 +6,11 @@ import { demoStore } from "@/nubbin/demoStore";
 import { resolveDemoHole } from "@/nubbin/resolveDemoHole";
 
 /**
- * `[...slug]`, not `[[...slug]]`: the optional form also claims `/`, which the hand-written home
- * page owns, and Next rejects two owners of one path. `@nubbin/next` is built for the optional
- * form — `routeFromSlug` maps an absent slug to `/` — so a consumer with no coded home page
- * doubles the brackets and the same page serves `/` as well.
+ * `[[...slug]]`, the optional form: a pointer at `/` yields `{ slug: [] }` from
+ * `staticRouteParams`, which only the optional form accepts — the required `[...slug]` cannot
+ * match `/` at all, so the adapter's root case (`routeFromSlug` maps an absent slug to `/`)
+ * would be unreachable in its own reference consumer. The coded originals live under
+ * `/reference/*`, so no literal route competes with this one for `/`.
  *
  * A route published after this build is absent from `generateStaticParams` and still resolves
  * here rather than 404ing, because `dynamicParams` defaults to true and nothing turns it off.
@@ -21,7 +22,7 @@ export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
 
 // `blockRegistry`, the render-side map — never `registry`, which is what compile validates
 // against. `notFound()` returns `never`, so `artifact` narrows with no non-null assertion.
-export default async function Page({ params }: { params: Promise<{ slug: string[] }> }) {
+export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
   const artifact = await resolveArtifact(demoStore, slug);
   if (!artifact) {
