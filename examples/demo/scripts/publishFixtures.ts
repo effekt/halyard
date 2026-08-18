@@ -7,6 +7,7 @@ const PREBUILD_ROUTES = [
   "/pricing",
   "/about",
   "/security",
+  "/changelog",
   "/promotions/summer",
   "/promotions/winter",
   "/live/pulse",

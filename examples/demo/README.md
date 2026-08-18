@@ -6,7 +6,7 @@ status: reference
 
 # Demo marketing site
 
-A marketing site for a fictional scheduling product, Tidewell, built from twelve components
+A marketing site for a fictional scheduling product, Tidewell, built from fourteen components
 whose shape already matches what a block requires. It exists so `defineBlock` has something
 real to register — ordinary application code first, a Nubbin fixture second.
 
@@ -16,7 +16,7 @@ artifacts from the fs store; the components themselves know nothing about it.
 
 ## What "block-shaped" means here
 
-Each of the twelve components in `src/blocks/` follows the constraints a block will need to
+Each of the fourteen components in `src/blocks/` follows the constraints a block will need to
 satisfy:
 
 - **One root element.** A renderer that attaches an id to the DOM node needs exactly one node

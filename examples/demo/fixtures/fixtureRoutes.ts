@@ -1,5 +1,6 @@
 import type { DocumentVersion } from "@nubbin/core";
 import { about } from "./about";
+import { changelog } from "./changelog";
 import { home } from "./home";
 import { livePulse } from "./livePulse";
 import { pricing } from "./pricing";
@@ -15,6 +16,7 @@ export const fixtureRoutes: Record<string, DocumentVersion> = {
   "/pricing": pricing,
   "/about": about,
   "/security": security,
+  "/changelog": changelog,
   "/promotions/summer": promotionsSummer,
   "/promotions/winter": promotionsWinter,
   "/promotions/flash": promotionsFlash,

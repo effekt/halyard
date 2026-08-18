@@ -14,6 +14,8 @@ export const blockRegistry = defineRegistry({
     import("../blocks/TestimonialQuote").then((module) => module.TestimonialQuote),
   FaqAccordion: () => import("../blocks/FaqAccordion").then((module) => module.FaqAccordion),
   CtaBanner: () => import("../blocks/CtaBanner").then((module) => module.CtaBanner),
+  PageHeader: () => import("../blocks/PageHeader").then((module) => module.PageHeader),
+  ChangelogList: () => import("../blocks/ChangelogList").then((module) => module.ChangelogList),
   SiteFooter: () => import("../blocks/SiteFooter").then((module) => module.SiteFooter),
   SectionStack: () => import("../blocks/SectionStack").then((module) => module.SectionStack),
 });
