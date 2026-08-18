@@ -1,5 +1,30 @@
 # @nubbin/react
 
+## 0.1.0-rc.5
+
+### Minor Changes
+
+- fa8d12b: `@nubbin/react` exports `BlockComponent`, `BlockRegistry` and `defineRegistry`. A block author
+  names their own component type as `BlockComponent<HeroProps>`; the registry holds
+  `BlockComponent<never>`, so a component declaring its own props is assignable to it — function
+  parameters are contravariant, and the widest props type is assignable from nothing. Installing
+  this package now installs React, because these types import `ReactNode`.
+- 388416d: `@nubbin/react` exports `Renderer`, an async server component that walks an artifact's tree,
+  loads only the blocks the artifact names, fills each node's holes, and stamps
+  `data-nubbin-node` on the root element each block returns. It invokes the block rather than
+  creating an element from it, because invoking is what puts that root element in hand to clone —
+  so a block is a server component with exactly one root, and no wrapper element is introduced.
+  
+  `resolveNodeHoles` and `setAtPath` are no longer exported: hole resolution is what `Renderer`
+  does with them, and a surface that also exposes the steps invites a second render path that
+  stamps nothing. `Renderer`, `defineRegistry` and `loadBlocks` are the runtime surface.
+
+### Patch Changes
+
+- Updated dependencies [1931dd8]
+- Updated dependencies [a79f39a]
+  - @nubbin/core@0.1.0-rc.5
+
 ## 0.1.0-rc.4
 
 ### Patch Changes

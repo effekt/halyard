@@ -1,5 +1,13 @@
 # @nubbin/store-fs
 
+## 0.1.0-rc.5
+
+### Patch Changes
+
+- Updated dependencies [1931dd8]
+- Updated dependencies [a79f39a]
+  - @nubbin/core@0.1.0-rc.5
+
 ## 0.1.0-rc.4
 
 ### Patch Changes
