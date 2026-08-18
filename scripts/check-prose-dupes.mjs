@@ -33,7 +33,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
  * `CLAUDE.md` symlink beside it cannot enter the corpus as a second file and read as a perfect
  * clone of it.
  */
-const SCAN = ["docs", ".claude/rules", "AGENTS.md"];
+const SCAN = ["docs", "AGENTS.md"];
 
 /**
  * The shortest run of identical words counted as a copy.

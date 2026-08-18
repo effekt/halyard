@@ -18,6 +18,8 @@ produced them.
 |---|---|---|
 | [`architecture.md`](architecture.md) | How the contract/content/output split and the compile-at-publish pipeline fit together. **Start here.** | stable |
 | [`environment.md`](environment.md) | The plugins, skills and toolchain this repository is worked on with, and how to reproduce them | stable |
+| [`gates.md`](gates.md) | Every gate, what it enforces, which run it belongs to, and the four that stay out of `verify` | stable |
+| [`public-repository.md`](public-repository.md) | What may not appear here, and how to publish a finding without its provenance | stable |
 | [`releasing.md`](releasing.md) | How a version reaches npm, which tool must do it, and the two behaviours that surprise people | stable |
 | [`decisions/`](decisions/README.md) | Settled choices and the reasoning behind them, one file per decision | stable |
 | [`domain-model.md`](domain-model.md) | Every entity, what owns it, and where it lives across the three layers | draft |

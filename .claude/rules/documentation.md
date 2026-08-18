@@ -138,7 +138,7 @@ resets.
 Publishable: a pattern, a failure mode, a thing you now know. Not publishable: whose codebase
 taught you it, or a measurement standing in for the reasoning. Anonymising a statistic does
 not make it checkable — argue the conclusion from why it holds. See
-[the repository section in `AGENTS.md`](../../AGENTS.md). **Gates:** `check-prose.mjs`.
+[`docs/public-repository.md`](../../docs/public-repository.md). **Gates:** `check-prose.mjs`.
 
 ## Checklist
 

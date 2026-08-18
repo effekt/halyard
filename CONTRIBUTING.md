@@ -6,8 +6,9 @@ status: stable
 
 # Contributing
 
-Read [`AGENTS.md`](AGENTS.md) first. It documents the invariants, the commands, and every
-quality gate. This file does not repeat it — it covers what AGENTS.md doesn't: getting set
+Read [`AGENTS.md`](AGENTS.md) first. It documents the invariants and the commands, and routes
+to everything else; the gates are in [`docs/gates.md`](docs/gates.md). This file does not repeat
+either — it covers what neither does: getting set
 up, and what's actually worth contributing right now.
 
 ## Setup
@@ -90,7 +91,7 @@ case, so a subject opening with a type name or an acronym fails — `feat(core):
 
 ## Code
 
-`AGENTS.md`'s invariants and gates apply in full: one unit per file, every dependency pinned,
+The invariants in `AGENTS.md` and the gates in `docs/gates.md` apply in full: one unit per file, every dependency pinned,
 `pnpm verify` green before review. If a gate seems to make correct code impossible to write,
 that's worth raising — as an issue, not a workaround.
 

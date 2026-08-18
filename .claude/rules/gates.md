@@ -121,7 +121,7 @@ against real inputs and watching what it did, not by reviewing it:
 | a `PreToolUse` hook matching `Write|Edit|MultiEdit`, to keep the primary worktree clean | files written by an MCP server never meet it — [#211](https://github.com/effekt/nubbin/issues/211) |
 | a pattern over gate-table rows, to find rows over-claiming their surface | the only rows stating a surface are ``publint``·``attw`` and `check-plan-files.mjs`, and both state it correctly — so it fires on the honest rows and passes the rest |
 
-Open `AGENTS.md` and grep the table for a scope literal to check the second yourself. Both authors had argued against this failure in the same breath as proposing it.
+Open [`docs/gates.md`](../../docs/gates.md) and grep the table for a scope literal to check the second yourself. Both authors had argued against this failure in the same breath as proposing it.
 
 So: hand the check to whoever did not design it, and ask them to run it against the corpus it
 will meet — the same standard as seeding a gate, one level up.
