@@ -129,12 +129,15 @@
       // Exempts the inert studio subtree, whose canonical markup trips these rules.
       // Biome cannot scope inside a file, so the interactive card is exempt too;
       // its accessibility coverage is the recorded accesslint runs, not lint.
+      // noNoninteractiveTabindex: the wordmark is a focus-disclosure trigger — the
+      // ticket requires tab to reach it and reveal the dictionary entry.
       "includes": ["apps/site/index.html"],
       "linter": {
         "rules": {
           "a11y": {
             "useSemanticElements": "off",
             "noNoninteractiveElementToInteractiveRole": "off",
+            "noNoninteractiveTabindex": "off",
             "useHeadingContent": "off"
           },
           "complexity": {
