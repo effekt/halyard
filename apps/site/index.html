@@ -265,9 +265,10 @@
      point lands flush against the top edge of the canvas and the drag ghost — which
      hangs 72px above the line — renders outside it, over the toolbar. An empty page
      has no position to indicate except its middle, so the slot holds the canvas open
-     and the line sits at the centre of it. Cleared by the swap, which restores the
-     pristine tree. */
-  #studio.empty .slot-body{padding:336px 0}
+     while the drag is live and the line sits at the centre of it. Scoped to the drag:
+     once the block lands, an empty page fills from the top like any other, and holding
+     it open afterwards would park the first block halfway down the canvas. */
+  #studio.empty[data-state="drag"] .slot-body{padding:336px 0}
   .drop-line{position:relative; height:0; z-index:3}
   .drop-line .bar{position:absolute; left:16px; right:16px; top:-2px; height:4px; border-radius:99px;
     background:var(--sel); box-shadow:0 0 0 3px rgba(191,65,29,.18)}
