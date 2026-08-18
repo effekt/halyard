@@ -92,6 +92,30 @@ Claiming full coverage is how the next gap is missed. `check-installable.mjs` re
 
 Where a gate fires on something legitimate, tune the scope and record the reason — do not raise the threshold to accommodate it. A contract suite constructs a fresh store per test deliberately, so `src/testing/` is excluded from duplication; the rest of the corpus stayed at 0.92% against a 1% threshold rather than the threshold moving.
 
+### Have someone else run the check against real inputs
+
+A check is written from a model of how the thing fails, and that model is the same one its
+author used to decide what to check. So its misses are exactly the cases the model does not
+contain, and they stay invisible to the author no matter how carefully they re-read it. A second
+person brings a different model — that is the whole of the mechanism, and why looking harder is
+not a substitute.
+
+Reading the design is not enough either. Both defects below were found by running the check
+against real inputs and watching what it did, not by reviewing it:
+
+| Proposed check | What running it showed |
+|---|---|
+| a `PreToolUse` hook matching `Write|Edit|MultiEdit`, to keep the primary worktree clean | files written by an MCP server never meet it — [#211](https://github.com/effekt/nubbin/issues/211) |
+| a pattern over gate-table rows, to find rows over-claiming their surface | the only rows stating a surface are ``publint``·``attw`` and `check-plan-files.mjs`, and both state it correctly — so it fires on the honest rows and passes the rest |
+
+Open `AGENTS.md` and grep the table for a scope literal to check the second yourself. Both authors
+had argued against this failure in the same breath as proposing it.
+
+So: hand the check to whoever did not design it, and ask them to run it against the corpus it
+will meet — the same standard as seeding a gate, one level up.
+
+**Gate:** none — nothing can tell whether the person seeding a check is the person who wrote it.
+
 ### Check the artifact, not only the source
 
 A gate reading `src/` cannot see what packing, publishing and installing do. Four defects reached the registry with every source gate green. `check-tarball`, `check-package-metadata` and `check-installable` read the packed manifest, the package directory and the installed package respectively, because those are three different questions.
@@ -104,3 +128,4 @@ A gate reading `src/` cannot see what packing, publishing and installing do. Fou
 - [ ] What the gate cannot catch is written down
 - [ ] Any exclusion names the reason, and the threshold did not move to accommodate it
 - [ ] The check asserts on the thing itself, at a defined moment, not on a proxy for it
+- [ ] Someone who did not design the check seeded the violation against it
