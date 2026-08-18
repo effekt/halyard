@@ -469,12 +469,25 @@
   body.story:not(.dim) #studio .panel,
   body.story:not(.dim) #studio .canvas-region,
   body.story:not(.dim) #studio .pop{opacity:0; animation:none}
+  /* Lit, not live: a panel at full brightness is the palette that invited clicks,
+     so the act holds lit panels under 1 — legible, but not something to reach for. */
   body.story:not(.dim) #studio[data-lit~="bar"] .toolbar,
   body.story:not(.dim) #studio[data-lit~="bar"] .pop,
   body.story:not(.dim) #studio[data-lit~="blocks"] .palette,
   body.story:not(.dim) #studio[data-lit~="outline"] .outline,
   body.story:not(.dim) #studio[data-lit~="canvas"] .canvas-region,
-  body.story:not(.dim) #studio[data-lit~="inspector"] .inspector{opacity:1}
+  body.story:not(.dim) #studio[data-lit~="inspector"] .inspector{opacity:.82}
+  /* A lit surface spills a little light onto the ground so it sits in the dark
+     rather than being stamped on it. The skirt is the panel's own shadow — one lit
+     thing with a soft edge, not the separate light layer #391 removed. Feathering
+     the panel itself would fade the outline's edge rows, so the ground lifts instead. */
+  body.story:not(.dim) #studio .panel,
+  body.story:not(.dim) #studio .crumbs,
+  body.story:not(.dim) #studio .pop{
+    box-shadow:0 0 24px rgba(241,244,243,.15), 0 0 72px 16px rgba(241,244,243,.07)}
+  body.story:not(.dim) #studio .canvas-shell{
+    box-shadow:inset 0 1px 3px rgba(11,43,51,.09),
+      0 0 24px rgba(241,244,243,.15), 0 0 72px 16px rgba(241,244,243,.07)}
   /* The cursor exists only while the story runs — the engine creates it, and reduced
      motion removes it. Its shell is light so it carries the eye across the dark
      ground between panels. */
@@ -728,7 +741,7 @@
       <div class="pop-body">
         <div class="addr-row">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.6" stroke="currentColor" stroke-width="1.4"/><path d="M1.6 7h10.8M7 1.4c-3.4 3.4-3.4 7.8 0 11.2M7 1.4c3.4 3.4 3.4 7.8 0 11.2" stroke="currentColor" stroke-width="1.2"/></svg>
-          windwardsupply.com/spring-sale
+          <span class="addr-url">windwardsupply.com/spring-sale</span>
         </div>
         <p class="meta-row">12 blocks · 3 changed since the last publish</p>
         <div class="steps">
@@ -1699,8 +1712,9 @@
       const TYPE_MS = 55;
       const TYPE_JITTER_MS = 45;
       const ERASE_MS = 16;
-      const GLIDE_MIN_MS = 650;
-      const GLIDE_VAR_MS = 350;
+      const GLIDE_MIN_MS = 260;
+      const GLIDE_JITTER_MS = 120;
+      const GLIDE_PACE = 9;
       const ARC_MIN_PX = 40;
       const ARC_VAR_PX = 110;
       const HALF = 0.5;
@@ -1835,7 +1849,10 @@
           x: from.x + deltaX * HALF - (deltaY / length) * arc,
           y: from.y + deltaY * HALF + (deltaX / length) * arc,
         };
-        const durationMs = GLIDE_MIN_MS + Math.random() * GLIDE_VAR_MS;
+        // Transit is not content: duration grows with the square root of distance,
+        // so a long hop crosses at a higher speed than a short one and neither
+        // reads as the same scripted pace. The meaningful pauses live in PAUSE.
+        const durationMs = GLIDE_MIN_MS + GLIDE_PACE * Math.sqrt(length) + Math.random() * GLIDE_JITTER_MS;
         const began = performance.now();
         const tick = (now) => {
           const frac = Math.min((now - began) / durationMs, 1);
@@ -2218,6 +2235,9 @@
         { op: "lit", v: "inspector" },
         { op: "wait", ms: LIGHT_OUT_MS },
         { op: "lit", v: "bar" },
+        { op: "text", to: "#publish-pop .t", value: "Publishing \u201cnubbin\u201d" },
+        { op: "text", to: ".addr-url", value: "nubbin.io" },
+        { op: "text", to: ".meta-row", value: "1 block \u00b7 1 changed since the last publish" },
         { op: "glide", to: ".btn-primary" },
         { op: "click" },
         { op: "state", v: "publish" },
