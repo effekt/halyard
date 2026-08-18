@@ -126,6 +126,9 @@
   },
   "overrides": [
     {
+      // Exempts the inert studio subtree, whose canonical markup trips these rules.
+      // Biome cannot scope inside a file, so the interactive card is exempt too;
+      // its accessibility coverage is the recorded accesslint runs, not lint.
       "includes": ["apps/site/index.html"],
       "linter": {
         "rules": {

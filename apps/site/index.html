@@ -435,55 +435,111 @@
     *, *::before, *::after{transition:none !important; animation:none !important}
   }
 
-  /* ── The landing page. Colours and measured ratios come from the colour-system
-     artifact — https://claude.ai/code/artifact/93952615-c490-4fa2-9427-ab6b92cac765 ── */
+  /* ── The landing page. Colours come from the colour-system artifact —
+     https://claude.ai/code/artifact/93952615-c490-4fa2-9427-ab6b92cac765 — dark-ground
+     tokens: #071F25 ground, #0B2B33 surface, #1E535C line, #F1F4F3 text, #9DB4B9 dim,
+     #4FB3C7 teal-light. Alpha values are tuned against measured pixel contrast. ── */
   body{background:#071F25; overflow:hidden}
   .backdrop{position:fixed; inset:0; z-index:0; display:grid; place-items:center;
     overflow:hidden; pointer-events:none}
   .studio{position:relative; pointer-events:none; width:1440px; height:860px; flex:none;
     display:flex; flex-direction:column; gap:10px;
     scale:max(calc(100vw / 1440px), calc(100vh / 860px))}
-  .pointer{position:absolute; left:0; top:0; z-index:1; width:20px; height:20px;
+  .scrim{position:fixed; inset:0; z-index:1; pointer-events:none; background:rgba(7,31,37,.80)}
+  /* The spotlight and the cursor exist only while the story runs — the engine creates
+     both, and reduced motion removes both. The spotlight screen-blends a teal-light
+     glow over the scrimmed studio, so the area around the cursor reads brighter. */
+  .spot{position:fixed; inset:0; z-index:1; pointer-events:none; mix-blend-mode:screen;
+    background:radial-gradient(280px circle at var(--mx, 50vw) var(--my, 55vh),
+      rgba(79,179,199,.34), rgba(79,179,199,.10) 45%, transparent 72%)}
+  .pointer{position:fixed; left:0; top:0; z-index:1; width:20px; height:20px;
     filter:drop-shadow(0 1px 2px rgba(11,43,51,.5))}
+  .pointer::before{content:""; position:absolute; inset:-16px; border-radius:99px;
+    background:radial-gradient(circle, rgba(241,244,243,.30), transparent 70%)}
   .pointer .ping{position:absolute; inset:-10px; border:2px solid var(--sel);
     border-radius:99px; opacity:0}
   @media (prefers-reduced-motion: no-preference){
     .pointer.pulse .ping{animation:ping .55s ease-out}
+    .pointer.pulse svg{animation:press .3s ease-out}
     #studio [data-when]{animation:appear .3s both}
+    .m-quote{animation:appear .3s both}
+    .card{transition:background-color .35s, border-color .35s}
   }
   @keyframes ping{from{opacity:.9; scale:.4} to{opacity:0; scale:1.1}}
-  .scrim{position:fixed; inset:0; z-index:1; pointer-events:none;
-    background:linear-gradient(180deg,
-      rgba(7,31,37,.90) 0%, rgba(7,31,37,.78) 26%,
-      rgba(7,31,37,.42) 46%, rgba(7,31,37,.38) 66%,
-      rgba(7,31,37,.88) 100%)}
-  .overlay{position:fixed; inset:0; z-index:2; overflow-y:auto;
-    display:flex; flex-direction:column; gap:28px; padding:clamp(20px, 4vw, 56px)}
+  @keyframes press{0%{scale:1} 40%{scale:.8} 100%{scale:1}}
+
+  /* ── Story scene state, set by the engine: .idle = nothing selected, .sel-quote =
+     the dropped Quote selected, .issue = its missing attribution raised. ── */
+  body.story .ghost > .cursor{display:none}
+  .inspector{position:relative}
+  #studio.idle .m-hero .sel-ring, #studio.idle .m-hero .sel-tag,
+  #studio.idle .m-hero .sel-chip{display:none}
+  #studio.idle .tr[aria-selected="true"]{background:transparent; border-left-color:transparent}
+  #studio.idle .tr[aria-selected="true"] .bic{color:var(--dim)}
+  #studio.idle .inspector .insp-head, #studio.idle .inspector .insp-body,
+  #studio.idle .inspector .insp-foot{visibility:hidden}
+  #studio.idle .inspector::after{content:"Select a block to edit it"; position:absolute;
+    inset:0; display:grid; place-items:center; color:var(--dim); font-size:12.5px}
+  .inspector[data-story]{display:none}
+  #studio.sel-quote .inspector[data-when]{display:none}
+  #studio.sel-quote .inspector[data-story]{display:flex}
+  #studio.sel-quote .m-hero .sel-ring, #studio.sel-quote .m-hero .sel-tag,
+  #studio.sel-quote .m-hero .sel-chip{display:none}
+  #studio.sel-quote .tr[aria-selected="true"]{background:transparent; border-left-color:transparent}
+  #studio.sel-quote [data-story="quote-row"] .tr{background:#FBF1EC; border-left-color:var(--sel)}
+  [data-story="quote"] .sel-ring, [data-story="quote"] .sel-tag{display:none}
+  #studio.sel-quote [data-story="quote"] .sel-ring,
+  #studio.sel-quote [data-story="quote"] .sel-tag{display:block}
+  .m-quote{position:relative; margin:24px 34px; padding:8px 22px;
+    border-left:3px solid var(--brass); font-family:var(--w-serif); color:var(--w-navy)}
+  .m-quote blockquote{margin:0; font-size:17px; font-style:italic; line-height:1.5}
+  .m-quote figcaption{margin-top:7px; font-size:12.5px; color:var(--w-dim)}
+  .m-quote .q-who{display:inline-block; min-width:110px; border-bottom:1px dashed var(--w-dim)}
+  .q-attn{position:absolute; top:-11px; right:10px; background:var(--bad-tint); color:var(--bad);
+    box-shadow:inset 0 0 0 1px #EBC6BE; font-family:var(--sans); font-size:11px; font-weight:700;
+    border-radius:99px; padding:2px 9px}
+  #studio:not(.issue) .q-attn{display:none}
+  #studio:not(.issue) [data-story-issue]{display:none}
+  #studio:not(.issue) .inspector[data-story] .f-err{display:none}
+  #studio:not(.issue) .inspector[data-story] .node-banner{display:none}
+  .field{position:relative}
+  .ti.typing{border-color:var(--teal); box-shadow:0 0 0 2px rgba(14,90,107,.14)}
+  .type-caret{position:absolute; width:1.5px; background:var(--teal)}
+  @media (prefers-reduced-motion: no-preference){
+    .type-caret{animation:caret 1s steps(2, start) infinite}
+  }
+  @keyframes caret{50%{opacity:0}}
+
+  /* ── The card. Its resting state is the baseline: touch devices never hover, so
+     hover may add legibility and never supplies it. ── */
+  .overlay{position:fixed; inset:0; z-index:2; overflow-y:auto; display:grid;
+    padding:clamp(16px, 4vw, 48px)}
   .overlay :focus-visible{outline-color:var(--teal-light)}
-  .top{display:flex; justify-content:space-between; align-items:flex-start;
-    gap:28px; flex-wrap:wrap}
-  .card{background:rgba(7,31,37,.62); border:1px solid rgba(79,179,199,.16);
-    border-radius:14px; padding:clamp(20px, 3vw, 34px);
+  .card{margin:auto; max-width:620px; background:rgba(11,43,51,.78);
+    border:1px solid rgba(30,83,92,.65); border-radius:14px; padding:clamp(24px, 4vw, 40px);
     backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px)}
-  .hero{max-width:640px}
-  .brand{display:flex; align-items:center; gap:18px; flex-wrap:wrap}
+  .card:hover, .card:focus-within{background:#0B2B33; border-color:#1E535C}
+  .brand{display:flex; align-items:center; gap:16px; flex-wrap:wrap}
   .brand svg{flex:none}
-  .brand h1{margin:0; font-size:clamp(52px, 8vw, 88px); font-weight:800;
+  .brand h1{margin:0; font-size:clamp(44px, 7vw, 64px); font-weight:800;
     letter-spacing:-.04em; line-height:.95; color:#F1F4F3}
-  .soon{font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-    color:#F1F4F3; border:1px solid var(--brass); border-radius:99px; padding:5px 13px}
-  .slogan{margin:18px 0 0; font-size:clamp(19px, 2.6vw, 26px); font-weight:700;
+  .soon{font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:#F1F4F3; border:1px solid var(--brass); border-radius:99px; padding:4px 12px}
+  .entry{margin:22px 0 0; border-top:1px solid rgba(30,83,92,.55); padding-top:18px}
+  .entry-word{margin:0; font-size:21px; font-weight:700; letter-spacing:.01em; color:#F1F4F3}
+  .entry-word i{font-size:14px; font-weight:400; color:#9DB4B9; letter-spacing:0}
+  .senses{margin:10px 0 0; padding-left:22px; display:grid; gap:8px}
+  .senses li{font-size:15px; line-height:1.55; color:#F1F4F3}
+  .senses li::marker{color:#9DB4B9; font-weight:700}
+  .senses .ex{display:block; font-style:italic; color:#9DB4B9; font-size:13.5px}
+  .thesis{margin:20px 0 0; font-size:clamp(16px, 2vw, 18px); line-height:1.6; color:#F1F4F3;
+    border-left:3px solid var(--brass); padding-left:14px}
+  .slogan{margin:18px 0 0; font-size:clamp(19px, 2.6vw, 24px); font-weight:700;
     letter-spacing:-.02em; color:var(--teal-light)}
-  .published{margin:12px 0 0; font-size:15px; line-height:1.6; color:#9DB4B9; max-width:56ch}
-  .resources{display:flex; flex-direction:column; align-items:flex-start; gap:12px; min-width:210px}
-  .resources a{color:var(--teal-light); font-weight:650; font-size:15px;
-    text-decoration:underline; text-underline-offset:3px}
-  .resources a:hover{color:#F1F4F3}
-  .badges{display:flex; flex-direction:column; gap:8px; margin-top:8px}
-  .badges img{height:20px; width:auto; display:block}
-  .caption{margin-top:auto; align-self:flex-start; max-width:72ch;
-    padding:14px 20px}
-  .caption p{margin:0; font-size:13.5px; line-height:1.6; color:#9DB4B9}
+  .links{display:flex; gap:14px; margin-top:22px}
+  .links a{display:grid; place-items:center; width:44px; height:44px; border-radius:10px;
+    color:var(--teal-light); border:1px solid rgba(79,179,199,.45)}
+  .links a:hover{color:#F1F4F3; border-color:#4FB3C7}
 </style>
 </head>
 <body>
@@ -1229,7 +1285,6 @@
         <div class="insp-head">
           <span class="bi"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 13h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
           <span><span class="t">Hero</span><br><span class="s">2nd block in Page body</span></span>
-          <a tabindex="-1" href="https://www.figma.com/">Open in Figma ↗</a>
         </div>
         <div class="insp-body">
           <p class="f-grp">Content</p>
@@ -1328,7 +1383,6 @@
         <div class="insp-head">
           <span class="bi"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="8" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 13h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
           <span><span class="t">Hero</span><br><span class="s">2nd block in Page body</span></span>
-          <a tabindex="-1" href="https://www.figma.com/">Open in Figma ↗</a>
         </div>
         <div class="insp-body">
           <div class="node-banner" role="status">
@@ -1414,67 +1468,174 @@
   <div class="scrim" aria-hidden="true"></div>
 
   <main class="overlay">
-    <div class="top">
-      <header class="card hero">
-        <div class="brand">
-          <svg width="44" height="44" viewBox="0 0 26 26" fill="none" aria-hidden="true">
-            <rect x="2.5" y="2.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
-            <rect x="17.5" y="2.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
-            <rect x="2.5" y="17.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
-            <rect x="17.5" y="17.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
-            <rect x="9.75" y="9.75" width="6.5" height="6.5" rx="1.75" fill="#C08A3E"/>
-          </svg>
-          <h1>nubbin</h1>
-          <span class="soon">Coming soon</span>
-        </div>
-        <p class="slogan">Your components. Their pages.</p>
-        <p class="published">Four packages are on npm as release candidates — the core
-          contract, a React renderer, a Next.js binding, and a reference store; the studio
-          that composes pages from them is designed but not yet built.</p>
+    <div class="card">
+      <header class="brand">
+        <svg width="40" height="40" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          <rect x="2.5" y="2.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
+          <rect x="17.5" y="2.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
+          <rect x="2.5" y="17.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
+          <rect x="17.5" y="17.5" width="6" height="6" rx="1.5" stroke="#4FB3C7" stroke-width="2"/>
+          <rect x="9.75" y="9.75" width="6.5" height="6.5" rx="1.75" fill="#C08A3E"/>
+        </svg>
+        <h1>nubbin</h1>
+        <span class="soon">Coming soon</span>
       </header>
-      <nav class="card resources" aria-label="Project resources">
-        <a href="https://effekt.github.io/nubbin/">Design record</a>
-        <a href="https://github.com/effekt/nubbin">Source on GitHub</a>
-        <a href="https://www.npmjs.com/package/@nubbin/core">@nubbin/core on npm</a>
-        <div class="badges">
-          <img src="https://img.shields.io/npm/v/%40nubbin%2Fcore?style=flat-square&amp;labelColor=0B2B33&amp;color=0E5A6B" alt="@nubbin/core version published to npm">
-          <img src="https://img.shields.io/npm/l/%40nubbin%2Fcore?style=flat-square&amp;labelColor=0B2B33&amp;color=1E6B4A" alt="Released under the MIT licence">
-        </div>
+      <div class="entry">
+        <p class="entry-word">nub·bin <i>· noun</i></p>
+        <ol class="senses">
+          <li>a small piece; a stub or remnant
+            <span class="ex">a nubbin of chalk, worn down to the grip</span></li>
+          <li>the essential part of something larger
+            <span class="ex">the demo cut to its nubbin — three blocks and a headline</span></li>
+        </ol>
+      </div>
+      <p class="thesis">A visual page builder should not require a second, vendor-owned
+        model of the component system it is supposed to compose.</p>
+      <p class="slogan">Your components. Their pages.</p>
+      <nav class="links" aria-label="Nubbin elsewhere">
+        <a href="https://github.com/effekt/nubbin" aria-label="Nubbin on GitHub">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+        <a href="https://www.npmjs.com/package/@nubbin/core" aria-label="@nubbin/core on npm">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1.763 0C.786 0 0 .786 0 1.763v20.474C0 23.214.786 24 1.763 24h20.474c.977 0 1.763-.786 1.763-1.763V1.763C24 .786 23.214 0 22.237 0zM5.13 5.323l13.837.019-.009 13.836h-3.464l.01-10.382h-3.456L12.04 19.17H5.113z"/></svg>
+        </a>
       </nav>
     </div>
-    <footer class="card caption">
-      <p>The background is a design preview of Nubbin Studio — the moments of editing a
-        block, dragging one in, catching issues, and publishing. A prototype, not
-        shipping software.</p>
-    </footer>
   </main>
+
+  <!-- Story props. The engine clones these into the studio subtree while the session
+       plays; they inherit its inert and aria-hidden, and reduced motion never mounts
+       them. Template content carries the same tabindex belt as the subtree. -->
+  <template id="tpl-quote">
+    <figure class="m-quote" data-story="quote">
+      <blockquote>“The riggers talked us out of the wrong line twice. You don’t get that from a catalogue.”</blockquote>
+      <figcaption>— <span class="q-who"></span></figcaption>
+      <span class="q-attn">Needs attribution</span>
+      <span class="sel-ring"></span>
+      <span class="sel-tag">Quote</span>
+    </figure>
+  </template>
+  <template id="tpl-quote-row">
+    <li role="none" data-story="quote-row">
+      <div class="tr tr-blk lv2" role="treeitem" tabindex="-1" aria-level="2">
+        <span class="tw" aria-hidden="true"></span>
+        <span class="bic" aria-hidden="true"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 10c0-3 1.2-5.5 4-6.5M9 10c0-3 1.2-5.5 4-6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="4" cy="11" r="1.8" fill="currentColor"/><circle cx="10" cy="11" r="1.8" fill="currentColor"/></svg></span>
+        <span class="tn">Quote</span>
+        <span class="issue-ct" data-story-issue>1 issue</span>
+      </div>
+    </li>
+  </template>
+  <template id="tpl-quote-inspector">
+    <section class="panel inspector" aria-label="Inspector — edit the selected block" data-story="inspector">
+      <div class="insp-head">
+        <span class="bi"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 10c0-3 1.2-5.5 4-6.5M9 10c0-3 1.2-5.5 4-6.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="4" cy="11" r="1.8" fill="currentColor"/><circle cx="10" cy="11" r="1.8" fill="currentColor"/></svg></span>
+        <span><span class="t">Quote</span><br><span class="s">3rd block in Page body</span></span>
+      </div>
+      <div class="insp-body">
+        <div class="node-banner" role="status">
+          <svg width="15" height="15" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.2 13 12H1L7 1.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M7 5.5v3M7 10.2v.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span><b>Quote has 1 thing to fix.</b> Your edits are saved — the page just can’t go live until it’s resolved.</span>
+        </div>
+        <p class="f-grp">Content</p>
+        <div class="field">
+          <label for="q-text">Quote</label>
+          <textarea tabindex="-1" class="ti" id="q-text" name="quote-text" autocomplete="off" rows="3">The riggers talked us out of the wrong line twice. You don’t get that from a catalogue.</textarea>
+        </div>
+        <div class="field">
+          <label for="q-attr">Attribution</label>
+          <input tabindex="-1" class="ti" id="q-attr" name="quote-attribution" autocomplete="off" value="" placeholder="A name, a boat, a role">
+          <p class="f-err" id="q-attr-err">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.6" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3.5M7 9.8v.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            A quote needs a name to stand on — attribution is empty.
+          </p>
+        </div>
+      </div>
+      <div class="insp-foot">Changes save by themselves — the preview refreshes when you pause.</div>
+    </section>
+  </template>
 
   <script>
     (() => {
       "use strict";
       const studio = document.getElementById("studio");
-      const backdrop = document.querySelector(".backdrop");
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-      // The element each state is about; the cursor settles on it, so it stays on
-      // target at any viewport scale (rects are read after the transform).
-      const TARGET = {
-        edit: "#i-headline",
-        drag: ".drop-line .ghost .cursor",
-        issues: ".btn-warn",
-        publish: ".live-banner .view",
+      // Each cycle retypes the headline with different copy; the closing undo returns
+      // the document to its opening state, so the cycle boundary needs no reset.
+      const COPY = [
+        { full: "Everything you need before launch day.", short: "Ready for launch day." },
+        { full: "New season, new rigging, same makers.", short: "New season, new rigging." },
+        { full: "Spring refits start here. Save 30%.", short: "Spring refits start here." },
+      ];
+      const HEADLINE_LIMIT = 80;
+      const TYPE_MS = 55;
+      const TYPE_JITTER_MS = 45;
+      const ERASE_MS = 16;
+      const GLIDE_MIN_MS = 650;
+      const GLIDE_VAR_MS = 350;
+      const ARC_MIN_PX = 40;
+      const ARC_VAR_PX = 110;
+      const HALF = 0.5;
+      const START_Y_FRAC = 0.55;
+      const CLICK_MS = 260;
+      const CARET_PAD_PX = 10;
+      const CARET_TOP_PX = 7;
+      const CARET_HEIGHT_PX = 18;
+      const CARET_EDGE_PX = 6;
+      const GUTTER_LIFT_PX = 26;
+      const GHOST_NUDGE_PX = 4;
+      const PAUSE = {
+        land: 900,
+        settle: 1400,
+        read: 2600,
+        publish: 3600,
+        banner: 2200,
+        drag: 1100,
+        issue: 3200,
+        undo: 700,
+        rest: 4200,
       };
-      const DWELL_MS = { edit: 4600, drag: 4200, issues: 5000, publish: 6400 };
-      // Jittered dwells and a random arc keep any two visits from matching.
-      const PACE = {
-        firstStepMs: 900,
-        dwellJitterMs: 1300,
-        glideMinMs: 700,
-        glideVarMs: 400,
-        arcMinPx: 40,
-        arcVarPx: 110,
-        half: 0.5,
-        startYFrac: 0.55,
+      const ISSUE_LABEL = "Fix 1 issue";
+      const ISSUE_BADGE = "1";
+      const ISSUE_CHIP = "1 to fix before publish";
+      const BODY_CHIP_WITH_QUOTE = "5 of 12";
+      const OUTLINE_SUB_WITH_QUOTE = "13 blocks";
+
+      const EL = {
+        headlineInput: () => studio.querySelector("#i-headline"),
+        headlineCount: () => studio.querySelector('label[for="i-headline"] .count'),
+        canvasHeadline: () => studio.querySelector(".m-hero h3 span"),
+        publishBtn: () => studio.querySelector(".btn-primary"),
+        warnBtn: () => studio.querySelector(".btn-warn"),
+        warnBadge: () => studio.querySelector(".btn-warn .badge"),
+        fixChip: () => studio.querySelector(".fix-chip"),
+        dropLine: () => studio.querySelector(".drop-line"),
+        bodyChip: () => studio.querySelector("#page-tree > li:nth-child(2) > .tr > .chip-dim"),
+        heroRow: () => studio.querySelector("#page-tree > li:nth-child(2) ul.g2 > li:first-child"),
+        outlineSub: () => studio.querySelector(".outline .p-head .sub"),
+      };
+
+      const textNodeOf = (el) => {
+        for (const node of el.childNodes) {
+          if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim() !== "") return node;
+        }
+        return null;
+      };
+
+      const setLabel = (el, text) => {
+        const node = textNodeOf(el);
+        if (node) node.nodeValue = ` ${text} `;
+      };
+
+      const opening = { headline: "", warnLabel: "", warnBadge: "", fixLabel: "", bodyChip: "", outlineSub: "" };
+
+      const captureOpening = () => {
+        opening.headline = EL.headlineInput().value;
+        opening.warnLabel = textNodeOf(EL.warnBtn()).nodeValue.trim();
+        opening.warnBadge = EL.warnBadge().textContent;
+        opening.fixLabel = textNodeOf(EL.fixChip()).nodeValue.trim();
+        opening.bodyChip = EL.bodyChip().textContent;
+        opening.outlineSub = EL.outlineSub().textContent;
       };
 
       const setState = (state) => {
@@ -1484,47 +1645,72 @@
         }
       };
 
+      const setHeadline = (text) => {
+        EL.headlineInput().value = text;
+        EL.headlineCount().textContent = `${text.length}/${HEADLINE_LIMIT}`;
+        EL.canvasHeadline().textContent = text;
+      };
+
       let cursor = null;
+      let spot = null;
+      let caret = null;
       let at = { x: 0, y: 0 };
       let timer = 0;
       let raf = 0;
-      let queue = [];
+      let copyIndex = 0;
+
+      const pairNow = () => COPY[copyIndex % COPY.length];
+
+      // The spotlight rides the cursor from the same tick, as custom-property writes.
+      const placeCursor = (x, y) => {
+        at = { x, y };
+        cursor.style.transform = `translate(${x}px, ${y}px)`;
+        spot.style.setProperty("--mx", `${x}px`);
+        spot.style.setProperty("--my", `${y}px`);
+      };
 
       const spawnCursor = () => {
+        spot = document.createElement("div");
+        spot.className = "spot";
+        document.querySelector(".scrim").after(spot);
         cursor = document.createElement("div");
         cursor.className = "pointer";
         cursor.innerHTML =
           '<span class="ping"></span>' +
           '<svg width="20" height="20" viewBox="0 0 18 18" fill="none" aria-hidden="true">' +
           '<path d="M3 2l4.5 13 2-5.5L15 7.5 3 2Z" fill="#0B2B33" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>';
-        at = { x: window.innerWidth * PACE.half, y: window.innerHeight * PACE.startYFrac };
-        cursor.style.transform = `translate(${at.x}px, ${at.y}px)`;
-        backdrop.append(cursor);
+        spot.after(cursor);
+        placeCursor(window.innerWidth * HALF, window.innerHeight * START_Y_FRAC);
       };
 
+      const targetPoint = (step) => {
+        const box = studio.querySelector(step.to).getBoundingClientRect();
+        if (step.align === "bottom") return { x: box.left + box.width * HALF, y: box.bottom - GUTTER_LIFT_PX };
+        if (step.align === "corner") return { x: box.left + GHOST_NUDGE_PX, y: box.top + GHOST_NUDGE_PX };
+        return { x: box.left + box.width * HALF, y: box.top + box.height * HALF };
+      };
+
+      // A quadratic arc with a random bow, so no two journeys retrace each other.
       const glideTo = (endX, endY, done) => {
         const from = { x: at.x, y: at.y };
         const deltaX = endX - from.x;
         const deltaY = endY - from.y;
         const length = Math.hypot(deltaX, deltaY) || 1;
-        // A small random arc, so no two journeys retrace each other.
-        const arc =
-          (PACE.arcMinPx + Math.random() * PACE.arcVarPx) * (Math.random() < PACE.half ? -1 : 1);
+        const arc = (ARC_MIN_PX + Math.random() * ARC_VAR_PX) * (Math.random() < HALF ? -1 : 1);
         const mid = {
-          x: from.x + deltaX * PACE.half - (deltaY / length) * arc,
-          y: from.y + deltaY * PACE.half + (deltaX / length) * arc,
+          x: from.x + deltaX * HALF - (deltaY / length) * arc,
+          y: from.y + deltaY * HALF + (deltaX / length) * arc,
         };
-        const durationMs = PACE.glideMinMs + Math.random() * PACE.glideVarMs;
+        const durationMs = GLIDE_MIN_MS + Math.random() * GLIDE_VAR_MS;
         const began = performance.now();
         const tick = (now) => {
           const frac = Math.min((now - began) / durationMs, 1);
           const eased = (1 - Math.cos(Math.PI * frac)) / 2;
           const rest = 1 - eased;
-          at = {
-            x: rest * rest * from.x + 2 * rest * eased * mid.x + eased * eased * endX,
-            y: rest * rest * from.y + 2 * rest * eased * mid.y + eased * eased * endY,
-          };
-          cursor.style.transform = `translate(${at.x}px, ${at.y}px)`;
+          placeCursor(
+            rest * rest * from.x + 2 * rest * eased * mid.x + eased * eased * endX,
+            rest * rest * from.y + 2 * rest * eased * mid.y + eased * eased * endY,
+          );
           if (frac < 1) raf = requestAnimationFrame(tick);
           else done();
         };
@@ -1537,46 +1723,252 @@
         cursor.classList.add("pulse");
       };
 
-      const shuffled = () => {
-        const opening = ["edit", "drag", "issues"];
-        for (let idx = opening.length - 1; idx > 0; idx -= 1) {
-          const swap = Math.floor(Math.random() * (idx + 1));
-          [opening[idx], opening[swap]] = [opening[swap], opening[idx]];
-        }
-        // Publish closes every cycle — publishing before there is anything to
-        // publish reads as noise rather than as a sequence.
-        opening.push("publish");
-        return opening;
+      const measureText = (input) => {
+        const probe = document.createElement("span");
+        probe.style.cssText = "position:absolute; visibility:hidden; white-space:pre; font:inherit";
+        probe.textContent = input.value;
+        input.parentElement.append(probe);
+        const width = probe.offsetWidth;
+        probe.remove();
+        return width;
       };
 
-      const step = () => {
-        if (queue.length === 0) queue = shuffled();
-        const state = queue.shift();
-        setState(state);
-        const target = studio.querySelector(TARGET[state]);
-        if (target) {
-          const box = target.getBoundingClientRect();
-          glideTo(box.left + box.width * PACE.half, box.top + box.height * PACE.half, pulse);
+      const placeCaret = (input) => {
+        if (!caret) {
+          caret = document.createElement("span");
+          caret.className = "type-caret";
+          input.parentElement.append(caret);
         }
-        const jitter = (Math.random() - PACE.half) * 2 * PACE.dwellJitterMs;
-        timer = setTimeout(step, DWELL_MS[state] + jitter);
+        const edge = input.offsetLeft + input.offsetWidth - CARET_EDGE_PX;
+        caret.style.left = `${Math.min(input.offsetLeft + CARET_PAD_PX + measureText(input), edge)}px`;
+        caret.style.top = `${input.offsetTop + CARET_TOP_PX}px`;
+        caret.style.height = `${CARET_HEIGHT_PX}px`;
+      };
+
+      const dropCaret = () => {
+        if (caret) caret.remove();
+        caret = null;
+      };
+
+      // Erases to the common prefix, then types the rest, character by character.
+      const typeTo = (text, done) => {
+        const input = EL.headlineInput();
+        input.classList.add("typing");
+        const step = () => {
+          const current = input.value;
+          if (current === text) {
+            input.classList.remove("typing");
+            dropCaret();
+            done();
+            return;
+          }
+          const growing = text.startsWith(current);
+          setHeadline(growing ? text.slice(0, current.length + 1) : current.slice(0, -1));
+          placeCaret(input);
+          timer = setTimeout(step, growing ? TYPE_MS + Math.random() * TYPE_JITTER_MS : ERASE_MS);
+        };
+        step();
+      };
+
+      const clone = (templateId) => document.getElementById(templateId).content.cloneNode(true);
+
+      const insertQuote = () => {
+        EL.dropLine().after(clone("tpl-quote"));
+        EL.heroRow().after(clone("tpl-quote-row"));
+        EL.bodyChip().textContent = BODY_CHIP_WITH_QUOTE;
+        EL.outlineSub().textContent = OUTLINE_SUB_WITH_QUOTE;
+        studio.classList.add("sel-quote");
+      };
+
+      const removeQuote = () => {
+        for (const el of studio.querySelectorAll('[data-story="quote"], [data-story="quote-row"]')) el.remove();
+        EL.bodyChip().textContent = opening.bodyChip;
+        EL.outlineSub().textContent = opening.outlineSub;
+        studio.classList.remove("sel-quote");
+      };
+
+      const raiseIssue = () => {
+        studio.classList.add("issue");
+        setLabel(EL.warnBtn(), ISSUE_LABEL);
+        EL.warnBadge().textContent = ISSUE_BADGE;
+        setLabel(EL.fixChip(), ISSUE_CHIP);
+        EL.publishBtn().hidden = true;
+        EL.warnBtn().hidden = false;
+        EL.fixChip().hidden = false;
+      };
+
+      const settleIssue = () => {
+        studio.classList.remove("issue");
+        EL.warnBtn().hidden = true;
+        EL.fixChip().hidden = true;
+        EL.publishBtn().hidden = false;
+        setLabel(EL.warnBtn(), opening.warnLabel);
+        EL.warnBadge().textContent = opening.warnBadge;
+        setLabel(EL.fixChip(), opening.fixLabel);
+      };
+
+      // The three undo clicks unwind the session's three document edits in order:
+      // the revision, the inserted Quote (its issue settles with it), the retype.
+      const undoStage = (stage) => {
+        if (stage === 1) {
+          setHeadline(pairNow().full);
+          return;
+        }
+        if (stage === 2) {
+          settleIssue();
+          removeQuote();
+          return;
+        }
+        setHeadline(opening.headline);
+      };
+
+      // The nine beats, as data. The state after the last undo equals the state
+      // before beat 1: the opening headline, no Quote, an issue count of zero.
+      const PROGRAM = [
+        { op: "wait", ms: PAUSE.land },
+        { op: "beat", n: 1 },
+        { op: "glide", to: ".m-hero" },
+        { op: "click" },
+        { op: "cls", remove: "idle" },
+        { op: "wait", ms: PAUSE.settle },
+        { op: "beat", n: 2 },
+        { op: "glide", to: "#i-headline" },
+        { op: "click" },
+        { op: "type", which: "full" },
+        { op: "wait", ms: PAUSE.read },
+        { op: "beat", n: 3 },
+        { op: "glide", to: ".btn-primary" },
+        { op: "click" },
+        { op: "state", v: "publish" },
+        { op: "wait", ms: PAUSE.publish },
+        { op: "glide", to: ".live-banner .view" },
+        { op: "wait", ms: PAUSE.banner },
+        { op: "state", v: "edit" },
+        { op: "wait", ms: PAUSE.settle },
+        { op: "beat", n: 4 },
+        { op: "glide", to: ".blk.dragging" },
+        { op: "click" },
+        { op: "state", v: "drag" },
+        { op: "wait", ms: PAUSE.drag },
+        { op: "glide", to: ".drop-line .ghost", align: "corner" },
+        { op: "wait", ms: PAUSE.drag },
+        { op: "click" },
+        { op: "state", v: "edit" },
+        { op: "drop" },
+        { op: "wait", ms: PAUSE.settle },
+        { op: "beat", n: 5 },
+        { op: "raise" },
+        { op: "wait", ms: PAUSE.issue },
+        { op: "beat", n: 6 },
+        { op: "glide", to: ".m-hero" },
+        { op: "click" },
+        { op: "cls", remove: "sel-quote" },
+        { op: "wait", ms: PAUSE.settle },
+        { op: "beat", n: 7 },
+        { op: "glide", to: "#i-headline" },
+        { op: "click" },
+        { op: "type", which: "short" },
+        { op: "wait", ms: PAUSE.read },
+        { op: "beat", n: 8 },
+        { op: "glide", to: '[aria-label="Undo"]' },
+        { op: "click" },
+        { op: "undo", stage: 1 },
+        { op: "wait", ms: PAUSE.undo },
+        { op: "click" },
+        { op: "undo", stage: 2 },
+        { op: "wait", ms: PAUSE.undo },
+        { op: "click" },
+        { op: "undo", stage: 3 },
+        { op: "wait", ms: PAUSE.settle },
+        { op: "beat", n: 9 },
+        { op: "glide", to: ".canvas-shell", align: "bottom" },
+        { op: "click" },
+        { op: "cls", add: "idle" },
+        { op: "wait", ms: PAUSE.rest },
+      ];
+
+      const OPS = {
+        beat: (step, done) => {
+          studio.dataset.beat = String(step.n);
+          done();
+        },
+        glide: (step, done) => {
+          const point = targetPoint(step);
+          glideTo(point.x, point.y, done);
+        },
+        click: (_step, done) => {
+          pulse();
+          timer = setTimeout(done, CLICK_MS);
+        },
+        cls: (step, done) => {
+          if (step.add) studio.classList.add(step.add);
+          if (step.remove) studio.classList.remove(step.remove);
+          done();
+        },
+        state: (step, done) => {
+          setState(step.v);
+          done();
+        },
+        wait: (step, done) => {
+          timer = setTimeout(done, step.ms);
+        },
+        type: (step, done) => {
+          typeTo(pairNow()[step.which], done);
+        },
+        drop: (_step, done) => {
+          insertQuote();
+          done();
+        },
+        raise: (_step, done) => {
+          raiseIssue();
+          done();
+        },
+        undo: (step, done) => {
+          undoStage(step.stage);
+          done();
+        },
+      };
+
+      const runFrom = (index) => {
+        if (index === PROGRAM.length) {
+          copyIndex += 1;
+          runFrom(0);
+          return;
+        }
+        OPS[PROGRAM[index].op](PROGRAM[index], () => runFrom(index + 1));
       };
 
       const start = () => {
         if (cursor) return;
+        document.body.classList.add("story");
+        studio.classList.add("idle");
+        studio.querySelector(".cols").append(clone("tpl-quote-inspector"));
         spawnCursor();
-        timer = setTimeout(step, PACE.firstStepMs);
+        runFrom(0);
       };
 
       const stop = () => {
         clearTimeout(timer);
         cancelAnimationFrame(raf);
-        if (cursor) cursor.remove();
+        dropCaret();
+        for (const el of [cursor, spot]) {
+          if (el) el.remove();
+        }
         cursor = null;
-        queue = [];
+        spot = null;
+        document.body.classList.remove("story");
+        removeQuote();
+        settleIssue();
+        const mounted = studio.querySelector('[data-story="inspector"]');
+        if (mounted) mounted.remove();
+        studio.classList.remove("idle");
+        delete studio.dataset.beat;
+        EL.headlineInput().classList.remove("typing");
+        setHeadline(opening.headline);
         setState("edit");
       };
 
+      captureOpening();
       reduced.addEventListener("change", () => (reduced.matches ? stop() : start()));
       if (!reduced.matches) start();
     })();

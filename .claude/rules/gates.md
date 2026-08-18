@@ -1,5 +1,5 @@
 ---
-paths: "scripts/**, .dependency-cruiser.cjs, biome.json, knip.jsonc, lefthook.yml, .github/workflows/**"
+paths: "scripts/**, .dependency-cruiser.cjs, biome.jsonc, knip.jsonc, lefthook.yml, .github/workflows/**"
 title: Gates
 summary: How to add or change a gate so it actually catches what it claims
 status: stable
