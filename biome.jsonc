@@ -13,7 +13,6 @@
       "!**/dist",
       "!**/.next",
       "!**/.turbo",
-      "!**/.repomix",
       "!.claude",
       "!**/*.grit"
     ]
@@ -105,6 +104,9 @@
             ]
           }
         },
+        // filename === export. Held alongside `check-single-export.mjs` (one unit per file) and
+        // `check-structure.mjs` (no category names), this makes filename → symbol invertible,
+        // which is what `scripts/catalog.mjs` derives every CATALOG.md from.
         "useFilenamingConvention": {
           "level": "error",
           "options": {

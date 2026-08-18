@@ -22,6 +22,17 @@ pre-commit:
       glob: "*.{ts,tsx}"
       run: node scripts/check-structure.mjs --check {staged_files}
 
+    # Regenerate the catalogs and stage them, so an index cannot describe code that moved.
+    # `scripts/catalog.test.mjs` asserts the committed files equal a fresh generation; this is
+    # what keeps that assertion green without a manual step.
+    #
+    # No glob, deliberately. A table is a whole package's units, not the ones a commit touched,
+    # so there is nothing to filter — and a glob on a command that never interpolates
+    # `{staged_files}` does not gate it anyway: lefthook 2.1.10 runs `docs` (glob `*.md`) for a
+    # staged `.ts` file. A glob here would say it was scoped while running every time.
+    catalog:
+      run: pnpm catalog && git add packages/*/CATALOG.md apps/studio/CATALOG.md .claude/CATALOG.md
+
     # A large schema is one declaration with no branching, so every complexity gate
     # scores it zero. This is the only thing that catches it.
     schema-depth:

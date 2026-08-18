@@ -13,6 +13,4 @@ One decision per file, named by the anchor slug of its title, so a link names th
 cites and two branches settling two decisions touch two different files. A decision carries
 cause, reason, decision and what it beat — the
 [decision skill](https://github.com/effekt/nubbin/blob/main/.claude/skills/decision/SKILL.md)
-walks the writing and the sweep that follows it. The sidebar and `pnpm catalog` enumerate
-what is here, for
-[the reason the codebase map is generated rather than committed](no-committed-catalog-of-the-codebase.md).
+walks the writing and the sweep that follows it. The sidebar enumerates what is here.

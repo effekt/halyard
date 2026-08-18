@@ -32,7 +32,7 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "test": "turbo run test",
+    "test": "turbo run test && vitest run",
     "typecheck": "turbo run typecheck",
     "lint": "biome check .",
     "format": "biome format --write .",
@@ -51,7 +51,8 @@
     "prose-dupes": "node scripts/check-prose-dupes.mjs --check",
     "a11y": "node scripts/check-a11y.mjs --check",
     "stale-docs": "node scripts/check-stale-docs.mjs",
-    "catalog": "node scripts/docs-catalog.mjs",
+    "catalog": "node scripts/catalog.mjs",
+    "catalog:check": "node scripts/catalog.mjs --check",
     "pinned-deps": "node scripts/check-pinned-deps.mjs --check",
     "sync-version": "node scripts/sync-core-version.mjs",
     "core-version": "node scripts/sync-core-version.mjs --check",
@@ -64,8 +65,6 @@
     "installable": "node scripts/check-installable.mjs --check",
     "publishable": "pnpm core-version && turbo run build && pnpm publint && pnpm attw && pnpm tarball && pnpm package-metadata && pnpm installable",
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm run docs && pnpm file-refs && pnpm prose && pnpm run prose-dupes && pnpm a11y && pnpm pinned-deps && pnpm peer-deps && pnpm core-version && pnpm skills-lock && pnpm plugins-lock && pnpm junk-filenames && pnpm rule-files && pnpm plan-files && pnpm gate-table && pnpm ci-parity && pnpm script-invocations && pnpm schema-depth && pnpm single-export && pnpm dupes && pnpm knip && pnpm boundaries && pnpm type-coverage && pnpm publishable",
-    "map": "repomix --style json --output .repomix/codebase.json",
-    "map:docs": "node scripts/docs-catalog.mjs --json > .repomix/docs.json",
     "release-tag": "node scripts/check-release-tag.mjs --check",
     "release": "pnpm publishable && pnpm release-tag && changeset publish",
     "release:rc": "pnpm publishable && pnpm --filter \"./packages/*\" publish --tag rc --no-git-checks",
@@ -92,10 +91,10 @@
     "knip": "catalog:",
     "lefthook": "catalog:",
     "publint": "catalog:",
-    "repomix": "catalog:",
     "turbo": "catalog:",
     "type-coverage": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=22"

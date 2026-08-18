@@ -66,9 +66,9 @@ Corollaries worth stating:
 
 ## Reuse before you write
 
-Before adding a helper, look for one. `pnpm map` regenerates the repomix codebase map
-(gitignored) when you need the whole picture; otherwise grep the package. A near-duplicate
-with a different name is the failure mode this rule exists to prevent.
+Before adding a helper, look for one. The `CATALOG.md` beside each package lists every unit
+it holds with a one-line summary — read that before grepping. A near-duplicate with a
+different name is the failure mode this rule exists to prevent.
 
 If an existing helper is *almost* right, widen it with a parameter rather than forking it —
 unless widening would give it two behaviours, in which case they were two units.

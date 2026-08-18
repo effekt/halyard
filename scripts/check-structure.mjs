@@ -8,6 +8,10 @@
 // That last rule technically permits `export const utils = {…}` in `utils.ts`, which is
 // exactly the shape worth blocking, so this closes it.
 //
+// It is also what keeps filename → symbol invertible: `utils.ts` names no unit, so a file with
+// that name has no row `scripts/catalog.mjs` could derive. The other two rules make the mapping;
+// this one stops a name that maps to nothing.
+//
 // Pass explicit paths to check those; pass none to scan every source file git would
 // publish. `--check` exits 1.
 

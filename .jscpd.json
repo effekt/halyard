@@ -18,7 +18,6 @@
     "**/dist/**",
     "**/.turbo/**",
     "**/coverage/**",
-    "**/.repomix/**",
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/__tests__/**",
