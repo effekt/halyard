@@ -43,7 +43,7 @@ The checkout directory name is not the product name. Take the name from `package
 export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh" >/dev/null 2>&1; nvm use 24 >/dev/null 2>&1
 ```
 
-Node 24 and pnpm 10 are installed but are not on the default PATH. A bare shell reports
+Node 24 and pnpm 11 are installed but are not on the default PATH. A bare shell reports
 `pnpm: command not found`, and git hooks fail the same way.
 
 ## Test first
