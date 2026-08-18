@@ -10,7 +10,11 @@ import { heroDefaults } from "../blocks/heroDefaults";
 import { logoWallSchema } from "../blocks/LogoWall.schema";
 import { logoWallDefaults } from "../blocks/logoWallDefaults";
 import { planTiersSchema } from "../blocks/PlanTiers.schema";
+import { profileGridSchema } from "../blocks/ProfileGrid.schema";
+import { proseSchema } from "../blocks/Prose.schema";
 import { planTiersDefaults } from "../blocks/planTiersDefaults";
+import { profileGridDefaults } from "../blocks/profileGridDefaults";
+import { proseDefaults } from "../blocks/proseDefaults";
 import { sectionStackSchema } from "../blocks/SectionStack.schema";
 import { siteFooterSchema } from "../blocks/SiteFooter.schema";
 import { statBandSchema } from "../blocks/StatBand.schema";
@@ -30,6 +34,8 @@ export const catalog = defineCatalog({
   LogoWall: { schema: logoWallSchema, defaults: logoWallDefaults },
   FeatureGrid: { schema: featureGridSchema, defaults: featureGridDefaults },
   PlanTiers: { schema: planTiersSchema, defaults: planTiersDefaults },
+  Prose: { schema: proseSchema, defaults: proseDefaults },
+  ProfileGrid: { schema: profileGridSchema, defaults: profileGridDefaults },
   StatBand: {
     schema: statBandSchema,
     defaults: statBandDefaults,
