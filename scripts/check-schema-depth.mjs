@@ -16,43 +16,21 @@
 //
 // Usage: node scripts/check-schema-depth.mjs <files...> [--check]
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const args = process.argv.slice(2);
 const CHECK = args.includes("--check");
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-const SCAN_ROOTS = ["packages", "apps", "examples"];
-const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", ".repomix"]);
-
-/** Every source file under the workspace roots, for when no explicit paths are given. */
-function walkSources(dir, found) {
-  let entries;
-  try {
-    entries = readdirSync(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (EXCLUDED_DIRS.has(entry.name)) continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) walkSources(full, found);
-    else if (/\.tsx?$/.test(entry.name)) found.push(full);
-  }
-  return found;
-}
-
-/**
- * Passing no paths used to scan nothing and report success, so `pnpm verify` ran this gate
- * against zero files. An empty run is now a full run.
- */
+/** No paths means every source file git would publish, so an empty run is a full run. */
 function defaultTargets() {
-  const found = [];
-  for (const root of SCAN_ROOTS) walkSources(join(REPO_ROOT, root), found);
-  return found;
+  return trackedFiles(REPO_ROOT)
+    .filter((path) => /\.tsx?$/.test(path))
+    .map((path) => join(REPO_ROOT, path));
 }
 
 const explicit = args.filter((arg) => !arg.startsWith("--"));

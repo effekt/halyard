@@ -14,21 +14,9 @@ import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = [
-  "docs",
-  ".claude/rules",
-  ".claude/skills",
-  ".claude/agents",
-  "README.md",
-  "AGENTS.md",
-  "CONTRIBUTING.md",
-  "SECURITY.md",
-  "CODE_OF_CONDUCT.md",
-  // The example app carries a README whose links were never resolved.
-  "examples",
-];
 const INDEX = join(ROOT, "docs/README.md");
 const INDEXED_DIR = join(ROOT, "docs");
 
@@ -46,29 +34,12 @@ function slugify(heading) {
     .replace(/ /g, "-");
 }
 
-async function walk(dir, found) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (entry.name === "node_modules") continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await walk(full, found);
-    else if (entry.name.endsWith(".md")) found.push(full);
-  }
-  return found;
-}
-
-const files = [];
-for (const root of SCAN_ROOTS) {
-  const full = join(ROOT, root);
-  if (!existsSync(full)) continue;
-  if (full.endsWith(".md")) files.push(full);
-  else await walk(full, files);
-}
+// A link resolves or it does not wherever it is written, so the corpus is every markdown
+// file git would publish. The index requirement below stays scoped to `docs/`, which is the
+// directory `docs/README.md` indexes.
+const files = trackedFiles(ROOT)
+  .filter((path) => path.endsWith(".md"))
+  .map((path) => join(ROOT, path));
 
 const headings = new Map();
 const bodies = new Map();

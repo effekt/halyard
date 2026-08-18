@@ -29,23 +29,12 @@
 // Usage: node scripts/check-prose.mjs [files...] [--check]
 
 import { existsSync } from "node:fs";
-import { readdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-// `.changeset` holds contributor-written prose that ships verbatim into the public
-// CHANGELOG, and `.github` holds templates every contributor reads. Both were outside
-// every prose root, so neither was checked.
-const SCAN_ROOTS = [
-  "docs",
-  ".claude/rules",
-  ".claude/skills",
-  ".claude/agents",
-  "examples",
-  ".changeset",
-  ".github",
-];
 const EXEMPT_LINE = /<!--\s*prose-ok\s*-->/;
 
 /**
@@ -134,36 +123,15 @@ function proseOnly(line) {
     .replace(/<!--[\s\S]*?-->/g, "");
 }
 
-async function walk(dir, found) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (entry.name === "node_modules") continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await walk(full, found);
-    else if (entry.name.endsWith(".md")) found.push(full);
-  }
-  return found;
-}
-
-async function collectTargets(explicit) {
+function collectTargets(explicit) {
   if (explicit.length > 0) return explicit.map((file) => resolve(ROOT, file)).filter(existsSync);
-  const found = (await readdir(ROOT, { withFileTypes: true }))
-    .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
-    .map((entry) => join(ROOT, entry.name));
-  for (const root of SCAN_ROOTS) {
-    const full = join(ROOT, root);
-    if (existsSync(full)) await walk(full, found);
-  }
-  return [...new Set(found)];
+  return trackedFiles(ROOT)
+    .filter((path) => path.endsWith(".md"))
+    .map((path) => join(ROOT, path));
 }
 
 const args = process.argv.slice(2);
-const targets = await collectTargets(args.filter((arg) => !arg.startsWith("--")));
+const targets = collectTargets(args.filter((arg) => !arg.startsWith("--")));
 
 const ALL_PATTERNS = [
   ...UNVERIFIABLE,

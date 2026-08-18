@@ -8,46 +8,29 @@
 // That last rule technically permits `export const utils = {…}` in `utils.ts`, which is
 // exactly the shape worth blocking, so this closes it.
 //
-// Pass explicit paths to check those; pass none to scan SCAN_ROOTS. `--check` exits 1.
+// Pass explicit paths to check those; pass none to scan every source file git would
+// publish. `--check` exits 1.
 
 import { existsSync } from "node:fs";
-import { readdir } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackedFiles } from "./trackedFiles.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const SCAN_ROOTS = ["packages", "apps", "examples"];
 const SOURCE_EXT = /\.(ts|tsx)$/;
-const EXCLUDED_DIRS = new Set(["node_modules", "dist", ".next", ".turbo", "generated"]);
 const JUNK_BASENAME =
   /^(utils?|helpers?|misc|common|stuff|shared|things|lib|core|base|extras?|temp|tmp)\.(ts|tsx)$/i;
 
-async function walk(dir, found) {
-  let entries;
-  try {
-    entries = await readdir(dir, { withFileTypes: true });
-  } catch {
-    return found;
-  }
-  for (const entry of entries) {
-    if (EXCLUDED_DIRS.has(entry.name)) continue;
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) await walk(full, found);
-    else if (SOURCE_EXT.test(entry.name)) found.push(full);
-  }
-  return found;
-}
-
-async function collectTargets(explicit) {
+function collectTargets(explicit) {
   if (explicit.length > 0) return explicit.map((file) => resolve(ROOT, file)).filter(existsSync);
-  const found = [];
-  for (const root of SCAN_ROOTS) await walk(join(ROOT, root), found);
-  return found;
+  return trackedFiles(ROOT)
+    .filter((path) => SOURCE_EXT.test(path))
+    .map((path) => join(ROOT, path));
 }
 
 const args = process.argv.slice(2);
 const check = args.includes("--check");
-const targets = await collectTargets(args.filter((arg) => !arg.startsWith("--")));
+const targets = collectTargets(args.filter((arg) => !arg.startsWith("--")));
 
 const offenders = targets
   .map((file) => relative(ROOT, file))
