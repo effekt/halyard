@@ -83,8 +83,8 @@ git worktree add -b fix/thing .worktrees/thing origin/main && \
 while living on the same disk as the work. Branch from `origin/main`: the local ref may be
 behind, or checked out elsewhere. The install belongs in that same command — hooks live in the
 common directory and fire in a fresh worktree, but their runner does not. **Gate:**
-`check-worktree.mjs` refuses an edit to the primary worktree, which the driver may reset without
-warning, and to a worktree whose gates cannot run, where a violation lands unseen.
+`check-worktree.mjs` refuses a `Write`, `Edit` or `MultiEdit` aimed at the primary tree or at a
+worktree whose gates cannot run; `check-primary-tree.mjs` reports what any other route left.
 
 This has happened here: an agent given a branch and no worktree, the driver running
 `git reset --hard` in that tree twice while it worked. **A reverted edit and an edit never made

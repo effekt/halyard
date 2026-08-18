@@ -116,3 +116,9 @@ pre-push:
     # nothing, so there is no file the commit hook could glob on.
     skills-lock:
       run: pnpm skills-lock
+
+    # Reports and cannot fail: it reads the primary worktree, which the person pushing from a
+    # linked one may not own. Pre-push rather than pre-commit because a stray artifact is worth
+    # one look before the work leaves the machine, not one on every commit.
+    primary-tree:
+      run: pnpm run primary-tree
