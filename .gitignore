@@ -38,3 +38,7 @@ report/
 
 # Playwright MCP writes console logs and traces beside whatever it is driving.
 .playwright-mcp/
+
+# The vendor scrub list stays private even though the gate that read it is gone: the
+# terms are the thing being protected, not the check that read them. One term per line.
+scripts/vendor-terms.txt
