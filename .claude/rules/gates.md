@@ -68,7 +68,7 @@ A pattern that catches one spelling and misses another is the failure above wear
 ### The check needs checking before its output means anything
 
 A verification that measures the wrong thing, or the right thing at the wrong moment, produces a
-confident and specific number. It reads exactly like a correct one. Five in a single session:
+confident and specific number. It reads exactly like a correct one. Six in a single session:
 
 | The check said | What was actually wrong |
 |---|---|
@@ -79,7 +79,10 @@ confident and specific number. It reads exactly like a correct one. Five in a si
 | four gates unreachable | the walker's `[a-z-]+` cannot match `a11y`, so it could not see a gate that was wired in fine |
 | `auto-close is broken` | every issue was hand-closed 2-9 minutes after its merge, before the observed 47-49s close could fire. The absence of an automatic close was then cited as proof one would never come |
 
-Four rules follow. **Assert on the thing, not a proxy** — a class landing, an exit code, a timer firing are all one remove from what you care about. **Fix the measurement before writing a second fix**: a change that alters nothing is evidence about the instrument, not the subject. **Assert on shape rather than an exact figure** where physics is involved, so an overshoot does not read as a defect. And **if your check changes the thing it measures, a negative result proves nothing** — the last row is a check whose own intervention removed the evidence it then reported missing.
+Four rules follow. **Assert on the thing, not a proxy** — an exit code or a class landing is one
+remove from what you care about. **Fix the measurement before writing a second fix**: a change
+that alters nothing is evidence about the instrument. **Assert on shape, not an exact figure**,
+where physics is involved. And **a check that changes what it measures cannot report a negative.**
 
 **Gate:** none — a check that lies passes every gate. This is the judgment `verify` cannot hold.
 
