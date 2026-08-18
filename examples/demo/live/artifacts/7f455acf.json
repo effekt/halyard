@@ -1,0 +1,211 @@
+{
+  "route": "/pricing",
+  "documentId": "pricing",
+  "documentVersion": 1,
+  "registryFingerprint": "9f34ad01",
+  "blockVersions": {
+    "SectionStack": 1,
+    "Hero": 1,
+    "PlanTiers": 1,
+    "FeatureGrid": 1,
+    "FaqAccordion": 1,
+    "CtaBanner": 1,
+    "SiteFooter": 1
+  },
+  "tree": [
+    {
+      "id": "stack",
+      "block": "SectionStack",
+      "props": {},
+      "slots": {
+        "sections": [
+          {
+            "id": "hero",
+            "block": "Hero",
+            "props": {
+              "eyebrow": "Pricing",
+              "headline": "Simple pricing, no surprises",
+              "body": "Every plan includes unlimited workstreams and the same fast setup. Pick the seat count that matches your team today — change it anytime.",
+              "tone": "dark",
+              "cta": {
+                "label": "Compare plans",
+                "href": "#plans"
+              },
+              "image": {
+                "url": "/hero-pricing.svg",
+                "alt": "Abstract illustration of three plan tiers as ascending sails"
+              }
+            }
+          },
+          {
+            "id": "plans",
+            "block": "PlanTiers",
+            "props": {
+              "heading": "Plans",
+              "tone": "light",
+              "tiers": [
+                {
+                  "name": "Starter",
+                  "price": "$19",
+                  "unit": "per seat / month",
+                  "description": "For one team finding its footing.",
+                  "features": ["Up to 3 workstreams", "Read-only share links", "Email support"],
+                  "recommended": false
+                },
+                {
+                  "name": "Crew",
+                  "price": "$39",
+                  "unit": "per seat / month",
+                  "description": "For teams coordinating across several workstreams.",
+                  "features": [
+                    "Unlimited workstreams",
+                    "Dependency alerts",
+                    "Priority support",
+                    "Spreadsheet import"
+                  ],
+                  "recommended": true
+                },
+                {
+                  "name": "Fleet",
+                  "price": "Talk to sales",
+                  "unit": "annual billing",
+                  "description": "For an organization running many teams on one schedule.",
+                  "features": [
+                    "Everything in Crew",
+                    "Single sign-on",
+                    "A dedicated onboarding lead"
+                  ],
+                  "recommended": false
+                }
+              ]
+            }
+          },
+          {
+            "id": "included",
+            "block": "FeatureGrid",
+            "props": {
+              "heading": "Every plan includes",
+              "tone": "dark",
+              "items": [
+                {
+                  "icon": "layers",
+                  "title": "Every workstream, unlimited",
+                  "body": "No plan caps how much of the schedule you can model."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Read-only share links",
+                  "body": "Send a client a link that always shows the current schedule, never a stale export."
+                },
+                {
+                  "icon": "bolt",
+                  "title": "Same-day onboarding",
+                  "body": "A first workstream is live the day you sign up, on every plan."
+                },
+                {
+                  "icon": "chart",
+                  "title": "Nested dependencies",
+                  "body": "Model how work actually depends on other work, not a flat list pretending it does."
+                }
+              ]
+            }
+          },
+          {
+            "id": "faq",
+            "block": "FaqAccordion",
+            "props": {
+              "heading": "Pricing questions",
+              "tone": "light"
+            },
+            "holes": {
+              "items": {
+                "revalidate": 5
+              }
+            }
+          },
+          {
+            "id": "cta",
+            "block": "CtaBanner",
+            "props": {
+              "heading": "Still deciding?",
+              "body": "Start on Starter and upgrade the moment you need more seats — every plan migrates without losing a workstream.",
+              "tone": "light",
+              "cta": {
+                "label": "Start a free trial",
+                "href": "/pricing#plans"
+              }
+            }
+          },
+          {
+            "id": "footer",
+            "block": "SiteFooter",
+            "props": {
+              "tagline": "One schedule. Read the same way by everyone on the team.",
+              "tone": "dark",
+              "columns": [
+                {
+                  "heading": "Product",
+                  "links": [
+                    {
+                      "label": "Features",
+                      "href": "/#features"
+                    },
+                    {
+                      "label": "Pricing",
+                      "href": "/pricing"
+                    },
+                    {
+                      "label": "Changelog",
+                      "href": "/#"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Company",
+                  "links": [
+                    {
+                      "label": "About",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Careers",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Contact",
+                      "href": "/#"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "links": [
+                    {
+                      "label": "Documentation",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Support",
+                      "href": "/#"
+                    },
+                    {
+                      "label": "Status",
+                      "href": "/#"
+                    }
+                  ]
+                }
+              ],
+              "legal": "© 2026 Tidewell. All rights reserved."
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "title": "Pricing — Tidewell",
+    "description": "Every Tidewell plan includes unlimited workstreams and the same fast setup. Pick the seat count that matches your team today."
+  },
+  "compiledWith": "0.1.0-rc.4",
+  "hash": "7f455acf"
+}

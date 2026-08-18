@@ -124,10 +124,22 @@ See [`studio.md`](studio.md) for the canvas and its delivery surfaces.
 
 Every artifact records the block versions and registry fingerprint it was compiled against.
 
-That makes the guardrail possible, and it is a **required, failing check** rather than a
-report: if a registry change would invalidate any artifact a live route pointer references,
-CI fails. Deleting a block is treated exactly like an incompatible version bump. An advisory
-check that engineers can merge past reproduces the failure it exists to prevent.
+That makes the guardrail possible, and it is a **failing check** rather than a report: if a
+registry change would invalidate any artifact a live route pointer references, CI fails.
+Deleting a block is treated exactly like an incompatible version bump. An advisory check that
+engineers can merge past reproduces the failure it exists to prevent.
 
-The same comparison runs before a rollback, since moving a pointer back to an older artifact
-can otherwise feed frozen props to a component that has since changed.
+`checkCompatibility` is the comparison, over every pointer a store holds; `checkRollback` is the
+same comparison for one artifact, which is what a pointer move back to an older artifact needs
+before it can feed frozen props to a component that has since changed. Neither reads a store:
+the caller reads its own and hands over what it found, so the check runs against a filesystem
+store, a database, or a deployment's API without `core` learning about any of them. Wiring it is
+[Artifacts, pointers and rollback](reference/artifacts.md#checkcompatibility); this repository
+runs it against `examples/demo/live/`, a committed store of pages already published, as the
+`pnpm guardrail` step of the `verify` workflow.
+
+The check fails that workflow. Making it *required* is branch protection, which lives in
+repository settings rather than in this tree
+([#22](https://github.com/effekt/nubbin/issues/22)). A rollback is `publish(route, olderHash)`,
+a bare pointer move; putting `checkRollback` in front of it is
+[#21](https://github.com/effekt/nubbin/issues/21).

@@ -84,7 +84,7 @@ reference back to it. Nubbin is needed to change a page, not to serve one.
 
 | Package | State |
 |---|---|
-| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkRollback` |
+| `@nubbin/core` | `defineBlock`, `defineCatalog`, `createRegistry`, `compile`, `checkCompatibility`, `checkRollback` |
 | `@nubbin/store-fs` | A pointer-per-route store, passing a contract suite a third-party adapter can run |
 | `@nubbin/next` | Read and write paths — resolve, prebuild params, publish and unpublish |
 | `@nubbin/react` | The renderer, the block registry, and hole resolution |

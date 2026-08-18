@@ -1,6 +1,6 @@
 ---
 title: Artifacts, Pointers and Rollback
-summary: The Artifact and ArtifactStore contracts as shipped, with checkRollback and parseMatchKind
+summary: The Artifact and ArtifactStore contracts as shipped, with the compatibility and rollback checks
 status: reference
 ---
 
@@ -8,8 +8,8 @@ status: reference
 
 This page describes the shipped output-layer contracts of `@nubbin/core`: the `Artifact`,
 `ArtifactNode` and `Holes` shapes `compile` produces, the `ArtifactStore` interface adapters
-implement, `RoutePointer` and `Manifest`, and the two functions that operate on them —
-`checkRollback` and `parseMatchKind`. Why artifacts are immutable and addressed by content is
+implement, `RoutePointer` and `Manifest`, and the functions that operate on them — `checkCompatibility`,
+`formatCompatibilityReport`, `checkRollback` and `parseMatchKind`. Why artifacts are immutable and addressed by content is
 [Artifacts are immutable and content-addressed](../decisions/artifacts-are-immutable-and-content-addressed.md);
 what they may contain is
 [Artifacts contain data, never code](../decisions/artifacts-contain-data-never-code.md).
@@ -110,6 +110,73 @@ checkRollback(artifact, createRegistry([heroAtV2]));
 `drifted` names every block whose registered version differs from the recorded one — and a
 block the registry no longer holds at all counts as drift, because a deleted block is exactly
 the failure a rollback must be warned about.
+
+## `checkCompatibility`
+
+```ts
+function checkCompatibility(live: readonly LiveRoute[], registry: Registry): CompatibilityReport;
+
+interface LiveRoute {
+  pointer: RoutePointer;
+  artifact: Artifact | null;
+}
+
+interface BlockDrift {
+  block: string;
+  live: number;
+  registered: number | null;
+}
+
+type RouteIncompatibility =
+  | { route: string; hash: string; reason: "unreadable-artifact" }
+  | { route: string; hash: string; reason: "block-drift"; drifted: BlockDrift[] };
+
+interface CompatibilityReport {
+  checked: number;
+  compatible: boolean;
+  incompatible: RouteIncompatibility[];
+}
+```
+
+The same comparison as `checkRollback`, run over every pointer instead of one artifact, and
+reported with the version delta a reader needs to act: which route, which artifact, which block,
+what the page was compiled against, and what is registered now. `registered: null` is a block
+the registry has lost. A pointer whose hash the store cannot resolve is incompatible on its own,
+since that route is broken with no registry change involved.
+
+It takes the pointers and artifacts rather than the store, because passing an `ArtifactStore`
+would put IO inside the package whose portability is the point, and would exclude any consumer
+whose live state does not sit behind that interface. Reading is three lines and belongs to the
+caller:
+
+```ts
+const { routes } = await store.manifest();
+const live = await Promise.all(
+  routes.map(async (pointer) => ({ pointer, artifact: await store.read(pointer.hash) })),
+);
+const report = checkCompatibility(live, registry);
+```
+
+`checked` is on the report because a run that read no pointers is compatible with everything.
+A caller asserts on it before trusting the verdict, or a store the check never reached reads as
+a pass.
+
+## `formatCompatibilityReport`
+
+```ts
+function formatCompatibilityReport(report: CompatibilityReport): string;
+```
+
+The report as a log reads it, leading with the count in both directions:
+
+```
+2 of 8 live route pointer(s) are incompatible with this registry:
+  /  (artifact 4a162726)
+    Hero: page needs v1, registry has v2
+    LogoWall: page needs v1, no longer in the registry
+  /about  (artifact 8be9f4fd)
+    Hero: page needs v1, registry has v2
+```
 
 ## `ArtifactStore`
 

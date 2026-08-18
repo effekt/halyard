@@ -1,0 +1,50 @@
+{
+  "route": "/live/pulse",
+  "documentId": "live-pulse",
+  "documentVersion": 1,
+  "registryFingerprint": "9f34ad01",
+  "blockVersions": {
+    "SectionStack": 1,
+    "StatBand": 1,
+    "FaqAccordion": 1
+  },
+  "tree": [
+    {
+      "id": "stack",
+      "block": "SectionStack",
+      "props": {},
+      "slots": {
+        "sections": [
+          {
+            "id": "stats",
+            "block": "StatBand",
+            "props": {
+              "tone": "dark"
+            },
+            "holes": {
+              "stats": "request"
+            }
+          },
+          {
+            "id": "faq",
+            "block": "FaqAccordion",
+            "props": {
+              "heading": "Questions about the live figures",
+              "tone": "light"
+            },
+            "holes": {
+              "items": {
+                "revalidate": 5
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "title": "Live pulse"
+  },
+  "compiledWith": "0.1.0-rc.4",
+  "hash": "ee6375cb"
+}

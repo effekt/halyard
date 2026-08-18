@@ -1,0 +1,90 @@
+{
+  "route": "/promotions/winter",
+  "documentId": "promotions-winter",
+  "documentVersion": 1,
+  "registryFingerprint": "9f34ad01",
+  "blockVersions": {
+    "SectionStack": 1,
+    "Hero": 1,
+    "FeatureGrid": 1,
+    "TestimonialQuote": 1
+  },
+  "tree": [
+    {
+      "id": "stack",
+      "block": "SectionStack",
+      "props": {},
+      "slots": {
+        "sections": [
+          {
+            "id": "hero",
+            "block": "Hero",
+            "props": {
+              "eyebrow": "Now shipping weekly",
+              "headline": "Winter planning, minus the spreadsheets",
+              "body": "Tidewell turns scattered planning docs into one schedule everyone on the team reads the same way — no more Friday afternoon status hunts.",
+              "tone": "dark",
+              "cta": {
+                "label": "Start a free trial",
+                "href": "/pricing"
+              },
+              "image": {
+                "url": "/hero-board.svg",
+                "alt": "A Tidewell planning board showing three workstreams moving from backlog to done"
+              }
+            }
+          },
+          {
+            "id": "features",
+            "block": "FeatureGrid",
+            "props": {
+              "heading": "What a winter rollout gets you",
+              "tone": "light",
+              "items": [
+                {
+                  "icon": "chart",
+                  "title": "One read of the schedule",
+                  "body": "Every workstream rolls up into a single timeline, so a stakeholder gets the same answer whether they ask you or open the app."
+                },
+                {
+                  "icon": "shield",
+                  "title": "Changes never surprise you",
+                  "body": "Tidewell flags a downstream date the moment an upstream task slips, before it becomes a standup surprise."
+                },
+                {
+                  "icon": "bolt",
+                  "title": "Set up in an afternoon",
+                  "body": "Import from a spreadsheet or a ticket tracker and get a working schedule the same day, not after a quarter of onboarding."
+                },
+                {
+                  "icon": "layers",
+                  "title": "Built for how teams actually work",
+                  "body": "Nested workstreams, dependencies, and owners map to how the work is really structured, not a flat list pretending it is."
+                }
+              ]
+            }
+          },
+          {
+            "id": "quote",
+            "block": "TestimonialQuote",
+            "props": {
+              "quote": "We stopped reconciling three versions of the plan every Monday. Now there’s just the one, and everyone trusts it.",
+              "name": "Priya Shah",
+              "role": "Head of Operations",
+              "avatar": {
+                "url": "/avatar-priya.svg",
+                "alt": "Portrait illustration of Priya Shah"
+              },
+              "tone": "light"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "meta": {
+    "title": "Winter promotion"
+  },
+  "compiledWith": "0.1.0-rc.4",
+  "hash": "6bd42c95"
+}

@@ -30,7 +30,7 @@
     },
     "examples/*": {
       "entry": ["src/app/**/{page,layout,not-found,error,loading,route}.{ts,tsx}"],
-      "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "fixtures/**/*.ts"]
+      "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "fixtures/**/*.ts", "guardrail/**/*.ts"]
     },
     "packages/*": {
       "entry": ["src/index.ts"],

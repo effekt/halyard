@@ -14,8 +14,34 @@ import { defineConfig } from "vitest/config";
  *
  * `globals` is what registers Testing Library's `afterEach(cleanup)`. Without it a second
  * `render` in one file leaves the first tree mounted and every `getByRole` finds two.
+ *
+ * Two projects, because they answer about different things. `unit` reads only files in this
+ * package and is what `pnpm test` runs. `guardrail` reads the committed artifact store — state
+ * whose contents no task hash has any reason to see — so it is invoked directly by
+ * `pnpm guardrail` at the workspace root and is registered as no turbo task, exactly as the
+ * `release` project is at the root for the same reason.
  */
 export default defineConfig({
   oxc: { jsx: { runtime: "automatic" } },
-  test: { environment: "happy-dom", globals: true, include: ["**/*.test.{ts,tsx}"] },
+  test: {
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: "unit",
+          environment: "happy-dom",
+          globals: true,
+          include: ["src/**/*.test.{ts,tsx}", "fixtures/**/*.test.ts", "scripts/**/*.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: "guardrail",
+          environment: "node",
+          include: ["guardrail/*.test.ts"],
+        },
+      },
+    ],
+  },
 });
