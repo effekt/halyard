@@ -14,7 +14,9 @@ happens — so in every worktree run it reported a green tick over an empty term
 
 A control that runs in one place, and whose configuration cannot travel to the places the
 work happens, is not protecting anything. Its single standing match on `main` was a common
-English word used in its ordinary sense.
+English word used in its ordinary sense, and that line stays where it is — removing the gate
+resolves nothing about the file it flagged, and a later reader should not take the build going
+green as evidence that anything was cleaned.
 
 The gate, its term list, its example file and its wiring are removed. The editorial standard —
 this repository is public and carries nothing from private work — is a matter for review, not
