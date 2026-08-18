@@ -83,9 +83,10 @@ function anchorsOf(span, base) {
 }
 
 /**
- * True when git would ignore the path. A gitignored file is absent on purpose — the vendor
- * term list is documented precisely because publishing a denylist defeats it — so naming one
- * in prose is correct, and an escape comment would only record that the gate is too blunt.
+ * True when git would ignore the path. A gitignored file is absent on purpose — the codebase
+ * map at `.repomix/codebase.json` is documented even though every checkout regenerates it —
+ * so naming one in prose is correct, and an escape comment would only record that the gate is
+ * too blunt.
  */
 function isDeliberatelyAbsent(span) {
   try {

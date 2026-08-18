@@ -15,7 +15,7 @@ A gate that passes because it scanned zero files reads exactly like one that pas
 
 | Gate | What it was actually doing |
 |---|---|
-| `check-no-vendor-refs.mjs` | `walk()` only handled directories, so top-level files were never scanned |
+| the vendor-reference scanner | `walk()` only handled directories, so top-level files were never scanned |
 | its term list | gitignored and absent, so it ran with zero terms |
 | three scanners | omitted `examples/` from `SCAN_ROOTS` |
 | the same three scanners | each carried an extension list narrower than its gate-table row claims, so a machine path in an `.svg`, a `.css` or an `.html` sat under a green tick |

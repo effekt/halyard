@@ -19,9 +19,6 @@ coverage/
 # jscpd report output
 report/
 
-# Vendor scrub list — kept private; see vendor-terms.example.txt
-scripts/vendor-terms.txt
-
 # Skills the CLI installs into the project. The content is third-party and not ours to
 # redistribute, so it is ignored the way node_modules is — skills-lock.json is committed
 # instead, and records the source, path and content hash needed to reinstall the same set.

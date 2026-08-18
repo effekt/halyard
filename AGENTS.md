@@ -88,8 +88,8 @@ generated file. Generate when you need the whole picture; otherwise read the tre
 
 Every row in the table below is enforced by a gate that runs on every agent edit
 (`.claude/settings.json`), at pre-commit (`lefthook.yml`), or at pre-push. The gates that
-read prose check every document; the ones that sweep for accessibility, vendor references and
-unpinned versions read every file git would publish, so a new file type or a new directory is
+read prose check every document; the ones that sweep for accessibility and unpinned
+versions read every file git would publish, so a new file type or a new directory is
 covered without anyone extending a list.
 
 **Not every rule in `.claude/rules/` has one.** Where a rule states a gate, that gate exists
@@ -120,7 +120,6 @@ it would assert is [#96](https://github.com/effekt/nubbin/issues/96).
 | `check-rules.mjs` | rule files carry `paths`, stay under 150 lines, end in a checklist |
 | `check-prose.mjs` | claims resting on a corpus no reader can open; references to what a thing used to be; promises of future work; filler |
 | `check-prose-dupes.mjs` | one claim, one home — a run of 12 words written into two documents, measured after fences, comments and tables are stripped out |
-| `check-no-vendor-refs.mjs` | no employer, client, internal application or product name, and no absolute path from a contributor's machine |
 | `check-pinned-deps.mjs` | no range specifier — every dependency version is exact, so an upgrade arrives only in a commit someone wrote |
 | `check-script-invocations.mjs` | a script whose name the package manager also claims is invoked as `pnpm run <name>`, never bare |
 | `check-skills-lock.mjs` | `skills-lock.json` and the installed skills agree by name, and by a hash over every file in each skill directory — not just its `SKILL.md` |
@@ -221,9 +220,9 @@ holds: a visual CMS accumulates structured data models faster than pages because
 cheap to add and a page needs a route. That claim stands on its own reasoning, and a reader
 who disagrees has something to push against.
 
-`scripts/check-no-vendor-refs.mjs` enforces this on every agent edit and at pre-commit. Its
-term list lives in `scripts/vendor-terms.txt`, which is gitignored — a published denylist
-defeats its own purpose. See `vendor-terms.example.txt` for the format.
+This standard is held in review rather than by a script —
+[the decision](docs/decisions/vendor-references-are-a-review-concern-not-a-gate.md) records
+why.
 
 **Examples must be self-contained.** Scaffold a clean Next.js application with the
 the create-starter generator for fixtures, demos, and manual testing. Never point them
