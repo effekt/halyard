@@ -23,7 +23,8 @@ findings were being captured at all.
 
 - [rule] A gate invoked as `pnpm <name>` resolves to the package manager's own command.
   A continuation line stays with the finding above it.
-- [issue] The routing table does not say which label a captured finding's issue carries.
+- [issue] `invokeBlock` drops the node attribute when a block's root is a composite component.
+  harms: a consumer's block renders, throws nothing, and cannot be selected in the studio.
 - [memory] A fresh worktree has no `node_modules`, so biome reports "not found" rather than clean.
 - [task-local] The fixture needed a trailing newline before the parser accepted it.
 ```
@@ -63,17 +64,43 @@ the four parts a sentence cannot carry are reported as warnings instead of refus
 The search is not softened alongside them — it runs above the check that is, so nothing reaches an
 open unsearched.
 
-**Where the search scores a candidate, the finding is commented onto that issue instead of filed.**
+**Where the search scores a candidate, the finding is commented onto that issue.**
 `--acknowledge-duplicates` states that a person read the candidate and judged the work different,
 and a hook reads nothing; passing it made every capture assert a judgement nobody had made. The
-finding still lands where whoever reads that issue will see it, which is the property that matters
-— this hook's `systemMessage` reaches no transcript and no log, so a finding held in a report alone
-is a finding gone. Rejected: filing anyway with the candidate's number in the body, which is what
-this did until the tracker had filled with pairs nobody could tell apart; and holding it in the
-report, which loses it outright.
+finding lands where whoever reads that issue will see it. Rejected: filing anyway with the
+candidate's number in the body, which is what this did until the tracker had filled with pairs
+nobody could tell apart.
+
+**Where nothing scores, the finding is referred to whoever dispatched the agent, and nothing is
+opened.** A new issue is the one outcome a subagent is unfit to choose: it exits before the work
+that produced it lands, and it has seen one slice of one task. The caller has the diff and the
+reason the agent was dispatched. This does not rest on a line that scrolls — the finding is in the
+report the caller receives, and its verdict is written to the ledger.
+[The decision](../../docs/decisions/a-subagent-refers-findings-the-caller-files-them.md) carries
+the measurements and what it beat.
 
 It passes no label. The hook knows which tag a report used and nothing about the surfaces this
 repository labels by, and a wrong label reads as a decision someone made.
+
+### Would it hurt anyone?
+
+A finding that would open something new names who is hurt and how, in a `harms:` clause. The hook
+reads whether the clause is there; whether it is true is the caller's half.
+
+```markdown
+WRONG   - [issue] The naming-failure table has eight rows and could have a ninth.
+CORRECT - [issue] Nine open tickets cite a path that became a directory.
+          harms: a builder follows the citation, finds nothing, and invents a replacement.
+```
+
+The test is not whether the finding is true — most of them are. It is whether anyone is worse off
+while it stands. One that fails is `[task-local]`, a destination rather than a rejection.
+
+### Does its subject still exist?
+
+A finding about issue `#N` dies when `#N` closes, and that happens minutes after the agent exits.
+The hook reads the closed set and marks any finding naming one, `HOLD`. Re-derive it against the
+tree before filing, or let it go.
 
 ## It says what it saw
 
@@ -114,6 +141,8 @@ one person who can act on them.
 ## Checklist
 
 - [ ] The report ends with `## Findings`, and every bullet in it carries one of the four tags
+- [ ] Every `[issue]` and `[rule]` bullet carries a `harms:` clause naming who is worse off
 - [ ] A finding true only of this task is tagged `[task-local]` rather than left out
+- [ ] As the caller: every `REFER` was judged and every `HOLD` answered or let go
 - [ ] The capture summary was read, not skipped — an `UNROUTED` line means a finding was lost
 - [ ] A memory whose content has become a rule in this repository was deleted

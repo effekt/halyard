@@ -33,7 +33,7 @@ Write the plan wherever is convenient while drafting — a scratchpad is ideal �
 
 A task issue is executable by someone with no other context. That means the actual failing test, the actual implementation, the exact commands and their expected output — not a summary that a reader has to re-derive. An issue saying "implement the schema adapter as designed" has moved the work rather than described it.
 
-**An issue without a close condition is a plan wearing an issue's clothes.** It has the shape but not the property this whole rule rests on: no state at which it is finished, so nothing ever closes it. Write the state a reader can check, under a `## Done when` heading. **Gate:** `scaffold-issue.mjs`, which also refuses a body missing cause, reason, decision or choice, and searches the open issues for one already covering the ground.
+**An issue without a close condition is a plan wearing an issue's clothes.** It has the shape but not the property this whole rule rests on: no state at which it is finished, so nothing ever closes it. Write the state a reader can check, under a `## Done when` heading. **Gate:** `scaffold-issue.mjs`, which also refuses a body missing cause, reason, decision or choice, and searches the open issues, the closed ones and their comments for one already covering the ground.
 
 **Trace every identifier back to a definition before you publish.** A plan that names a test fixture, a type, or a function it never defines forces the implementer to invent one, and two implementers will invent differently. This has already happened here: a Phase 1 plan referenced `validDoc`, `BlockUi` and `RollbackCheck` without defining any of them, and a reviewer reconstructed all three.
 

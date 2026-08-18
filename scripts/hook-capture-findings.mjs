@@ -46,9 +46,17 @@ const SEARCH_LINE = /^Searched \d+ open issues[^\n]*?(?=\.?$)/m;
 /** The same sentence's repository, so a comment lands where the search looked and nowhere else. */
 const SEARCHED_REPO = /^Searched \d+ open issues in ([\w.-]+\/[\w.-]+)/m;
 
-/** The scaffold's refusal when a candidate scores and nothing has acknowledged it. */
-const HELD_LINE = /^❌ (#\d+(?:,\s*#\d+)*) may already cover this\./m;
 const CANDIDATE_LINE = /^\s*CANDIDATE\s+\d+%\s+#(\d+)/gm;
+
+/**
+ * A finding that would open something new must say who is hurt. Without it, "the table has eight
+ * rows and could have nine" and "a consumer's block renders unselectable" arrive identical, and
+ * the tracker fills with the first kind.
+ */
+const HARMS_CLAUSE = /\bharms:\s*(\S.*)/is;
+
+/** An issue number the finding is about, which decides whether its subject still exists. */
+const SUBJECT_ISSUE = /#(\d{1,6})\b/g;
 
 const isDryRun = process.argv.includes("--dry-run");
 
@@ -233,9 +241,13 @@ function writeBodyFile(body) {
  * different, and a hook reads nothing. Where the search scores one, the finding is commented onto
  * that issue instead — nothing is filed on an assertion nobody made, and the finding still lands
  * where whoever reads that issue will see it.
+ *
+ * No `--open` at all: the search runs, and what it finds decides. A scored candidate takes the
+ * comment; anything with no candidate would be a new issue, and a subagent exits before its own
+ * work lands and has seen one slice of the task, so it is the wrong thing to be deciding that.
  */
 function scaffoldArgs(title, bodyFile) {
-  return [SCAFFOLD, "--body-file", bodyFile, "--title", title, "--open", "--advisory-validation"];
+  return [SCAFFOLD, "--body-file", bodyFile, "--title", title, "--advisory-validation"];
 }
 
 function candidatesIn(output) {
@@ -247,12 +259,6 @@ function lastLineOf(output) {
   return output.trim().split("\n").at(-1)?.trim() ?? "";
 }
 
-function describeOpened(route, searched, output) {
-  const candidates = candidatesIn(output);
-  const nearby = candidates.length > 0 ? `; may duplicate ${candidates.join(", ")}` : "";
-  return `${route} (${searched}${nearby}; ${lastLineOf(output)})`;
-}
-
 /**
  * A finding that was never searched must not read as one that was, so a missing search line is
  * reported as loudly as a non-zero exit — it is the shape the defect would take on returning.
@@ -260,12 +266,6 @@ function describeOpened(route, searched, output) {
 function describeStopped(route, searched, output) {
   const why = searched ? "the scaffold opened nothing" : "NO DUPLICATE SEARCH RAN";
   return `${route} (FAILED — ${why}: ${lastLineOf(output) || "no output"})`;
-}
-
-/** The issues the scaffold refused to file past, nearest first, as it ranked them. */
-function heldCandidates(output) {
-  const line = output.match(HELD_LINE);
-  return line ? line[1].split(",").map((entry) => entry.trim().replace(/^#/, "")) : [];
 }
 
 function heldCommentBody(finding, payload, route, others) {
@@ -285,7 +285,7 @@ function heldCommentBody(finding, payload, route, others) {
  * both lossy: this hook's `systemMessage` reaches no transcript and no log, and a report scrolls.
  */
 function commentHeld(finding, payload, route, output, searched) {
-  const [nearest, ...others] = heldCandidates(output).map((number) => `#${number}`);
+  const [nearest, ...others] = candidatesIn(output);
   const repo = output.match(SEARCHED_REPO)?.[1];
   if (!repo) return lostFinding(`${route} (held by ${nearest} — FAILED: the search named no repo)`);
   const bodyFile = writeBodyFile(heldCommentBody(finding, payload, route, others));
@@ -302,7 +302,70 @@ function commentHeld(finding, payload, route, output, searched) {
   return routed(`${route} (${searched}; not filed — commented on ${nearest}${alsoNear})`);
 }
 
-function routeToIssue(finding, payload, route) {
+/** Every issue number any finding names, so their state is read in one call rather than N. */
+function subjectsIn(findings) {
+  const numbers = new Set();
+  for (const finding of findings) {
+    if (finding.route === "memory" || finding.route === "task-local") continue;
+    for (const match of finding.lines.join(" ").matchAll(SUBJECT_ISSUE)) numbers.add(match[1]);
+  }
+  return [...numbers];
+}
+
+/**
+ * A subagent exits while the pull request closing its subject is merging, so "#69 is unfinished"
+ * is routinely false by the time anyone reads it — measured at 51 seconds once, and that was not
+ * the closest. One call covers every subject the report named.
+ */
+function closedSubjects(numbers) {
+  if (numbers.length === 0) return new Set();
+  const run = spawnSync(
+    "gh",
+    ["issue", "list", "--state", "closed", "--limit", "800", "--json", "number"],
+    {
+      encoding: "utf8",
+      maxBuffer: 32 * 1024 * 1024,
+    },
+  );
+  if (run.status !== 0) return null;
+  try {
+    const closed = new Set(JSON.parse(run.stdout).map((issue) => String(issue.number)));
+    return new Set(numbers.filter((number) => closed.has(number)));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Nothing scored, so this would be a new issue. The two tests a subagent cannot apply to its own
+ * finding run here, and the finding goes back to whoever dispatched the agent either way — a
+ * finding the hook refuses is a finding nobody reads.
+ */
+function referToCaller(finding, route, subjects, searched) {
+  const text = finding.lines.join(" ");
+  const harm = text.match(HARMS_CLAUSE)?.[1]?.trim();
+  const dead = [...text.matchAll(SUBJECT_ISSUE)]
+    .map((match) => match[1])
+    .filter((number) => subjects?.has(number));
+  const notes = [];
+  if (!harm) notes.push("NO HARM STATED — name who is hurt and how, or it is `[task-local]`");
+  if (dead.length > 0) {
+    notes.push(`SUBJECT CLOSED (${dead.map((n) => `#${n}`).join(", ")}) — re-derive before filing`);
+  }
+  const verdict = notes.length === 0 ? "REFER" : "HOLD";
+  const detail = harm ? [`      harms: ${harm}`] : [];
+  return {
+    line: [
+      `${route} (${searched}; nothing scored — ${verdict}, yours to file)`,
+      ...detail,
+      ...notes.map((note) => `      ${note}`),
+    ].join("\n"),
+    wasLost: false,
+    verdict,
+  };
+}
+
+function routeToIssue(finding, payload, route, subjects) {
   const title = titleFor(finding);
   if (isDryRun) return routed(`${route} (dry run: would scaffold "${title}")`);
   const bodyFile = writeBodyFile(issueBody(finding, payload, route));
@@ -310,17 +373,17 @@ function routeToIssue(finding, payload, route) {
   const output = `${run.stdout ?? ""}${run.stderr ?? ""}${run.error?.message ?? ""}`;
   const searched = output.match(SEARCH_LINE)?.[0].trim() ?? null;
   if (searched === null) return lostFinding(describeStopped(route, searched, output));
-  if (heldCandidates(output).length > 0) {
+  if (candidatesIn(output).length > 0) {
     return commentHeld(finding, payload, route, output, searched);
   }
   if (run.status !== 0) return lostFinding(describeStopped(route, searched, output));
-  return routed(describeOpened(route, searched, output));
+  return referToCaller(finding, route, subjects, searched);
 }
 
-function routeOne(finding, payload, memoryDir) {
+function routeOne(finding, payload, memoryDir, subjects) {
   if (finding.route === "task-local") return routed("dropped (task-local)");
   if (finding.route === "memory") return routeToMemory(finding, payload, memoryDir);
-  return routeToIssue(finding, payload, finding.route);
+  return routeToIssue(finding, payload, finding.route, subjects);
 }
 
 /** Lines the way `wc -l` counts them, so a reported total matches the shell. */
@@ -424,6 +487,22 @@ function countsLine(findings, results, unrouted) {
   ].join("\n");
 }
 
+/**
+ * A referral is worth nothing if the caller does not know it is theirs, so the hook says so every
+ * time rather than trusting that the rule has been read.
+ */
+function callerLine(outcomes) {
+  const referred = outcomes.filter((outcome) => outcome.verdict);
+  if (referred.length === 0) return null;
+  const held = referred.filter((outcome) => outcome.verdict === "HOLD").length;
+  const tail = held ? `, ${held} HOLD — answer the note before filing` : "";
+  return [
+    `${referred.length} finding(s) scored against nothing and are yours to judge${tail}.`,
+    "  File one only if someone is worse off while it stands: `pnpm run issue-scaffold … --open`.",
+    "  A finding nobody is hurt by is `[task-local]`, not an issue.",
+  ].join("\n");
+}
+
 /** What was read, so that "nothing to capture" cannot be mistaken for "nothing captured". */
 function sawLine(payload, report, lines) {
   const who = `a \`${payload.agent_type ?? "subagent"}\` subagent`;
@@ -513,7 +592,10 @@ async function main() {
   const report = reportFrom(payload);
   const lines = report.trim() ? findingLines(report) : null;
   const { findings, unrouted } = lines ? parseFindings(lines) : { findings: [], unrouted: [] };
-  const outcomes = findings.map((finding) => routeOne(finding, payload, context.memoryDir));
+  const subjects = closedSubjects(subjectsIn(findings));
+  const outcomes = findings.map((finding) =>
+    routeOne(finding, payload, context.memoryDir, subjects),
+  );
   const results = outcomes.map((outcome) => outcome.line);
   const saw = sawLine(payload, report, lines);
   record(context.ledger, payload, { saw, findings, outcomes, unrouted });
@@ -521,6 +603,7 @@ async function main() {
     [
       `subagent capture: ${saw}`,
       countsLine(findings, results, unrouted) ?? (lines ? "captured 0 finding(s)" : null),
+      callerLine(outcomes),
       lossLine(findings, outcomes, context.ledger),
     ],
     context,
