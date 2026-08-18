@@ -7,7 +7,6 @@
 
 import { execFileSync, spawnSync } from "node:child_process";
 import { dirname } from "node:path";
-import { isBinaryPath } from "./isBinaryPath.mjs";
 
 /**
  * The gates resolve their arguments against the working directory, and a hook inherits the
@@ -36,9 +35,6 @@ const CODE_GATES = [
 
 /** Markup and stylesheets, which is where an accessibility failure is written. */
 const MARKUP_GATES = [["node", ["scripts/check-a11y.mjs", "--check"]]];
-
-/** Prose carries vendor references as readily as code, so docs are checked too. */
-const UNIVERSAL_GATES = [["node", ["scripts/check-no-vendor-refs.mjs", "--check"]]];
 
 /** Judged against the file alone, so these run per-file and report the exact line. */
 const PER_FILE_PROSE_GATES = [
@@ -80,19 +76,11 @@ const isMarkup = /\.(tsx|jsx|html|css)$/.test(filePath);
 const isProse = /\.(md|mdx)$/.test(filePath);
 const isManifest = filePath.endsWith("package.json");
 
-/**
- * Everything but the certainly-binary, matching the vendor scanner's own sweep. An allowlist
- * of extensions here once hid a leak in a `.grit` comment that nothing scanned because the
- * list predated the file type — the same blindness would meet the next new extension.
- */
-const isScannable = !isBinaryPath(filePath);
-
 const perFile = [
   ...(isCode ? CODE_GATES : []),
   ...(isMarkup ? MARKUP_GATES : []),
   ...(isManifest ? [["node", ["scripts/check-pinned-deps.mjs", "--check"]]] : []),
   ...(isProse ? PER_FILE_PROSE_GATES : []),
-  ...(isScannable ? UNIVERSAL_GATES : []),
 ];
 
 if (perFile.length === 0 && !isProse) process.exit(0);

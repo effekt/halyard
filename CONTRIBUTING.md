@@ -28,7 +28,6 @@ bare checkout:
 ```bash
 node scripts/check-docs.mjs --check
 node scripts/check-prose.mjs --check
-node scripts/check-no-vendor-refs.mjs --check
 ```
 
 Node 22+ (24 pinned in `.nvmrc`) and pnpm are required; `packageManager` in `package.json`

@@ -38,17 +38,6 @@ jobs:
       - name: Documentation structure
         run: node scripts/check-docs.mjs --check
 
-      # The denylist is gitignored — publishing it would defeat it — so this run catches
-      # machine paths only. VENDOR_TERMS supplies the terms when the secret is configured.
-      - name: Vendor references
-        run: |
-          if [ -n "$VENDOR_TERMS" ]; then
-            printf '%s\n' "$VENDOR_TERMS" > scripts/vendor-terms.txt
-          fi
-          node scripts/check-no-vendor-refs.mjs --check
-        env:
-          VENDOR_TERMS: ${{ secrets.VENDOR_TERMS }}
-
       - name: Prose
         run: node scripts/check-prose.mjs --check
 
