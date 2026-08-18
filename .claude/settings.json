@@ -10,46 +10,6 @@
             "command": "node scripts/hook-check-file.mjs",
             "timeout": 60,
             "statusMessage": "Checking structure"
-          },
-          {
-            "type": "prompt",
-            "prompt": "Review ONLY the code added or changed in this edit, against the single-concern rule (.claude/rules/single-concern.md). FAIL if any added function performs a step that could be given its own name and is not already its own exported unit — e.g. formatting a value inline, deriving a const from an argument, mapping/normalizing a shape, or branching on a condition that has a name. The canonical violation: a logger that formats its own timestamp inline instead of calling an imported formatDate. Also FAIL if the edit adds a helper that duplicates or near-duplicates one that plausibly already exists, or inlines two lines that also appear elsewhere in the file. PASS if every nameable step is already extracted, or the edit adds no logic (config, docs, types, tests). When failing, name each concern that should be extracted, propose the file and export name for it, and say which existing unit it should have reused instead. Do not comment on style, comments, or naming beyond extraction. Hook input follows:\n$ARGUMENTS",
-            "continueOnBlock": true,
-            "timeout": 45,
-            "statusMessage": "Reviewing extraction"
-          },
-          {
-            "type": "prompt",
-            "prompt": "Review ONLY the comments and documentation prose added or changed in this file edit. For Edit/MultiEdit, focus on the newly added text; for Write, the whole content. FAIL the check if any added comment or doc line is: (1) negative inventory — names absent or intentionally-omitted technologies, or describes repo origin, migration history, or speculative future integrations (e.g. 'no X yet', 'intentionally omitted', 'copied from', 'we will eventually'); (2) unnecessary — restates what the code already plainly says or narrates the obvious; (3) too verbose — could be cut to a short clause or removed without losing a non-obvious WHY. A good comment explains non-obvious intent or rationale. PASS if every added comment is necessary and concise, or if none were added (e.g. a pure code or config change). When failing, quote each offending line, give a one-line reason, and say whether to tighten or delete it. Hook input follows:\n$ARGUMENTS",
-            "continueOnBlock": true,
-            "timeout": 30,
-            "statusMessage": "Reviewing comments"
-          },
-          {
-            "type": "prompt",
-            "prompt": "Review ONLY the markdown prose added or changed in this edit. If the edited file is not .md or .mdx, PASS immediately with no further comment.\n\nFAIL if any added or changed passage:\n(1) records a decision without naming what it was chosen OVER — the rejected alternative is the part that stops the same proposal returning in six months, and it is the part that gets dropped;\n(2) narrates how the design was reached instead of stating the design — 'an earlier draft proposed', 'review found that unworkable', 'we then decided'. State the system; compress the rejection to its reason;\n(3) rests a claim on a measurement the reader cannot open — a count, ratio, or percentage from a private corpus ('77 of the 122 components', 'in one audited set', 'roughly 23 real pages'). Keep the conclusion, argue it from why it holds. Public sources are fine and must NOT be flagged: a named library's documented behaviour, a spec section, a numbered issue in a public tracker;\n(4) changes or reverses a stated decision while another passage in the SAME file still argues the previous one — check tables, diagram labels, and API names inside diagrams, which is exactly where this has been missed before. Quote both passages;\n(5) states a boundary or refusal as permanent without a reason a future maintainer could re-derive or challenge.\n\nPASS if the edit adds no prose (code, config, or frontmatter only), or every added passage carries its cause, its reason, the decision, and what the decision beat.\n\nWhen failing, quote each passage, name which of the five it is, and write the corrected sentence. Do not comment on formatting, heading level, or word choice beyond the above — check-prose.mjs already covers filler phrases. Hook input follows:\n$ARGUMENTS",
-            "continueOnBlock": true,
-            "timeout": 45,
-            "statusMessage": "Reviewing prose"
-          },
-          {
-            "type": "prompt",
-            "prompt": "Review ONLY the markup added or changed in this edit, for the accessibility judgments a script cannot make. If the edited file is not .tsx/.jsx/.css, or the edit adds no markup, PASS immediately with no further comment.\n\nFAIL if any added or changed markup:\n(1) gives an image alt text that describes rather than names — it recounts the pixels ('a blue rectangle with bars'), repeats the surrounding heading, or reads as a caption instead of the sentence a reader who cannot see it needs; or gives descriptive alt to an image that carries no information and should be alt=\"\" with aria-hidden;\n(2) skips a heading level, uses a heading level as a type scale, or opens a section with no heading at all — a section the design shows unlabelled still needs one, and a visually hidden heading (sr-only) is the correct answer;\n(3) lets colour alone carry a meaning — a link in prose set apart from body text by hue with no underline, a state or status distinguished only by a colour class, or a filled control with no border, which forced-colors mode flattens into plain text. This repository shipped the first and the third already, so read for them specifically. Also FAIL text placed on the `orange` (#E4572E) or behind-text `teal` (#0E5A6B) tokens, whose measured ratios fail AA — `orange-deep` and `teal-light` are the accessible twins;\n(4) picks the wrong interactive element — a <button> that navigates, an <a href> that performs an action, a control whose accessible name is an icon with no label, or a role attribute contradicting the tag it sits on;\n(5) animates or transitions without a prefers-reduced-motion guard (Tailwind's motion-safe: variant, or the media query in CSS).\n\nDo NOT report a missing alt attribute, an alt that is a filename or one of the generic words, onClick on a plain element, a positive tabIndex, an <a> with no href, or an outline removed with no focus style — check-a11y.mjs already blocks every one of those, and repeating them wastes the review. Do not comment on formatting, class ordering, or naming.\n\nPASS if the edit adds no markup, or every added element names what it shows, sits at the right heading level, carries its meaning in something other than colour, and uses the element that already means what it does.\n\nWhen failing, quote each element, name which of the five it is, and write the corrected markup. See .claude/rules/accessibility.md. Hook input follows:\n$ARGUMENTS",
-            "continueOnBlock": true,
-            "timeout": 45,
-            "statusMessage": "Reviewing accessibility"
-          }
-        ]
-      }
-    ],
-    "SubagentStop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node scripts/hook-capture-findings.mjs",
-            "timeout": 60,
-            "statusMessage": "Capturing findings"
           }
         ]
       }

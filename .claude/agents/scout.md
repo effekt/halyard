@@ -15,11 +15,11 @@ meant. If the answer is "it does not exist", say that plainly rather than offeri
 thing as though it were a match.
 
 Where the search taught you something that outlives the question, end with a `## Findings`
-section, one bullet per finding, each tagged `[rule]`, `[issue]`, `[memory]` or `[task-local]`.
-Untagged, it is not captured — see `.claude/rules/subagent-findings.md`.
+section, one bullet per finding. The caller decides what each finding becomes — see
+`docs/decisions/a-subagent-refers-findings-the-caller-files-them.md`.
 
 Two facts about this repository that will otherwise cost you time:
 
-- Code lives in `packages/`, `examples/demo` and `scripts/`. The studio is unbuilt.
+- Code lives in `packages/`, `examples/demo`, `apps/studio` and `scripts/`.
 - The toolchain is not on the default PATH. Any command needing node or pnpm must first run
   `export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh" >/dev/null 2>&1; nvm use 24 >/dev/null 2>&1`

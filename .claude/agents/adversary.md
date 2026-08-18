@@ -50,9 +50,8 @@ If you conclude something is sound, say so plainly and name what you tried that 
 it. A review that finds nothing and cannot say what it attempted is indistinguishable from one
 that did not happen.
 
-End the report with a `## Findings` section, one bullet per finding, each tagged `[rule]`,
-`[issue]`, `[memory]` or `[task-local]`. That section is the only part anything downstream keeps —
-see `.claude/rules/subagent-findings.md`.
+End the report with a `## Findings` section, one bullet per finding. The caller decides what each finding becomes — see
+`docs/decisions/a-subagent-refers-findings-the-caller-files-them.md`.
 
 ## Never
 
