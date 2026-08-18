@@ -445,16 +445,31 @@
   .studio{position:relative; pointer-events:none; width:1440px; height:860px; flex:none;
     display:flex; flex-direction:column; gap:10px;
     scale:max(calc(100vw / 1440px), calc(100vh / 860px))}
-  /* The blackout is the page's ground: absent while the studio works, total at the
+  /* The blackout is the page's ground: dark from the first frame, total at the
      climax, and settled at a dim that reads the studio as atmosphere at rest. */
   .blackout{position:fixed; inset:0; z-index:1; pointer-events:none; background:#04141A;
     opacity:.93}
+  /* While the story edits, these mask holes are the only light — darkness as a mask,
+     not added light, so it composes to two holes for the typing beat. Without
+     intersect the additive default would seal both holes, so an engine lacking it
+     keeps the act fully lit instead of unwatchably dark. */
+  @property --h1r{syntax:"<length>"; inherits:false; initial-value:0px}
+  @property --h2r{syntax:"<length>"; inherits:false; initial-value:0px}
   body.story:not(.black):not(.dim) .blackout{opacity:0}
+  @supports (mask-composite: intersect){
+    body.story:not(.black):not(.dim) .blackout{opacity:.97;
+      mask-image:
+        radial-gradient(circle at var(--h1x, 50vw) var(--h1y, 55vh),
+          transparent calc(var(--h1r) * .55), #000 var(--h1r)),
+        radial-gradient(circle at var(--h2x, 50vw) var(--h2y, 55vh),
+          transparent calc(var(--h2r) * .55), #000 var(--h2r));
+      mask-composite:intersect}
+  }
   body.black .blackout{opacity:1}
   body.dim .blackout{opacity:.93}
   /* The spotlight and the cursor exist only while the story runs — the engine creates
-     both, and reduced motion removes both. The spotlight screen-blends a teal-light
-     glow over the studio, so the area around the cursor reads brighter. */
+     both, and reduced motion removes both. The glow keeps the cursor's mask hole
+     reading as a beam rather than a cutout. */
   .spot{position:fixed; inset:0; z-index:1; pointer-events:none; mix-blend-mode:screen;
     background:radial-gradient(280px circle at var(--mx, 50vw) var(--my, 55vh),
       rgba(79,179,199,.34), rgba(79,179,199,.10) 45%, transparent 72%)}
@@ -469,7 +484,7 @@
     .pointer.pulse svg{animation:press .3s ease-out}
     #studio [data-when]{animation:appear .3s both}
     .m-quote{animation:appear .3s both}
-    .blackout{transition:opacity 1.5s ease}
+    .blackout{transition:opacity 1.5s ease, --h1r .45s ease, --h2r .45s ease}
     .headline{transition:opacity .9s ease}
     .card{transition:opacity 1.2s ease}
     .cut{transition:height .45s ease, opacity .3s ease}
@@ -1684,6 +1699,10 @@
       const GHOST_NUDGE_PX = 4;
       const CUT_MS = 480;
       const SHEEN_MS = 1300;
+      const LIGHT_CURSOR_R_PX = 220;
+      const LIGHT_ARRIVE_R_PX = 330;
+      const LIGHT_PAD_PX = 56;
+      const LIGHT_OUT_MS = 600;
       const PAUSE = {
         open: 1400,
         consequence: 1400,
@@ -1768,18 +1787,39 @@
 
       const pairNow = () => COPY[copyIndex % COPY.length];
 
-      // The spotlight rides the cursor from the same tick, as custom-property writes.
+      const blackout = document.querySelector(".blackout");
+      // While followRadius is set, mask hole 1 rides the cursor; the light op
+      // anchors holes to elements instead, measured when the beat begins.
+      let followRadius = 0;
+
+      const setHole = (n, x, y, r) => {
+        blackout.style.setProperty(`--h${n}x`, `${x}px`);
+        blackout.style.setProperty(`--h${n}y`, `${y}px`);
+        blackout.style.setProperty(`--h${n}r`, `${r}px`);
+      };
+
+      const closeHole = (n) => blackout.style.setProperty(`--h${n}r`, "0px");
+
+      const anchorHole = (n, selector) => {
+        const box = studio.querySelector(selector).getBoundingClientRect();
+        const radius = Math.hypot(box.width, box.height) * HALF + LIGHT_PAD_PX;
+        setHole(n, box.left + box.width * HALF, box.top + box.height * HALF, radius);
+      };
+
+      // The spotlight and the mask hole ride the cursor from the same tick, as
+      // custom-property writes.
       const placeCursor = (x, y) => {
         at = { x, y };
         cursor.style.transform = `translate(${x}px, ${y}px)`;
         spot.style.setProperty("--mx", `${x}px`);
         spot.style.setProperty("--my", `${y}px`);
+        if (followRadius > 0) setHole(1, x, y, followRadius);
       };
 
       const spawnCursor = () => {
         spot = document.createElement("div");
         spot.className = "spot";
-        document.querySelector(".blackout").before(spot);
+        blackout.before(spot);
         cursor = document.createElement("div");
         cursor.className = "pointer";
         cursor.innerHTML =
@@ -1787,6 +1827,7 @@
           '<svg width="20" height="20" viewBox="0 0 18 18" fill="none" aria-hidden="true">' +
           '<path d="M3 2l4.5 13 2-5.5L15 7.5 3 2Z" fill="#0B2B33" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/></svg>';
         spot.after(cursor);
+        followRadius = LIGHT_CURSOR_R_PX;
         placeCursor(window.innerWidth * HALF, window.innerHeight * START_Y_FRAC);
       };
 
@@ -1881,6 +1922,7 @@
 
       const retireCursor = () => {
         dropCaret();
+        followRadius = 0;
         for (const el of [cursor, spot]) {
           if (el) el.remove();
         }
@@ -2070,6 +2112,23 @@
           undoStage(step.stage);
           done();
         },
+        // Per-beat lighting: "cursor" follows at radius r, "pair" anchors both
+        // holes so the field and the canvas read at once, "off" irises shut.
+        light: (step, done) => {
+          followRadius = 0;
+          if (step.mode === "cursor") {
+            followRadius = step.r;
+            setHole(1, at.x, at.y, followRadius);
+            closeHole(2);
+          } else if (step.mode === "pair") {
+            anchorHole(1, step.a);
+            anchorHole(2, step.b);
+          } else {
+            closeHole(1);
+            closeHole(2);
+          }
+          done();
+        },
         mark: (step, done) => {
           document.querySelector(step.to).classList[step.add ? "add" : "remove"](step.add || step.remove);
           done();
@@ -2149,6 +2208,7 @@
         { op: "click" },
         { op: "mark", to: "#blk-text", remove: "dragging" },
         { op: "state", v: "edit" },
+        { op: "light", mode: "cursor", r: LIGHT_ARRIVE_R_PX },
         { op: "place" },
         { op: "mount", tpl: "tpl-text-row", in: "#body-group" },
         { op: "text", to: "#chip-body", value: "1 of 12" },
@@ -2160,13 +2220,17 @@
         { op: "wait", ms: PAUSE.settle },
         { op: "glide", to: "#t-text" },
         { op: "click" },
+        { op: "light", mode: "pair", a: "#t-text", b: ".nub-text" },
         { op: "write" },
         { op: "wait", ms: PAUSE.read },
         { op: "beat", n: 4 },
+        { op: "light", mode: "cursor", r: LIGHT_CURSOR_R_PX },
         { op: "glide", to: ".btn-primary" },
         { op: "click" },
         { op: "state", v: "publish" },
         { op: "wait", ms: PAUSE.consequence },
+        { op: "light", mode: "off" },
+        { op: "wait", ms: LIGHT_OUT_MS },
         { op: "beat", n: 5 },
         { op: "mark", to: "body", add: "black" },
         { op: "wait", ms: PAUSE.fade },
@@ -2237,6 +2301,7 @@
         clearTimeout(timer);
         cancelAnimationFrame(raf);
         dropCaret();
+        followRadius = 0;
         swapStudio();
         document.body.classList.remove("black", "hl");
         document.body.classList.add("dim", "brand");
