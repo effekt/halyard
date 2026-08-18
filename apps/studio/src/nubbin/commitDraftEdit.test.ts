@@ -12,9 +12,10 @@ afterEach(() => {
 
 test("a committed edit changes what the route compiles to", () => {
   const before = compileDraft("/about");
-  const artifact = commitDraftEdit("/about", "hero", "headline", "A new headline");
-  expect(artifact?.hash).not.toBe(before?.hash);
-  expect(compileDraft("/about")?.hash).toBe(artifact?.hash);
+  const outcome = commitDraftEdit("/about", "hero", "headline", "A new headline");
+  const hash = "missing" in outcome ? undefined : outcome.hash;
+  expect(hash).not.toBe(before?.hash);
+  expect(compileDraft("/about")?.hash).toBe(hash);
 });
 
 test("edits accumulate: a second commit keeps the first", () => {
@@ -31,5 +32,12 @@ test("an edit that fails validation throws and keeps nothing", () => {
 });
 
 test("an unknown route commits nothing", () => {
-  expect(commitDraftEdit("/no-such-route", "hero", "headline", "x")).toBeUndefined();
+  expect(commitDraftEdit("/no-such-route", "hero", "headline", "x")).toEqual({
+    missing: "draft",
+  });
+});
+
+test("an unknown node commits nothing and keeps the draft untouched", () => {
+  expect(commitDraftEdit("/about", "nope", "headline", "x")).toEqual({ missing: "node" });
+  expect(readDraft("/about")).toBe(about);
 });

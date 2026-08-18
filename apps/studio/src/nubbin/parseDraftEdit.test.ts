@@ -12,3 +12,10 @@ test.each([null, "text", 7, [], { route: "/about" }, { route: 1, nodeId: "n", pa
     expect(parseDraftEdit(body)).toBeUndefined();
   },
 );
+
+test.each(["", "cta..label", ".label", "label.", "paragraphs[].0"])(
+  "rejects the unaddressable path %j",
+  (path) => {
+    expect(parseDraftEdit({ route: "/about", nodeId: "hero", path, value: "x" })).toBeUndefined();
+  },
+);
