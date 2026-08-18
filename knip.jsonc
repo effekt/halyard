@@ -22,6 +22,12 @@
     // reason another file is reachable. Entries stay as they were: knip finds the publish
     // script through the `fixtures:publish` package script and the suites through
     // `vitest.config.ts`, and naming either again is reported as a redundant pattern.
+    // `apps/studio` by name, not `apps/*`: a glob would sweep the Docusaurus app into
+    // analysis knip has no entries for, and every finding there would be noise.
+    "apps/studio": {
+      "entry": ["src/app/**/{page,layout,not-found,error,loading,route}.{ts,tsx}"],
+      "project": ["src/**/*.{ts,tsx}"]
+    },
     "examples/*": {
       "entry": ["src/app/**/{page,layout,not-found,error,loading,route}.{ts,tsx}"],
       "project": ["src/**/*.{ts,tsx}", "scripts/**/*.ts", "fixtures/**/*.ts"]

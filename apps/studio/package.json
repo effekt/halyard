@@ -1,28 +1,25 @@
 {
-  "name": "demo",
+  "name": "studio",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Reference marketing site whose components are shaped as Nubbin blocks.",
+  "description": "The Nubbin editor's first vertical slice: parse a catalog, preview a draft, publish an artifact.",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3001",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3001",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
-    "fixtures:publish": "tsx scripts/publishFixtures.ts",
-    "serve:verify": "node scripts/verifyServing.mjs",
-    "publish:live": "tsx scripts/publishLive.ts"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@nubbin/core": "workspace:*",
     "@nubbin/next": "workspace:*",
     "@nubbin/react": "workspace:*",
     "@nubbin/store-fs": "workspace:*",
+    "demo": "workspace:*",
     "next": "catalog:",
     "react": "catalog:",
-    "react-dom": "catalog:",
-    "zod": "catalog:"
+    "react-dom": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "catalog:",
@@ -30,7 +27,6 @@
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "tailwindcss": "catalog:",
-    "tsx": "4.23.12",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

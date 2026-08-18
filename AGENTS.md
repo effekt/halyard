@@ -14,7 +14,7 @@ Guidance for working in this repo. Loaded automatically by coding agents.
 blocks in code; non-developers compose pages from them. The composition is data, the
 contract is code, and publishing compiles a document into an immutable artifact.
 
-The four packages are built; the studio is settled and unbuilt. See `## Status`.
+The four packages are built; the studio is a first vertical slice. See `## Status`.
 
 ```
 packages/
@@ -88,8 +88,10 @@ an untagged one is written nowhere.
 
 Four packages are published under the `rc` tag — `npm view @nubbin/core dist-tags` for the
 version, which in prose would be a copy of the registry. [`docs/reference/`](docs/README.md)
-documents `core`'s authoring and compile surfaces and the artifact contracts as shipped.
-**Unbuilt:** the studio.
+documents `core`'s authoring and compile surfaces, the artifact contracts, and the `react`
+and `next` bindings as shipped. **The studio** is a vertical slice — parse, preview, publish
+against the demo ([`apps/studio/README.md`](apps/studio/README.md)) — rather than an editor;
+the editing phases are [the roadmap](https://github.com/effekt/nubbin/issues/14).
 
 Read [`docs/architecture.md`](docs/architecture.md) for the model and
 [`docs/decisions/`](docs/decisions/README.md) for what is settled, and treat the open issues

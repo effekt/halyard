@@ -1,3 +1,4 @@
+export { zodAdapter } from "./adapters/zodAdapter";
 export type {
   Artifact,
   ArtifactNode,
