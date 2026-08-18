@@ -1,0 +1,75 @@
+#!/bin/sh
+
+# Installs a freshly created worktree or clone, so it can run this repository's gates without
+# anyone remembering to chain a command onto `git worktree add`.
+#
+# "A fresh worktree has no node_modules" is the failure this exists for. The previous answer was
+# documentation — the `worktree` skill and four agent definitions each said "chain the install" —
+# and an instruction that has to be remembered is the failure mode rather than the fix. A worktree
+# without `node_modules` has no lefthook runner either, so every commit hook is silently absent
+# too, and the tree looks normal.
+#
+# Raw `sh`, deliberately: a lefthook-managed hook shells out to `pnpm exec lefthook`, which needs
+# the `node_modules` this hook exists to create.
+#
+# To disable: touch .git/SKIP_INSTALL_HOOK
+#
+# Git passes: $1 previous HEAD, $2 new HEAD, $3 branch-checkout flag.
+
+PREV_HEAD="$1"
+BRANCH_CHECKOUT="$3"
+NULL_SHA="0000000000000000000000000000000000000000"
+
+# Creation only. `git worktree add` and `git clone` pass the null SHA as the previous HEAD with the
+# branch flag set; an ordinary `git checkout <branch>` passes a real SHA, and a file checkout
+# passes flag 0. Without this guard the install would run on every branch switch.
+[ "$PREV_HEAD" = "$NULL_SHA" ] || exit 0
+[ "$BRANCH_CHECKOUT" = "1" ] || exit 0
+
+# `$PWD`, never `git rev-parse`: a hook can run while git holds a lock, and git sets the working
+# directory to the new tree before calling this.
+ROOT="$PWD"
+
+[ -f "$ROOT/package.json" ] || exit 0
+
+# The escape hatch, honoured from a linked worktree as well as from the clone. In a linked
+# worktree `.git` is a *file* holding `gitdir: <path>`, so a plain `$ROOT/.git/SKIP_INSTALL_HOOK`
+# test can never match there — which is how the first version of this looked correct and skipped
+# nothing. Parsed rather than asked of `git rev-parse`, because a hook can run while git holds a
+# lock; two levels up from `.git/worktrees/<name>` is the common directory.
+GIT_DIR_PATH="$ROOT/.git"
+if [ -f "$GIT_DIR_PATH" ]; then
+  GIT_DIR_PATH=$(sed -n 's/^gitdir: //p' "$ROOT/.git")
+fi
+[ -f "$GIT_DIR_PATH/SKIP_INSTALL_HOOK" ] && exit 0
+[ -f "$GIT_DIR_PATH/../../SKIP_INSTALL_HOOK" ] && exit 0
+
+# nvm is sourced only where pnpm is absent — a login shell usually has it, a GUI git client does
+# not, and this repository's toolchain is not on the default PATH.
+if ! command -v pnpm >/dev/null 2>&1; then
+  # shellcheck disable=SC1091
+  [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh" >/dev/null 2>&1
+  [ -s "$ROOT/.nvmrc" ] && nvm use >/dev/null 2>&1
+fi
+
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "post-checkout: pnpm is not on PATH, so $ROOT was not installed." >&2
+  echo "post-checkout: run \`nvm use && pnpm install\` there before editing anything." >&2
+  exit 0
+fi
+
+echo "post-checkout: installing $ROOT"
+if ! pnpm install --frozen-lockfile; then
+  # A post-checkout hook cannot fail the checkout — git is explicit that its exit status does not
+  # affect the outcome. So a failure has to be loud instead, or this recreates the problem it was
+  # written to remove, with one more moving part.
+  echo "" >&2
+  echo "post-checkout: ############################################################" >&2
+  echo "post-checkout: pnpm install FAILED in $ROOT." >&2
+  echo "post-checkout: The worktree exists but has no node_modules, so no gate and" >&2
+  echo "post-checkout: no git hook here can run. Fix it before editing:" >&2
+  echo "post-checkout:     cd $ROOT && nvm use && pnpm install" >&2
+  echo "post-checkout: ############################################################" >&2
+fi
+
+exit 0

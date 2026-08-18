@@ -27,8 +27,19 @@ the gates import TypeScript, and every git hook shells out to `pnpm`.
 ```bash
 nvm install && nvm use          # reads .nvmrc
 corepack enable pnpm            # activates the pinned pnpm
-pnpm install                    # installs lefthook's hooks via `prepare`
+pnpm install                    # sets core.hooksPath and installs the hooks via `prepare`
 ```
+
+`prepare` points `core.hooksPath` at `.githooks/`, which is stored in the common git directory and
+so covers every worktree made afterwards. That directory holds one tracked hook — `post-checkout`,
+which installs a worktree as it is created — beside lefthook's generated shims, which are ignored.
+
+**`lefthook install` must be passed `--force` under a custom `core.hooksPath`.** Without it, it
+prints a target line, writes nothing, and `prepare` swallows the exit code — every git hook in the
+repository would be silently absent while the install looked entirely normal.
+
+`pnpm install` on an already-current tree is a no-op and does not re-run `prepare`, so a hook
+deleted by hand is not restored by running it again.
 
 If a git hook reports `pnpm: command not found`, the toolchain is not on the PATH for that
 shell rather than missing.

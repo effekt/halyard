@@ -61,7 +61,7 @@
     "release": "pnpm publishable && pnpm release-tag && changeset publish",
     "release:rc": "pnpm publishable && pnpm --filter \"./packages/*\" publish --tag rc --no-git-checks",
     "changeset": "changeset",
-    "prepare": "lefthook install || true; node scripts/catalog.mjs || true"
+    "prepare": "git config core.hooksPath .githooks && lefthook install --force || true; node scripts/catalog.mjs || true"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "catalog:",

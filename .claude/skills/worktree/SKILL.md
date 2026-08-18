@@ -14,31 +14,30 @@ agent's uncommitted edits with no error on either side.
 ## Create it
 
 ```bash
-git worktree add -b <branch> .worktrees/<name> origin/main && \
-  cd .worktrees/<name> && pnpm install
+git worktree add -b <branch> .worktrees/<name> origin/main
 ```
-
-Three parts, each load-bearing:
 
 | Part | Why |
 |---|---|
 | `.worktrees/<name>` | Gitignored, and on the same disk as the work. A path under `/tmp` is swept with uncommitted work still in it |
 | `origin/main` | The local `main` may be behind, or checked out by another worktree |
-| `pnpm install` | Chained, never separate — see below |
 
-## The install is not optional
+## The install happens on its own
 
-Git hooks live in the common directory, so a fresh worktree inherits `pre-commit`, `commit-msg`
-and `pre-push`, and they fire. They invoke `pnpm exec lefthook`, which resolves from the
-worktree's own `node_modules`. Without it the commit aborts with:
+`.githooks/post-checkout` runs `pnpm install` in the new worktree, so there is no command to
+chain and nothing to remember. It fires on creation only — git passes a null previous HEAD for
+`worktree add` and `clone`, and a real one for an ordinary branch switch.
 
-```
-ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL  Command "lefthook" not found
-```
+It has to happen, which is why it is a hook rather than an instruction. Git hooks live in the
+common directory, so a fresh worktree inherits `pre-commit`, `commit-msg` and `pre-push`, and they
+fire — invoking `pnpm exec lefthook`, which resolves from the worktree's own `node_modules`.
+Without it the commit aborts with `Command "lefthook" not found`: nothing unchecked lands, but the
+message names no gate and no fix, and the reflex it invites is `--no-verify`, which turns a
+fail-closed crash into a silent bypass.
 
-Nothing unchecked lands, because the commit is blocked. But the message names no gate and no fix,
-and the reflex it invites is `--no-verify` — the one response that turns a fail-closed crash into
-a silent bypass. Install instead.
+A post-checkout hook cannot fail a checkout, so a failed install is printed loudly rather than
+blocking. Read what `git worktree add` printed; if it says the install failed, run it by hand
+before editing anything. `touch .git/SKIP_INSTALL_HOOK` disables it.
 
 ## Confirm before editing
 
@@ -87,7 +86,7 @@ git branch -D <branch>                  # only once the work has landed
 ## Checklist
 
 - [ ] The worktree is under `.worktrees/`, branched from `origin/main`
-- [ ] `pnpm install` ran in the same command, not afterwards
+- [ ] `git worktree add` printed an install that succeeded, or it was run by hand
 - [ ] `node scripts/check-worktree.mjs` passes
 - [ ] A seeded violation was watched to fail before trusting the hooks
 - [ ] A new skill directory was allowlisted in `.gitignore`, and `git status` confirms it is tracked

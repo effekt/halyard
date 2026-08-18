@@ -39,6 +39,13 @@ report/
 !/.claude/skills/querying-github/
 !/.claude/skills/worktree/
 
+# lefthook's generated shims. `prepare` sets `core.hooksPath` here so `post-checkout` — which
+# installs a freshly created worktree — is version-controlled rather than per-clone, and lefthook
+# then writes its own hooks into the same directory. Everything but the one tracked hook is
+# generated, so the exception is named rather than the ignores.
+/.githooks/*
+!/.githooks/post-checkout
+
 # Agent worktrees. Inside the repository so a stray `rm -rf /tmp` cannot take uncommitted
 # work with it, and ignored because a worktree is a checkout, not content.
 .worktrees/

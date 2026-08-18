@@ -16,7 +16,7 @@ up, and what's actually worth contributing right now.
 ```bash
 nvm install && nvm use     # reads .nvmrc
 corepack enable pnpm       # activates the pinned pnpm
-pnpm install               # installs the git hooks via `prepare`
+pnpm install               # sets core.hooksPath and installs the git hooks via `prepare`
 pnpm verify                # every gate
 ```
 
