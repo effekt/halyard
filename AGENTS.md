@@ -87,8 +87,9 @@ an untagged one is written nowhere.
 ## Status
 
 Four packages are published under the `rc` tag — `npm view @nubbin/core dist-tags` for the
-version, which in prose would be a copy of the registry. Every shipped surface is documented
-under [`docs/reference/`](docs/README.md). **Unbuilt:** the studio.
+version, which in prose would be a copy of the registry. [`docs/reference/`](docs/README.md)
+documents `core`'s authoring and compile surfaces and the artifact contracts as shipped.
+**Unbuilt:** the studio.
 
 Read [`docs/architecture.md`](docs/architecture.md) for the model and
 [`docs/decisions/`](docs/decisions/README.md) for what is settled, and treat the open issues
