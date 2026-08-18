@@ -8,7 +8,8 @@ status: reference
 
 This page describes the shipped behaviour of `defineCatalog` and the types around it:
 `Catalog`, `CatalogEntry`, `BlockUi`, `FieldHint`, `FieldHintData`, `BlockDocs`, and the
-introspection contract `SchemaAdapter` with its `FieldNode` and `FieldKind`. Why the catalog
+introspection contract `SchemaAdapter` — `FieldNode`, `FieldKind`, and the shipped
+`zodAdapter`. Why the catalog
 exists apart from the registry is
 [Catalog and registry are separate](../decisions/catalog-and-registry-are-separate.md); why
 hints sit beside the schema rather than inside it is
@@ -158,6 +159,17 @@ type FieldKind =
 `SchemaAdapter` is the contract for reading a schema's field structure: `describe` returns
 one `FieldNode` per addressable path, in the same dotted form hint keys use. The schema root
 itself has no path, so the result is exactly the set of paths a hint may target. `members` is
-present only when `kind` is `"enum"`. `defineCatalog` resolves hint paths through an internal
-adapter built on the Standard JSON Schema converter; the type is exported so a consumer can
-describe schemas with the same shape.
+present only when `kind` is `"enum"`.
+
+## `zodAdapter`
+
+```ts
+const zodAdapter: SchemaAdapter;
+```
+
+The shipped implementation — the adapter `defineCatalog` resolves hint paths through,
+exported so an editing surface can describe a block's fields without the block's component.
+It is named for the reference validator but reads any schema exposing the converter; why the
+converter beat validator-internal traversal is argued in [`api.md`](../api.md). Duplicate
+paths — a union whose branches share a field — are reported once, keeping the first kind
+seen.

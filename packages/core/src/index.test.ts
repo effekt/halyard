@@ -10,5 +10,6 @@ test("the published surface exports exactly the documented API", async () => {
     "defineBlock",
     "defineCatalog",
     "parseMatchKind",
+    "zodAdapter",
   ]);
 });
