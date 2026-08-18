@@ -1,4 +1,4 @@
-/** Copy-on-write down one dotted path. Holes address object fields only; `[]` has no single target. */
+/** Copy-on-write down one dotted path. Paths address object fields only; `[]` has no single target. */
 export function setAtPath(
   target: Record<string, unknown>,
   path: string,
@@ -6,7 +6,7 @@ export function setAtPath(
 ): Record<string, unknown> {
   const [head, ...rest] = path.split(".");
   if (head === undefined || head === "" || head.includes("[]")) {
-    throw new Error(`hole path "${path}" is not addressable`);
+    throw new Error(`path "${path}" is not addressable`);
   }
   if (rest.length === 0) {
     return { ...target, [head]: value };
