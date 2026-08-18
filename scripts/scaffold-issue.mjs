@@ -24,13 +24,19 @@
 // high-scoring candidate is genuinely the same work. It checks that each part is present and
 // carries content, and it puts the nearest issues in front of the author.
 //
+// The search is not optional in either mode. `--advisory-validation` softens the draft check to
+// warnings, for a caller whose whole input is one sentence and which has no draft to go back and
+// fix. The search runs above that check in this file, so no mode reaches an open without it.
+//
 // Usage:
 //   node scripts/scaffold-issue.mjs --template > draft.md
 //   node scripts/scaffold-issue.mjs --body-file draft.md --title "…" [--label enhancement]
 //   node scripts/scaffold-issue.mjs --body-file draft.md --title "…" --open
 
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 /** Well above the open set, so a full-length result means something is wrong rather than large. */
 const DEFAULT_LIMIT = 200;
@@ -43,11 +49,23 @@ const MIN_TOKEN_LENGTH = 4;
 const TITLE_WEIGHT = 3;
 const PERCENT = 100;
 
+/**
+ * The open path is proven against a stub rather than by opening a real issue, so the executable
+ * is a seam.
+ */
+const GH_BIN = process.env.NUBBIN_GH_BIN ?? "gh";
+
 const PARTS = ["cause", "reason", "decision", "choice"];
 const CLOSE_HEADINGS = ["done when", "closes when", "closed when", "close condition"];
 const PLACEHOLDER = /^(?:tbd|todo|n\/a|none|xxx|\.\.\.)\b/i;
 
-const FLAGS = new Set(["open", "template", "help", "acknowledge-duplicates"]);
+const FLAGS = new Set([
+  "open",
+  "template",
+  "help",
+  "acknowledge-duplicates",
+  "advisory-validation",
+]);
 
 const STOPWORDS = new Set([
   "that",
@@ -118,6 +136,7 @@ const USAGE = `scaffold-issue — search the open issues, check the draft, then 
   --repo <owner/name>              defaults to the repository you are in
   --open                           create it, once the search and the checks pass
   --acknowledge-duplicates         open despite a candidate the search surfaced
+  --advisory-validation            report draft problems as warnings and open regardless
 `;
 
 function camelCase(key) {
@@ -213,7 +232,7 @@ function validateDraft(text) {
 }
 
 function runGh(args) {
-  return execFileSync("gh", args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+  return execFileSync(GH_BIN, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
 }
 
 /**
@@ -365,6 +384,23 @@ function createIssue(repo, args, bodyFile) {
   console.log(gh(command).trim());
 }
 
+/**
+ * What the search surfaced travels into the issue itself. The person deciding whether these are
+ * the same work reads the issue, not the run that opened it, and a run's output scrolls away.
+ * The draft is left where it is, so the temporary copy is what carries the note.
+ */
+function bodyNamingCandidates(bodyFile, candidates) {
+  if (candidates.length === 0) return bodyFile;
+  const numbers = candidates.map((entry) => `#${entry.issue.number}`).join(", ");
+  const file = join(mkdtempSync(join(tmpdir(), "nubbin-issue-")), "body.md");
+  const draft = readFileSync(bodyFile, "utf8").trimEnd();
+  writeFileSync(
+    file,
+    `${draft}\n\nThe duplicate search surfaced ${numbers} as covering nearby ground.\n`,
+  );
+  return file;
+}
+
 /** The command the operator would run, so a dry run ends with something they can act on. */
 function printCommand(repo, args, bodyFile) {
   const labels = args.labels.map((label) => ` --label ${label}`).join("");
@@ -406,13 +442,23 @@ function requireWholeSet(issues, limit, corroboration) {
   process.exit(1);
 }
 
-function reportProblems(problems) {
-  if (problems.length === 0) return;
-  console.log(`\n❌ ${problems.length} problem(s) with the draft — nothing was opened.\n`);
+/**
+ * Advisory mode is for a caller with no draft to fix: the finding is the whole of what it has,
+ * and refusing it leaves the finding with nowhere to go. The search above still ran — it sits
+ * higher in the file than this, so no mode can reach an open without passing it.
+ */
+function reportDraft(problems, isAdvisory) {
+  if (problems.length === 0) {
+    console.log("\n✅ Draft carries all four parts and a close condition.");
+    return;
+  }
+  const verdict = isAdvisory ? "⚠️" : "❌";
+  const outcome = isAdvisory ? "opening it anyway" : "nothing was opened";
+  console.log(`\n${verdict} ${problems.length} problem(s) with the draft — ${outcome}.\n`);
   for (const problem of problems) console.log(`  ${problem}`);
   console.log("\n  See .claude/rules/prose.md for the four parts, .claude/rules/planning.md for");
   console.log("  why the close condition is not optional.\n");
-  process.exit(1);
+  if (!isAdvisory) process.exit(1);
 }
 
 function finish(repo, args, nearest) {
@@ -426,7 +472,7 @@ function finish(repo, args, nearest) {
     console.log(`\n❌ ${numbers} may already cover this. Say so with --acknowledge-duplicates.\n`);
     process.exit(1);
   }
-  createIssue(repo, args, args.bodyFile);
+  createIssue(repo, args, bodyNamingCandidates(args.bodyFile, candidates));
 }
 
 const args = parseArgs(process.argv.slice(2));
@@ -458,6 +504,5 @@ const nearest = rank(args.title, body, issues);
 console.log(`\nNearest ${nearest.length} of ${issues.length}, by weighted term overlap:\n`);
 reportNearest(nearest);
 
-reportProblems(validateDraft(body));
-console.log(`\n✅ Draft carries all four parts and a close condition.`);
+reportDraft(validateDraft(body), args.advisoryValidation);
 finish(repo, args, nearest);

@@ -65,6 +65,10 @@ Nothing is created until this run passes both the validation and the search. Whe
 scored high enough to be labelled, `--acknowledge-duplicates` is how you say you looked at it
 and it is a different issue.
 
+`--advisory-validation` softens the draft check to warnings, and it is there for a caller whose
+whole input is one sentence — the `SubagentStop` capture. With a draft in front of you, fix the
+draft.
+
 ## What this cannot check
 
 That the paragraph under `## Reason` is a reason, and that a ranked candidate is genuinely the
