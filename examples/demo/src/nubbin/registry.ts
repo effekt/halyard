@@ -4,6 +4,7 @@ import { faqAccordionBlock } from "../blocks/FaqAccordion.block";
 import { featureGridBlock } from "../blocks/FeatureGrid.block";
 import { heroBlock } from "../blocks/Hero.block";
 import { logoWallBlock } from "../blocks/LogoWall.block";
+import { planTiersBlock } from "../blocks/PlanTiers.block";
 import { sectionStackBlock } from "../blocks/SectionStack.block";
 import { siteFooterBlock } from "../blocks/SiteFooter.block";
 import { statBandBlock } from "../blocks/StatBand.block";
@@ -17,6 +18,7 @@ export const registry = createRegistry([
   heroBlock,
   logoWallBlock,
   featureGridBlock,
+  planTiersBlock,
   statBandBlock,
   testimonialQuoteBlock,
   faqAccordionBlock,

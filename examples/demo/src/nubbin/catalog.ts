@@ -9,6 +9,8 @@ import { heroSchema } from "../blocks/Hero.schema";
 import { heroDefaults } from "../blocks/heroDefaults";
 import { logoWallSchema } from "../blocks/LogoWall.schema";
 import { logoWallDefaults } from "../blocks/logoWallDefaults";
+import { planTiersSchema } from "../blocks/PlanTiers.schema";
+import { planTiersDefaults } from "../blocks/planTiersDefaults";
 import { sectionStackSchema } from "../blocks/SectionStack.schema";
 import { siteFooterSchema } from "../blocks/SiteFooter.schema";
 import { statBandSchema } from "../blocks/StatBand.schema";
@@ -27,6 +29,7 @@ export const catalog = defineCatalog({
   Hero: { schema: heroSchema, defaults: heroDefaults },
   LogoWall: { schema: logoWallSchema, defaults: logoWallDefaults },
   FeatureGrid: { schema: featureGridSchema, defaults: featureGridDefaults },
+  PlanTiers: { schema: planTiersSchema, defaults: planTiersDefaults },
   StatBand: {
     schema: statBandSchema,
     defaults: statBandDefaults,
