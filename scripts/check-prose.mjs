@@ -88,7 +88,7 @@ const FUTURE = [
  * A prerelease literal in prose copies a registry dist-tag. `0.1.0-rc.0` sat in README.md and
  * AGENTS.md while `latest` moved ahead of it and `rc` fell behind, so both were wrong in two
  * directions at once. `npm view <pkg> dist-tags` cannot go stale because it is not a copy.
- * CHANGELOGs and changesets are exempt: recording which version carried a change is their job.
+ * A CHANGELOG is exempt: recording which version carried a change is its whole job.
  *
  * An absence claim ages the moment the thing arrives, and nothing marks the moment.
  * "Nubbin has no implementation yet" outlived its truth in five files across two rounds of
@@ -142,7 +142,7 @@ const ALL_PATTERNS = [
 ];
 
 /** Recording which release carried a change is the whole point of these files. */
-const VERSION_EXEMPT = /(?:CHANGELOG\.md$|^\.changeset\/)/;
+const VERSION_EXEMPT = /CHANGELOG\.md$/;
 
 /** Body lines, frontmatter dropped. Numbers are the file's own, so reports stay navigable. */
 function* numberedBodyLines(text) {
