@@ -68,3 +68,18 @@ catalog:
   "@types/node": 25.9.2
   "@types/react": 19.2.17
   "@types/react-dom": 19.2.3
+
+# pnpm 11 replaced the ignore-with-a-warning default: a dependency wanting to run a build
+# script is now an error until this file says yes or no to it by name. All four were already
+# ignored under pnpm 10 and every gate was green, so `false` records the behaviour that was
+# already in effect rather than changing it — a lifecycle script is the supply-chain surface
+# `.claude/rules/dependencies.md` exists to keep small.
+#
+# None of the four needs its script: esbuild and sharp resolve their platform binaries through
+# optionalDependencies, core-js only prints a funding notice, and lefthook's hooks are installed
+# by the `prepare` script in package.json, not by its postinstall.
+allowBuilds:
+  core-js: false
+  esbuild: false
+  lefthook: false
+  sharp: false

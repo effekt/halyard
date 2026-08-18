@@ -1,7 +1,14 @@
 {
   "name": "nubbin",
   "private": true,
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@11.22.0",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24",
+      "onFail": "warn"
+    }
+  },
   "description": "Your components. Their pages. A page builder that lives inside your codebase.",
   "keywords": [
     "page-builder",

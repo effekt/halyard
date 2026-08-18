@@ -14,15 +14,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v7
+      # install: false because the install below is deliberate, not the default one.
+      - uses: pnpm/setup@v2
         with:
-          node-version-file: .nvmrc
-
-      - uses: pnpm/action-setup@v4
+          install: false
 
       # Installed with pnpm, not npm: devDependencies use the `catalog:` protocol, which
       # npm rejects outright ("Unsupported URL Type"). No --frozen-lockfile and no
-      # `cache: pnpm` until a lockfile exists — both require one. --ignore-scripts because
+      # `cache: true` until a lockfile exists — both require one. --ignore-scripts because
       # nothing here needs to build, and lifecycle scripts are the supply-chain surface
       # .claude/rules/dependencies.md exists to keep small.
       - name: Install

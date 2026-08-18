@@ -31,9 +31,11 @@ jobs:
           # check-stale-docs compares commit times across link edges, so it needs history.
           fetch-depth: 0
 
-      - uses: actions/setup-node@v7
+      # These scripts import nothing, so there is no install — but the runtime still comes
+      # from `devEngines.runtime` like every other job, rather than from a second source.
+      - uses: pnpm/setup@v2
         with:
-          node-version-file: .nvmrc
+          install: false
 
       - name: Documentation structure
         run: node scripts/check-docs.mjs --check
@@ -72,12 +74,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v7
+      - uses: pnpm/setup@v2
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
+          cache: true
+          install: false
 
       - run: pnpm install --frozen-lockfile
 
