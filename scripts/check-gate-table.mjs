@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-// Keeps AGENTS.md's gate table and `pnpm verify` in agreement, in both directions.
+// Keeps the gate table in `docs/gates.md` and `pnpm verify` in agreement, in both directions.
 //
 // That table is what a contributor reads to learn what is enforced, so it makes two claims:
 // every row runs, and every gate has a row. Both have been wrong.
@@ -118,7 +118,7 @@ function reachableFromVerify(scripts) {
 }
 
 /**
- * The data rows under `| Gate | Enforces |`, to the first non-`|` line — AGENTS.md carries
+ * The data rows under `| Gate | Enforces |`, to the first non-`|` line — the page carries
  * other tables, whose rows are not claims about `verify`. A missing header yields no rows,
  * which the row-presence direction then reports as every mapped gate rowless.
  */
@@ -134,7 +134,7 @@ function gateTableRows(agents) {
   return rows;
 }
 
-/** The gate column of every gate-table row in AGENTS.md, as script filenames and tool names. */
+/** The gate column of every gate-table row, as script filenames and tool names. */
 function namedGates(agents) {
   const gates = new Set();
   for (const line of gateTableRows(agents)) {
@@ -153,7 +153,7 @@ function reachesGate(gate, files, names) {
 }
 
 const scripts = JSON.parse(await readFile(join(ROOT, "package.json"), "utf8")).scripts ?? {};
-const agents = await readFile(join(ROOT, "AGENTS.md"), "utf8");
+const agents = await readFile(join(ROOT, "docs/gates.md"), "utf8");
 const { files, names } = reachableFromVerify(scripts);
 const gates = namedGates(agents);
 const reachedGates = [...gates].filter((gate) => reachesGate(gate, files, names));
@@ -215,7 +215,7 @@ if (
   process.exit(0);
 }
 
-console.log("\n❌ AGENTS.md's gate table and `pnpm verify` disagree.\n");
+console.log("\n❌ The gate table in `docs/gates.md` and `pnpm verify` disagree.\n");
 if (unreached.length > 0) {
   console.log("  Named in the table, not run by verify:");
   for (const gate of unreached.sort()) console.log(`        ${gate}`);

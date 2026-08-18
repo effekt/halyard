@@ -123,7 +123,8 @@ built on top of that assumption.
 
 ## Contributing
 
-Read [`AGENTS.md`](AGENTS.md) first — it documents the invariants and the gates.
+Read [`AGENTS.md`](AGENTS.md) first — it documents the invariants and routes to the rest; the
+gates are in [`docs/gates.md`](docs/gates.md).
 [`CONTRIBUTING.md`](CONTRIBUTING.md) covers setup and what's worth contributing before any
 code exists.
 

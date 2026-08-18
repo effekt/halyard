@@ -30,7 +30,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // every markdown file instead pulls in changesets, agent and skill definitions and package
 // READMEs, which link to these documents without describing them; it adds advisory rows a
 // person then reads past, and a report worth ignoring is a report nobody opens.
-const SCAN_ROOTS = ["docs", ".claude/rules", "README.md", "AGENTS.md"];
+const SCAN_ROOTS = ["docs", "README.md", "AGENTS.md"];
 
 /** Commit time of a file's last change, or null when it has never been committed. */
 async function lastCommitted(file) {
