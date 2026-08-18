@@ -159,7 +159,7 @@ const ruleFiles = (await readdir(RULES_DIR)).filter((name) => name.endsWith(".md
 const phantomCitations = [];
 for (const name of ruleFiles) {
   const text = await readFile(join(RULES_DIR, name), "utf8");
-  for (const match of text.matchAll(/`(check-[a-z-]+\.mjs)`/g)) {
+  for (const match of text.matchAll(/`(check-[a-z0-9-]+\.mjs)`/g)) {
     const named = match[1];
     if (existsSync(join(ROOT, "scripts", named))) continue;
     phantomCitations.push(`.claude/rules/${name}  names ${named}, which does not exist`);
@@ -168,7 +168,7 @@ for (const name of ruleFiles) {
   // `/.claude/skills/*` with one negation per repository-local skill, so a skill added without
   // its `!` line is staged by nothing and reported by nothing — which is how a rule came to cite
   // a `worktree` skill that had never been committed.
-  for (const match of text.matchAll(/`([a-z][a-z-]+)` skill/g)) {
+  for (const match of text.matchAll(/`([a-z][a-z0-9-]+)` skill/g)) {
     const named = match[1];
     if (existsSync(join(ROOT, ".claude/skills", named, "SKILL.md"))) continue;
     phantomCitations.push(
