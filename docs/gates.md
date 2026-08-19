@@ -55,6 +55,7 @@ porting them into the suite first would be a rewrite thrown away twice.
 | `tests/peerDependencies.test.mjs` | no package declares a peer dependency nothing in it imports |
 | `tests/packageMetadata.test.mjs` | every publishable package has a README, a licence file and field, a description and a repository |
 | `tests/coreVersionStamp.test.mjs` | `NUBBIN_VERSION`, stamped into every artifact, matches the published version |
+| `tests/releaseConfiguration.test.mjs` | release-please releases every publishable package, at the version it is at, as one linked group |
 | `tests/skillsLock.test.mjs` | `skills-lock.json` is one a reinstall could use, and — where the skills are on disk — agrees with them by name and by a hash over every file in each skill directory |
 | `tests/trackedFiles.test.mjs` | the corpus every assertion above reads is what git would publish, and nothing else |
 | `tests/release/packagesInstallFromTarball.test.mjs` | every package packs with no `catalog:`, `workspace:` or `link:` specifier surviving, installs from its own tarball into an empty project, and imports |
@@ -106,8 +107,9 @@ without its version moving, since the artifact records versions and nothing else
 
 `pnpm core-version` runs **first**, ahead of the build, because `NUBBIN_VERSION` is compiled into
 `dist/` and stamped into every artifact as `compiledWith`. It is the one release gate that reads
-source, and it is named separately because the release workflow runs `publishable` and not `verify`:
-without it a version bump can publish artifacts that misreport what produced them.
+source, and it runs on both paths: the release workflow waits for `verify` to pass on the commit it
+is publishing, and then runs `publishable` again against the tree it checked out. Without it a
+version bump can publish artifacts that misreport what produced them.
 
 **The gates cannot catch everything.** A logger that formats its own timestamp —
 [the canonical violation](https://github.com/effekt/nubbin/blob/main/.claude/rules/single-concern.md#the-canonical-violation) — sits

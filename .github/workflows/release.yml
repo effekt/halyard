@@ -1,22 +1,26 @@
 name: release
 
-# Manual, not tag-triggered. A tag push publishes whatever the tag points at; a dispatch makes
-# someone choose the dist-tag deliberately, and the `npm` environment is where a required
-# reviewer or a branch rule hangs if this ever needs one.
+# Two jobs, and the second only runs when the first says a release was created.
+#
+# The predecessor was `workflow_dispatch`, which meant a human chose a ref and a dist-tag and the
+# workflow published whatever was there. Five dispatches on 2026-08-17 all targeted `0.1.0-rc.4`
+# from four different commits; one landed and the other three reported success having published
+# nothing, because the publisher skips a version already on the registry and exits 0. npm's
+# immutability was the only thing keeping four different builds from shipping under one version.
+#
+# So the version is no longer a thing anyone chooses. release-please derives it from the
+# conventional commits since the last release, opens a pull request that carries the bump and the
+# changelogs, and creates the GitHub releases when that pull request merges. `releases_created` is
+# true only on the run that created them — which is once per version, ever. That output is the
+# republish prevention, and nothing else in this file is.
 on:
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "npm dist-tag to publish under"
-        required: true
-        default: rc
-        type: choice
-        options: [rc, latest]
+  push:
+    branches: [main]
 
-# `pnpm install` runs `prepare`, which installs lefthook's git hooks. In CI that means any
-# step doing a `git push` runs the whole pre-push suite — the checks this workflow already
-# runs as explicit jobs, against a checkout that may not have built yet. Hooks are for a
-# developer's machine.
+# `pnpm install` runs `prepare`, which installs lefthook's git hooks. In CI that means any step
+# doing a `git push` runs the whole pre-push suite — the checks this workflow already runs as
+# explicit jobs, against a checkout that may not have built yet. Hooks are for a developer's
+# machine.
 env:
   LEFTHOOK: "0"
 
@@ -25,11 +29,53 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
+  release-please:
     runs-on: ubuntu-latest
-    # The `npm` environment restricts deploys to `main` and records each publish under the
-    # repository's Environments tab, so a release is announced rather than buried in a job log.
-    # A required reviewer hangs here too, if one is ever wanted.
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
+    steps:
+      # `GITHUB_TOKEN` cannot do this job, for two independent reasons, and both fail in ways that
+      # read like something else. This repository has "Allow GitHub Actions to create and approve
+      # pull requests" off, so the token cannot open the release pull request at all. And a pull
+      # request opened by `GITHUB_TOKEN` triggers no workflow run, so `verify` and `commitlint` —
+      # both required status checks — would never report on it and it could never be merged.
+      #
+      # Naming the secret rather than assuming it: an unset one would otherwise surface as an
+      # authentication error against an action nobody suspects.
+      - name: Require the release-please token
+        env:
+          TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "$TOKEN" ]; then
+            echo "::error::RELEASE_PLEASE_TOKEN is not set. It is a fine-grained personal access token with Contents: read and write, Pull requests: read and write, and Issues: read and write on this repository. docs/releasing.md says why GITHUB_TOKEN cannot stand in for it." >&2
+            exit 1
+          fi
+
+      # SHA-pinned because `.github/zizmor.yml` requires a full commit SHA for every publisher
+      # except `actions/*`: a third party can move a tag under us. This is v5.0.0.
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7
+        id: release
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  publish:
+    needs: release-please
+    # A string comparison, not the bare truthiness form. The action sets this output through
+    # `@actions/core`, which stringifies — so the value is the string `'false'` when nothing was
+    # released, and `if: needs...outputs.releases_created` would be true for it.
+    if: needs.release-please.outputs.releases_created == 'true'
+    runs-on: ubuntu-latest
+    # The `npm` environment restricts deployments to `main`, carries a required reviewer, and
+    # records each publish under the repository's Environments tab. Merging the release pull
+    # request proposes a release; approving here is what performs one.
     environment:
       name: npm
       url: https://www.npmjs.com/org/nubbin
@@ -38,8 +84,51 @@ jobs:
       # workflow, so no npm token is stored anywhere. Also what --provenance signs with.
       id-token: write
       contents: read
+      # For reading the `verify` run's conclusion on this commit.
+      actions: read
     steps:
       - uses: actions/checkout@v7
+
+      # The gap this closes: nothing here ever asked whether the code being published passes the
+      # suite. `pnpm publishable` below builds and checks the artifact, but it does not run the
+      # tests, the typecheck or the lint — so a commit that fails all three could publish.
+      #
+      # It waits rather than reading once, because `verify` and this workflow are triggered by the
+      # same push and start together.
+      - name: Require verify to have passed on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 1800))
+          while :; do
+            # `gh api --jq` rather than a pipe into `jq`: gh carries its own engine, so this needs
+            # nothing installed beyond the CLI the step already depends on. An unmatched `head_sha`
+            # returns an empty array rather than falling back to the newest run, so `missing` really
+            # does mean this commit has no run.
+            read -r status conclusion <<<"$(gh api \
+              "repos/$REPO/actions/workflows/verify.yml/runs?head_sha=$SHA&per_page=1" \
+              --jq '"\(.workflow_runs[0].status // "missing") \(.workflow_runs[0].conclusion // "none")"')"
+            if [ "$status" = "missing" ]; then
+              echo "::error::No verify run for $SHA. This workflow publishes only what verify has passed." >&2
+              exit 1
+            fi
+            if [ "$status" = "completed" ]; then
+              if [ "$conclusion" = "success" ]; then
+                echo "verify succeeded for $SHA"
+                break
+              fi
+              echo "::error::verify concluded '$conclusion' for $SHA. Nothing is published from a commit that did not pass it." >&2
+              exit 1
+            fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              echo "::error::verify is still '$status' for $SHA after 30 minutes." >&2
+              exit 1
+            fi
+            sleep 20
+          done
 
       - uses: pnpm/setup@v2
         with:
@@ -70,40 +159,48 @@ jobs:
             if (!ok) throw new Error(`npm ${process.argv[1]} is below the 11.5.1 trusted publishing floor`);
           ' "$(npm --version)"
 
-      - name: Refuse a stable release of a prerelease version
-        if: inputs.tag == 'latest'
-        run: pnpm release-tag
-
       - name: Build and prove the artifacts are publishable
         run: pnpm publishable
 
-      # `changeset publish` rather than a hand-rolled loop: it already skips a version
-      # already on the registry, reads the dist-tag from prerelease mode, and is what
-      # `.changeset/config.json` was configured for. It shells out to `pnpm publish`, so the
-      # `catalog:` and `workspace:*` rewriting still happens — npm cannot do that itself.
+      # The dist-tag is derived from the version rather than chosen, because a choice is what
+      # produced a release candidate sitting on `latest`. A prerelease publishes to `rc`; a stable
+      # version publishes to `latest`, and `pnpm release-tag` is the assertion that the second case
+      # really is stable.
       #
-      # Reading the tag from prerelease mode is exactly why `--tag` must not be passed while
-      # that mode is active: changesets treats the two as a conflict and exits 1 with
-      # "Releasing under custom tag is not allowed in pre mode!". So the input is checked
-      # against `.changeset/pre.json` and then dropped, rather than forwarded.
-      #
-      # NPM_CONFIG_PROVENANCE reaches npm through both layers of delegation, which is the one
-      # part of this path not yet observed in a real run.
-      - name: Publish
+      # The registry is read first because both `pnpm publish` and its predecessor skip a version
+      # already on it and exit 0 — that is the behaviour under which one version reported four
+      # successful publishes. Here it is a red build with the version named.
+      - name: Refuse a version the registry already has
         run: |
           set -euo pipefail
-          if [ -f .changeset/pre.json ]; then
-            pre_tag=$(node -p "require('./.changeset/pre.json').tag")
-            if [ "$pre_tag" != "$TAG" ]; then
-              echo "::error::Pre mode publishes under '$pre_tag', but this run asked for '$TAG'. Dispatch with tag=$pre_tag, or leave pre mode first with 'pnpm changeset pre exit'." >&2
-              exit 1
+          version=$(node -p "require('./packages/core/package.json').version")
+          case "$version" in
+            *-*) tag=rc ;;
+            *)   tag=latest ;;
+          esac
+          if [ "$tag" = "latest" ]; then pnpm release-tag; fi
+          published=0
+          for dir in packages/*/; do
+            [ -f "$dir/package.json" ] || continue
+            name=$(node -p "require('./$dir/package.json').name")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "::error::$name@$version is already on the registry. Publishing it again would either be a no-op reported as success, or a different build under a version consumers already have." >&2
+              published=$((published + 1))
             fi
-            pnpm changeset publish
-          else
-            pnpm changeset publish --tag "$TAG"
-          fi
+          done
+          [ "$published" -eq 0 ]
+          echo "NPM_DIST_TAG=$tag" >> "$GITHUB_ENV"
+          echo "NUBBIN_VERSION=$version" >> "$GITHUB_ENV"
+
+      # pnpm rather than npm: workspace dependencies are written `catalog:` and `workspace:*`, and
+      # pnpm rewrites them to real versions when it packs. npm cannot, and publishes a manifest
+      # that fails on install for every consumer.
+      #
+      # NPM_CONFIG_PROVENANCE reaches npm through pnpm's delegation to `npm publish` — the
+      # attestation on `0.1.0-rc.4` was produced through this same path.
+      - name: Publish
+        run: pnpm --filter "./packages/*" publish --tag "$NPM_DIST_TAG" --no-git-checks
         env:
-          TAG: ${{ inputs.tag }}
           NPM_CONFIG_PROVENANCE: "true"
 
       # The publish output is not the evidence — the registry is. This reads back what a
@@ -120,14 +217,13 @@ jobs:
           for dir in packages/*/; do
             [ -f "$dir/package.json" ] || continue
             name=$(node -p "require('./$dir/package.json').name")
-            version=$(node -p "require('./$dir/package.json').version")
             for attempt in $(seq 1 "$attempts"); do
-              if npm view "$name@$version" version >/dev/null 2>&1; then
-                echo "$name@$version is readable (attempt $attempt)"
+              if npm view "$name@$NUBBIN_VERSION" version >/dev/null 2>&1; then
+                echo "$name@$NUBBIN_VERSION is readable (attempt $attempt)"
                 break
               fi
               if [ "$attempt" -eq "$attempts" ]; then
-                echo "::error::$name@$version never became readable after $attempts attempts" >&2
+                echo "::error::$name@$NUBBIN_VERSION never became readable after $attempts attempts" >&2
                 exit 1
               fi
               sleep 6
@@ -135,15 +231,11 @@ jobs:
             echo "$name dist-tags: $(npm view "$name" dist-tags --json | tr -d '\n')" >> "$GITHUB_STEP_SUMMARY"
           done
 
-      # changesets publishes a package with no prior *normal* release to `latest`, not to the
-      # prerelease tag — its own notice says so. So a prerelease becomes the default install and
-      # the tag consumers are told to use stays where it was.
-      #
-      # Moving it by hand needs a second factor, and npm has retired TOTP for security keys, so
-      # there is no code to pass to `--otp`. This attempts the move with the same OIDC credential
-      # the publish used. Whether npm honours a trusted-publisher token for `dist-tag` is not
-      # documented either way, so the step reports rather than fails: a release that published
-      # correctly must not go red because a tag could not be moved.
+      # `latest` is the tag a plain `npm install` resolves, and it sat on `0.1.0-rc.4` for months
+      # because the previous publisher sent a package with no prior stable release there whatever
+      # `--tag` said. Publishing with an explicit `--tag rc` does not move it, so this step exists
+      # for the stable case only — and reports rather than fails, because a release that published
+      # correctly must not go red over a tag.
       - name: Move the dist-tag to the version just published
         if: success()
         continue-on-error: true
@@ -154,30 +246,21 @@ jobs:
           for dir in packages/*/; do
             [ -f "$dir/package.json" ] || continue
             name=$(node -p "require('./$dir/package.json').name")
-            version=$(node -p "require('./$dir/package.json').version")
-            current=$(npm view "$name" "dist-tags.$TAG" 2>/dev/null || echo "")
-            if [ "$current" = "$version" ]; then
-              echo "$name: '$TAG' already at $version"
+            current=$(npm view "$name" "dist-tags.$NPM_DIST_TAG" 2>/dev/null || echo "")
+            if [ "$current" = "$NUBBIN_VERSION" ]; then
+              echo "$name: '$NPM_DIST_TAG' already at $NUBBIN_VERSION"
               continue
             fi
-            if npm dist-tag add "$name@$version" "$TAG" 2>/dev/null; then
-              echo "$name: '$TAG' moved $current -> $version"
+            if npm dist-tag add "$name@$NUBBIN_VERSION" "$NPM_DIST_TAG" 2>/dev/null; then
+              echo "$name: '$NPM_DIST_TAG' moved $current -> $NUBBIN_VERSION"
               moved=$((moved + 1))
             else
-              echo "::warning::$name: could not move '$TAG' from '$current' to $version. Run: npm dist-tag add $name@$version $TAG"
+              echo "::warning::$name: could not move '$NPM_DIST_TAG' from '$current' to $NUBBIN_VERSION. Run: npm dist-tag add $name@$NUBBIN_VERSION $NPM_DIST_TAG"
               failed=$((failed + 1))
             fi
           done
           {
-            echo "### dist-tag \`$TAG\`"
+            echo "### dist-tag \`$NPM_DIST_TAG\`"
             echo ""
             echo "moved: $moved · could not move: $failed"
-            if [ "$failed" -gt 0 ]; then
-              echo ""
-              echo "npm did not accept the OIDC credential for \`dist-tag\`. Uncheck"
-              echo "**Require two-factor authentication for write actions** on npmjs.com, move the"
-              echo "tags by hand, and re-check it — publishing is unaffected either way."
-            fi
           } >> "$GITHUB_STEP_SUMMARY"
-        env:
-          TAG: ${{ inputs.tag }}

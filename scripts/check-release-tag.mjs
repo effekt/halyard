@@ -2,14 +2,15 @@
 
 // Refuses a stable release while any package version is a prerelease.
 //
-// `pnpm release` ends in `changeset publish`, which publishes to the `latest` dist-tag unless
-// told otherwise. A version like 0.1.0-rc.0 taking `latest` means `npm install @nubbin/core`
-// hands a release candidate to everyone who did not ask for one, and the fix is a second
-// publish rather than an undo — npm keeps what was published.
+// The `release` workflow derives the dist-tag from the version — a prerelease goes to `rc`, a
+// stable version goes to `latest` — and calls this before the second case. `latest` is what a plain
+// `npm install` resolves, so a version like 0.1.0-rc.0 taking it hands a release candidate to
+// everyone who did not ask for one, and the fix is a second publish rather than an undo: npm keeps
+// what it was given. `latest` sat on `0.1.0-rc.4` for exactly that reason.
 //
 // `publishConfig.tag` does not close this: pnpm's publish path ignores it, verified by a
 // dry-run that announced `latest` with the field set. The dist-tag is decided by the command,
-// so the command is what this checks — `pnpm release:rc` passes `--tag rc` and skips this.
+// so the command is what this checks.
 //
 // Usage: node scripts/check-release-tag.mjs [--check]
 
@@ -46,9 +47,8 @@ if (prereleases.length === 0) {
 
 console.log(
   "❌ A prerelease version would be published to the `latest` dist-tag.\n\n" +
-    "   Use `pnpm release:rc`, which passes --tag rc. Publishing a release candidate to\n" +
-    "   `latest` gives it to everyone running a plain install, and npm keeps what it is\n" +
-    "   given — the only correction is another publish.\n",
+    "   Publishing a release candidate to `latest` gives it to everyone running a plain\n" +
+    "   install, and npm keeps what it is given — the only correction is another publish.\n",
 );
 for (const row of prereleases) console.log(`        ${row}`);
 console.log("");
