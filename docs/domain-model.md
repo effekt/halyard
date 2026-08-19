@@ -92,7 +92,6 @@ interface Block<Schema, Component> {
   version: number;           // bumped when the schema changes incompatibly
   status?: "active" | "deprecated";  // deprecated stays resolvable; hidden from the studio's placement palette
   slots: Record<string, SlotConstraint>;  // named regions, and what may go in them
-  migrate?: Record<number, (props: UnknownProps) => UnknownProps>;  // same-node prop reshaping only — cannot touch slots or split/delete a block
 }
 
 interface SlotConstraint {
@@ -111,22 +110,13 @@ in a parallel `ui` structure keyed by field path. See
 flag forces an all-or-nothing choice per block. It lives per field instead. See
 [Data lifecycle is a field hint, not a block flag](api.md#data-lifecycle-is-a-field-hint-not-a-block-flag).
 
-### Structural migration
+### Structural change
 
-`migrate` above only reshapes props for one node — it cannot touch `slots`, split one block
-into two, or handle deletion. Real structural change runs as an explicit, dataset-wide pass
-over documents, not a lazy per-node upcaster invoked at compile:
-
-```ts
-interface StructuralMigration {
-  from: string;   // registry fingerprint this expects going in
-  to: string;      // registry fingerprint after
-  run(version: DocumentVersion, registry: Registry): DocumentVersion;  // full tree access
-}
-```
-
-A script reads every targeted `DocumentVersion`, calls `run()`, and appends the result as a
-new version — an adapter concern (invariant 5); nothing mutates a historical version in place.
+Reshaping an old document is neither something `Block` declares nor something `compile` does:
+[a schema change is a republish, not a migration](decisions/a-schema-change-is-a-republish-not-a-migration.md).
+A rename, a split into two blocks, or a `slots` change is a dataset-wide pass over
+`DocumentVersion`s, run by a script through the document operations in `core` — an adapter
+concern (invariant 5).
 
 ### Registry
 
@@ -421,7 +411,7 @@ before offering "rollback," and a script can call it from a terminal outside any
 | `RollbackCheck` | Response |
 |---|---|
 | `compatible: true` | `store.publish(route, hash)` proceeds |
-| `compatible: false` | Reject with `drifted`, or recompile the historical `DocumentVersion` through `compile()` — the same `migrate` chain a normal publish runs — and publish the fresh hash instead |
+| `compatible: false` | Reject with `drifted`, or recompile the historical `DocumentVersion` through `compile()` and publish the fresh hash instead — a compile that fails names the nodes to rewrite first |
 
 ## What this model has not settled
 

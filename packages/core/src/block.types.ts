@@ -30,6 +30,4 @@ export interface Block<Schema extends StandardSchemaV1 = StandardSchemaV1, Compo
   /** A deprecated block still resolves; the studio hides it from the palette. */
   status?: "active" | "deprecated";
   slots: Record<string, SlotConstraint>;
-  /** Same-node prop reshaping only. It cannot touch slots, or split or delete a block. */
-  migrate?: Record<number, (props: UnknownProps) => UnknownProps>;
 }

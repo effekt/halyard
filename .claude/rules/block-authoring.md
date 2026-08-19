@@ -99,14 +99,13 @@ body: richTextSchema
 ```ts
 // WRONG — a prop renamed in place; live artifacts' frozen props now disagree with the schema that will render them
 schema: z.object({ heading: z.string() })   // was `title`
-// CORRECT — bump the version, migrate the old shape
+// CORRECT — bump the version, then republish every document still carrying the old shape
 export const heroBlock = defineBlock({
   name: "Hero", schema: heroSchema, component: Hero, version: 2,
-  migrate: { 2: (props) => ({ ...props, heading: props.title }) },
 });
 ```
 
-Artifacts are immutable and content-addressed (invariant 3) — frozen props were valid against the version they compiled with. Any rename, retype, or requiredness change needs a bump. `migrate` reshapes props on one node only — never `slots`, never a split into two blocks. **Gate:** none.
+Artifacts are immutable and content-addressed (invariant 3) — frozen props were valid against the version they compiled with, so published pages keep serving. Any rename, retype, or requiredness change needs a bump. Nothing upcasts an old document: it fails `compile`, and the remedy is to rewrite and publish it ([decision](../../docs/decisions/a-schema-change-is-a-republish-not-a-migration.md)). **Gate:** none.
 
 ### File convention, `docs`, and the tests a block ships
 
