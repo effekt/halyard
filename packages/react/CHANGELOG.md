@@ -1,5 +1,18 @@
 # @nubbin/react
 
+## [0.1.0-rc.5](https://github.com/effekt/nubbin/compare/react-v0.1.0-rc.4...react-v0.1.0-rc.5) (2026-08-19)
+
+
+### Features
+
+* **repo:** a generated catalog answers "does this already exist" ([#473](https://github.com/effekt/nubbin/issues/473)) ([2d41486](https://github.com/effekt/nubbin/commit/2d414864667d41aa7ce2e055c540c3ceb5491364))
+* the studio edits — select a block, change a field, the preview follows ([#451](https://github.com/effekt/nubbin/issues/451)) ([23fbe05](https://github.com/effekt/nubbin/commit/23fbe0579c99972f0a5903d811f210119e5df510))
+
+
+### Bug Fixes
+
+* **repo:** five product defects, each with the test that found it ([#472](https://github.com/effekt/nubbin/issues/472)) ([04ce3c7](https://github.com/effekt/nubbin/commit/04ce3c76905477d9b8d5a6d5160130f3638b0973))
+
 ## 0.1.0-rc.4
 
 ### Patch Changes
