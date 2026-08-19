@@ -31,7 +31,7 @@ catalog:
   # Peers — consumers bring their own; we only ever devDepend on these
   react: 19.2.7
   react-dom: 19.2.7
-  next: 16.2.7
+  next: 16.2.11
 
   # Schema — Standard Schema is the interface, zod is what we test against
   "@standard-schema/spec": 1.1.0
