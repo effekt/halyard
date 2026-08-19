@@ -64,6 +64,9 @@ bypasses turbo and runs against whatever is in `dist/` — which produces failur
 
 Node 22+ (24 in `.nvmrc`) and pnpm are required; `packageManager` pins the version.
 
+Neither a commit message nor a pull request body carries agent attribution: `commitlint.config.mjs`
+rejects the trailers and the footer, and a pull request body is checked by nobody but you.
+
 ## Where everything else lives
 
 Two pages are surfaced by nothing, and are named here for that reason:
