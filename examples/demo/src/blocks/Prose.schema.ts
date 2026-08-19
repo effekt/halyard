@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { richTextSchema } from "./shared/richText.schema";
 
-/** Plain paragraphs only — a string carrying markup is content the schema cannot see. */
+/** `body` is rich text: inline structure the schema can see, never markup inside a string. */
 export const proseSchema = z.object({
   heading: z.string(),
   tone: z.enum(["light", "dark"]),
-  paragraphs: z.array(z.string()),
+  body: richTextSchema,
 });

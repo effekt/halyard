@@ -6,8 +6,9 @@ status: reference
 
 # Blocks and the registry
 
-This page describes the shipped behaviour of `defineBlock` and `createRegistry` and the types
-they take and return: `Block`, `InferProps`, `SlotConstraint`, `UnknownProps` and `Registry`.
+This page describes the shipped behaviour of `defineBlock`, `createRegistry` and `richText`,
+and the types they take and return: `Block`, `InferProps`, `SlotConstraint`, `UnknownProps`,
+`Registry`, `StandardDataSchema` and the rich-text types.
 The source of record is `packages/core/src/index.ts`; the reasoning behind the shape lives in
 [`api.md`](../api.md) and [the decisions](../decisions/README.md).
 
@@ -90,6 +91,58 @@ type InferProps<Schema extends StandardSchemaV1> = StandardSchemaV1.InferOutput<
 
 The output side of the schema, not the input side: a component receives what `validate()`
 returned, so a field a transform reshaped arrives in its transformed form.
+
+## `richText`
+
+```ts
+function richText(): StandardDataSchema<RichText>;
+
+type RichTextMark = "strong" | "em" | "code";
+type RichTextBlockKind = "paragraph" | "listItem";
+interface RichTextSpan { text: string; marks?: readonly RichTextMark[]; href?: string }
+interface RichTextBlock { kind: RichTextBlockKind; spans: readonly RichTextSpan[] }
+type RichText = readonly RichTextBlock[];
+```
+
+A field of inline content as data. Both sets are closed, both objects are closed, and a key the
+shape does not declare is rejected rather than dropped — see
+[Rich text is typed data, never markup](../decisions/rich-text-is-typed-data-never-markup.md).
+
+| Rejected by `validate()` | Reported at |
+|---|---|
+| A value that is not an array | the field itself |
+| A block whose `kind` is outside the set | `<index>.kind` |
+| A span whose `text` is not a string | `<index>.spans.<index>.text` |
+| A mark outside the set | `<index>.spans.<index>.marks.<index>` |
+| A key neither shape declares | the key |
+
+`core` writes the schema itself rather than reaching for a validator, so the projection the
+studio reads comes from `~standard.jsonSchema.input` alongside `~standard.validate`. Both are
+what `zodAdapter.describe` walks to reach `body[].spans[].text` and the two enums.
+
+A validator will not necessarily hold it. zod checks that every value in an object shape is a
+zod schema, so `z.object({ body: richText() })` throws at the first parse. A block written in
+zod seats the schema once — `examples/demo/src/blocks/shared/richText.schema.ts` carries the
+value through `z.unknown()`, runs `core`'s `validate` as the check, and passes
+`~standard.jsonSchema.input(…)` to `.meta()` so the projection survives.
+
+## `StandardDataSchema`
+
+```ts
+interface StandardDataSchema<Value> {
+  readonly "~standard": {
+    readonly version: 1;
+    readonly vendor: string;
+    readonly validate: (value: unknown) => StandardSchemaV1.Result<Value>;
+    readonly jsonSchema: StandardJSONSchemaV1.Converter;
+  };
+}
+```
+
+What a schema `core` writes itself guarantees over the interface generally: `validate` answers
+synchronously, which compile requires of any schema, and the JSON Schema converter is present
+rather than optional. It satisfies both `StandardSchemaV1` and `StandardJSONSchemaV1`, so a
+block, a catalog entry, or an adapter takes it wherever either is accepted.
 
 ## `SlotConstraint`
 

@@ -35,6 +35,15 @@ export type { FieldKind, FieldNode, SchemaAdapter } from "./field.types";
 export { formatCompatibilityReport } from "./formatCompatibilityReport";
 export { parseMatchKind } from "./parseMatchKind";
 export type { Registry } from "./registry.types";
+export { richText } from "./richText";
+export type {
+  RichText,
+  RichTextBlock,
+  RichTextBlockKind,
+  RichTextMark,
+  RichTextSpan,
+} from "./richText.types";
 export type { RollbackCheck } from "./rollback.types";
 export { setAtPath } from "./setAtPath";
 export { setNodeProp } from "./setNodeProp";
+export type { StandardDataSchema } from "./standardDataSchema.types";

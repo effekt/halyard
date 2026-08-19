@@ -2,11 +2,11 @@
   "route": "/about",
   "documentId": "about",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "Hero": 1,
-    "Prose": 1,
+    "Prose": 2,
     "FeatureGrid": 1,
     "ProfileGrid": 1,
     "CtaBanner": 1,
@@ -43,10 +43,38 @@
             "props": {
               "heading": "Why we build this",
               "tone": "light",
-              "paragraphs": [
-                "Most planning tools optimise for the person entering the work. Tidewell optimises for the person reading it — the one deciding on Monday morning what the week actually holds.",
-                "That is why there is one schedule rather than one per team, and why a read-only link is a first-class thing rather than an export. How we keep that one schedule safe is written up on our security page.",
-                "We are a small crew and we ship weekly. The changelog is public because a roadmap is a promise, and promises age badly."
+              "body": [
+                {
+                  "kind": "paragraph",
+                  "spans": [
+                    {
+                      "text": "Most planning tools optimise for the person entering the work. Tidewell optimises for the person reading it — the one deciding on Monday morning what the week actually holds."
+                    }
+                  ]
+                },
+                {
+                  "kind": "paragraph",
+                  "spans": [
+                    {
+                      "text": "That is why there is one schedule rather than one per team, and why a read-only link is a first-class thing rather than an export. How we keep that one schedule safe is written up on our "
+                    },
+                    {
+                      "text": "security page",
+                      "href": "/security"
+                    },
+                    {
+                      "text": "."
+                    }
+                  ]
+                },
+                {
+                  "kind": "paragraph",
+                  "spans": [
+                    {
+                      "text": "We are a small crew and we ship weekly. The changelog is public because a roadmap is a promise, and promises age badly."
+                    }
+                  ]
+                }
               ]
             }
           },
@@ -188,6 +216,6 @@
     "title": "About — Tidewell",
     "description": "Tidewell is built by a small crew who ran the Friday status hunt and decided one schedule, read the same way by everyone, was the fix."
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "8be9f4fd"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "c5907d35"
 }

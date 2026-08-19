@@ -1,8 +1,8 @@
 import type { DocumentVersion } from "@nubbin/core";
 
-/** `/about` re-authored by hand: six sections carrying the reference page's content. The
- * second prose paragraph loses its inline link — `Prose` holds plain strings, so the anchor
- * to `/security` cannot be expressed and only the sentence survives. */
+/** `/about` re-authored by hand: six sections carrying the reference page's content, with no
+ * loss. The second prose paragraph keeps the anchor to `/security` inside its sentence —
+ * `Prose.body` is rich text, so inline structure is data the schema can see. */
 export const about: DocumentVersion = {
   documentId: "about",
   version: 1,
@@ -37,10 +37,33 @@ export const about: DocumentVersion = {
       props: {
         heading: "Why we build this",
         tone: "light",
-        paragraphs: [
-          "Most planning tools optimise for the person entering the work. Tidewell optimises for the person reading it — the one deciding on Monday morning what the week actually holds.",
-          "That is why there is one schedule rather than one per team, and why a read-only link is a first-class thing rather than an export. How we keep that one schedule safe is written up on our security page.",
-          "We are a small crew and we ship weekly. The changelog is public because a roadmap is a promise, and promises age badly.",
+        body: [
+          {
+            kind: "paragraph",
+            spans: [
+              {
+                text: "Most planning tools optimise for the person entering the work. Tidewell optimises for the person reading it — the one deciding on Monday morning what the week actually holds.",
+              },
+            ],
+          },
+          {
+            kind: "paragraph",
+            spans: [
+              {
+                text: "That is why there is one schedule rather than one per team, and why a read-only link is a first-class thing rather than an export. How we keep that one schedule safe is written up on our ",
+              },
+              { text: "security page", href: "/security" },
+              { text: "." },
+            ],
+          },
+          {
+            kind: "paragraph",
+            spans: [
+              {
+                text: "We are a small crew and we ship weekly. The changelog is public because a roadmap is a promise, and promises age badly.",
+              },
+            ],
+          },
         ],
       },
     },

@@ -2,7 +2,7 @@
   "route": "/",
   "documentId": "home",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "Hero": 1,
@@ -219,6 +219,6 @@
     "title": "Tidewell — one schedule, read the same way by everyone",
     "description": "Tidewell turns scattered planning docs into one schedule everyone on the team reads the same way."
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "4a162726"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "bff9d618"
 }

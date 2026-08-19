@@ -2,7 +2,7 @@
   "route": "/promotions/winter",
   "documentId": "promotions-winter",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "Hero": 1,
@@ -85,6 +85,6 @@
   "meta": {
     "title": "Winter promotion"
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "6bd42c95"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "815ea945"
 }
