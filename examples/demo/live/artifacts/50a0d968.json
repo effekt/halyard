@@ -2,11 +2,11 @@
   "route": "/security",
   "documentId": "security",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "Hero": 1,
-    "Prose": 1,
+    "Prose": 2,
     "FeatureGrid": 1,
     "FaqAccordion": 1,
     "CtaBanner": 1,
@@ -43,8 +43,15 @@
             "props": {
               "heading": "How your data is handled",
               "tone": "light",
-              "paragraphs": [
-                "Every schedule lives in one region, encrypted at rest and in transit. Exports are generated on demand and never cached; a deleted workstream is purged from backups on a fixed thirty-day cycle."
+              "body": [
+                {
+                  "kind": "paragraph",
+                  "spans": [
+                    {
+                      "text": "Every schedule lives in one region, encrypted at rest and in transit. Exports are generated on demand and never cached; a deleted workstream is purged from backups on a fixed thirty-day cycle."
+                    }
+                  ]
+                }
               ]
             }
           },
@@ -54,8 +61,22 @@
             "props": {
               "heading": "Who can see what",
               "tone": "light",
-              "paragraphs": [
-                "Access follows the schedule, not the org chart. A seat sees the workstreams it is invited to, a read-only link sees exactly one, and nobody at Tidewell can open your schedule without a recorded grant that you approve first."
+              "body": [
+                {
+                  "kind": "paragraph",
+                  "spans": [
+                    {
+                      "text": "Access follows the schedule, not the org chart. A seat sees the workstreams it is invited to, a read-only link sees exactly one, and "
+                    },
+                    {
+                      "text": "nobody at Tidewell can open your schedule without a recorded grant",
+                      "marks": ["strong"]
+                    },
+                    {
+                      "text": " that you approve first."
+                    }
+                  ]
+                }
               ]
             }
           },
@@ -65,8 +86,22 @@
             "props": {
               "heading": "When something changes",
               "tone": "light",
-              "paragraphs": [
-                "Security-relevant changes ship the way everything here ships — versioned, reviewed, and announced. Recent ones are on the changelog, not in a quarterly PDF."
+              "body": [
+                {
+                  "kind": "paragraph",
+                  "spans": [
+                    {
+                      "text": "Security-relevant changes ship the way everything here ships — versioned, reviewed, and announced. Recent ones are on the "
+                    },
+                    {
+                      "text": "changelog",
+                      "href": "/changelog"
+                    },
+                    {
+                      "text": ", not in a quarterly PDF."
+                    }
+                  ]
+                }
               ]
             }
           },
@@ -196,6 +231,6 @@
     "title": "Security — Tidewell",
     "description": "Tidewell holds the one plan everyone trusts. How that plan is stored, who can see it, and what changes when the practices do."
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "57c8a561"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "50a0d968"
 }

@@ -6,6 +6,6 @@ export const proseBlock = defineBlock({
   name: "Prose",
   schema: proseSchema,
   component: Prose,
-  version: 1,
+  version: 2,
   slots: {},
 });

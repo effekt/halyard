@@ -2,7 +2,7 @@
   "route": "/live/pulse",
   "documentId": "live-pulse",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "StatBand": 1,
@@ -45,6 +45,6 @@
   "meta": {
     "title": "Live pulse"
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "ee6375cb"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "dec0f6d1"
 }

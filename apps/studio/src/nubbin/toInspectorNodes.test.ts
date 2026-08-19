@@ -29,3 +29,12 @@ test("a node whose block the catalog lacks gets no fields rather than a throw", 
   };
   expect(toInspectorNodes(stray, catalog).lone?.fields).toEqual([]);
 });
+
+test("a rich-text field arrives as an array whose value is the whole document", () => {
+  const why = toInspectorNodes(about, catalog).why;
+  const body = why?.fields.find((field) => field.path === "body");
+
+  expect(body?.kind).toBe("array");
+  expect(body?.value).toEqual(about.elements.why?.props.body);
+  expect(why?.fields.map((field) => field.path)).toContain("body[].spans[].href");
+});

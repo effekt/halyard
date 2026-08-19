@@ -2,7 +2,7 @@
   "route": "/promotions/summer",
   "documentId": "promotions-summer",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "Hero": 1,
@@ -53,6 +53,6 @@
   "meta": {
     "title": "Summer promotion"
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "c994beb6"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "167ddb1a"
 }

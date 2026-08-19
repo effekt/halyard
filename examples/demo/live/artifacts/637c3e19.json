@@ -2,7 +2,7 @@
   "route": "/changelog",
   "documentId": "changelog",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "PageHeader": 1,
@@ -161,6 +161,6 @@
     "title": "Changelog — Tidewell",
     "description": "What shipped in Tidewell, and when. We ship weekly, and this page is the record — no roadmap, no “coming soon.”"
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "f7a8b9f9"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "637c3e19"
 }

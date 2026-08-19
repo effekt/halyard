@@ -2,7 +2,7 @@
   "route": "/pricing",
   "documentId": "pricing",
   "documentVersion": 1,
-  "registryFingerprint": "9f34ad01",
+  "registryFingerprint": "fdedd4f8",
   "blockVersions": {
     "SectionStack": 1,
     "Hero": 1,
@@ -206,6 +206,6 @@
     "title": "Pricing — Tidewell",
     "description": "Every Tidewell plan includes unlimited workstreams and the same fast setup. Pick the seat count that matches your team today."
   },
-  "compiledWith": "0.1.0-rc.4",
-  "hash": "7f455acf"
+  "compiledWith": "0.1.0-rc.5",
+  "hash": "26dfce57"
 }

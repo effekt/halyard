@@ -1,10 +1,10 @@
 import type { DocumentVersion } from "@nubbin/core";
 
 /** `/security` re-authored by hand with zero new blocks — `Prose` from `/about` covers the
- * three write-ups. Four losses are deliberate measurements, not bugs: the inline `<strong>`
- * and the inline `/changelog` anchor flatten to plain text (`Prose` holds plain strings), the
- * hero CTA's `#practices` target no longer exists (no block prop carries an id), and the
- * authored FAQ items are compiled into a revalidate hole and replaced at request time. */
+ * three write-ups. Its inline `<strong>` and its `/changelog` anchor both survive, as spans in
+ * `Prose.body`. Two deliberate measurements remain, and neither is a bug: the hero CTA's
+ * `#practices` target no longer exists (no block prop carries an id), and the authored FAQ
+ * items are compiled into a revalidate hole and replaced at request time. */
 export const security: DocumentVersion = {
   documentId: "security",
   version: 1,
@@ -39,8 +39,15 @@ export const security: DocumentVersion = {
       props: {
         heading: "How your data is handled",
         tone: "light",
-        paragraphs: [
-          "Every schedule lives in one region, encrypted at rest and in transit. Exports are generated on demand and never cached; a deleted workstream is purged from backups on a fixed thirty-day cycle.",
+        body: [
+          {
+            kind: "paragraph",
+            spans: [
+              {
+                text: "Every schedule lives in one region, encrypted at rest and in transit. Exports are generated on demand and never cached; a deleted workstream is purged from backups on a fixed thirty-day cycle.",
+              },
+            ],
+          },
         ],
       },
     },
@@ -50,8 +57,20 @@ export const security: DocumentVersion = {
       props: {
         heading: "Who can see what",
         tone: "light",
-        paragraphs: [
-          "Access follows the schedule, not the org chart. A seat sees the workstreams it is invited to, a read-only link sees exactly one, and nobody at Tidewell can open your schedule without a recorded grant that you approve first.",
+        body: [
+          {
+            kind: "paragraph",
+            spans: [
+              {
+                text: "Access follows the schedule, not the org chart. A seat sees the workstreams it is invited to, a read-only link sees exactly one, and ",
+              },
+              {
+                text: "nobody at Tidewell can open your schedule without a recorded grant",
+                marks: ["strong"],
+              },
+              { text: " that you approve first." },
+            ],
+          },
         ],
       },
     },
@@ -61,8 +80,17 @@ export const security: DocumentVersion = {
       props: {
         heading: "When something changes",
         tone: "light",
-        paragraphs: [
-          "Security-relevant changes ship the way everything here ships — versioned, reviewed, and announced. Recent ones are on the changelog, not in a quarterly PDF.",
+        body: [
+          {
+            kind: "paragraph",
+            spans: [
+              {
+                text: "Security-relevant changes ship the way everything here ships — versioned, reviewed, and announced. Recent ones are on the ",
+              },
+              { text: "changelog", href: "/changelog" },
+              { text: ", not in a quarterly PDF." },
+            ],
+          },
         ],
       },
     },

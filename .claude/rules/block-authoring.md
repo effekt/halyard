@@ -88,11 +88,11 @@ An unconstrained slot means the studio can't grey out invalid drop targets, and 
 ```ts
 // WRONG — an open string; nothing that scans for rich text can find this field
 body: z.string()
-// CORRECT — marked, so tooling can find every rich-text field without scanning
-body: richText()   // a thin z.string() wrapper, symmetric to responsive()
+// CORRECT — `richText()` from `@nubbin/core`, seated in a named sub-schema
+body: richTextSchema
 ```
 
-Not stylistic. Free-form rich text is where migration risk concentrates: stored markup encodes assumptions about the styles that rendered it, so a design-system change can force a bulk rewrite of published content. **That risk is the consumer's** — marking the field only makes it findable. **Gate:** none.
+`richText()` is a schema over an array of blocks of spans, not a string with markup in it — [the decision](../../docs/decisions/rich-text-is-typed-data-never-markup.md) argues that and names what it beat. zod refuses a foreign Standard Schema inside an object shape, so a block written in zod seats it once, in `examples/demo/src/blocks/shared/richText.schema.ts`, and every block refers to that. **Gate:** none.
 
 ### Version bumps aren't optional
 
