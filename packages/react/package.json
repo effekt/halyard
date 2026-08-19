@@ -1,6 +1,6 @@
 {
   "name": "@nubbin/react",
-  "version": "0.1.0-rc.5",
+  "version": "0.1.0-rc.6",
   "description": "The React render path for Nubbin: render a compiled artifact against a block registry.",
   "keywords": [
     "nubbin",

@@ -1,5 +1,29 @@
 # @nubbin/core
 
+## [0.1.0-rc.6](https://github.com/effekt/nubbin/compare/core-v0.1.0-rc.5...core-v0.1.0-rc.6) (2026-08-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **core:** `DocumentVersion.root: string` is now `roots: readonly string[]`. A single-root document becomes `roots: [root]`; the compiled artifact is unchanged.
+* **core:** `Block.migrate` is removed. No node records the block version its props were authored against and `compile` runs no upcaster, so a document whose props no longer satisfy the current schema fails `compile` with a `CompileError` naming the node and the path; the remedy is to rewrite the document and publish it again. Already-published artifacts are unaffected — their props were validated and frozen against the version they compiled with.
+
+### Features
+
+* **core:** a document has many roots ([#483](https://github.com/effekt/nubbin/issues/483)) ([4abe53e](https://github.com/effekt/nubbin/commit/4abe53e827fb1ef24354a62cd4f2ad4a6be74a0d)), closes [#60](https://github.com/effekt/nubbin/issues/60)
+* **core:** rich text ships as typed data, not markup in a string ([#484](https://github.com/effekt/nubbin/issues/484)) ([28ba770](https://github.com/effekt/nubbin/commit/28ba770ac2fa0832d01ae973e5749e437ccd75f1)), closes [#389](https://github.com/effekt/nubbin/issues/389)
+
+
+### Bug Fixes
+
+* **core:** a data hint addresses a dotted path, not a top-level key ([#482](https://github.com/effekt/nubbin/issues/482)) ([d602f91](https://github.com/effekt/nubbin/commit/d602f9136d8da349621642d783ae558e865e3c4d))
+* **core:** the rich-text compile test builds a document with roots ([#486](https://github.com/effekt/nubbin/issues/486)) ([1975d8a](https://github.com/effekt/nubbin/commit/1975d8adc133b2cf3d6fb24797fbdf6e907bfdf1))
+
+
+### Code Refactoring
+
+* **core:** a schema change is a republish, not a migration ([#481](https://github.com/effekt/nubbin/issues/481)) ([8140b14](https://github.com/effekt/nubbin/commit/8140b1472b202cb62743cc88983d8ebae136c334))
+
 ## [0.1.0-rc.5](https://github.com/effekt/nubbin/compare/core-v0.1.0-rc.4...core-v0.1.0-rc.5) (2026-08-19)
 
 
