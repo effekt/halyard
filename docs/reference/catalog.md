@@ -50,6 +50,8 @@ It throws on:
 |---|---|
 | A `ui.fields` key naming a path the schema does not define | An unresolvable hint is invisible at runtime — the inspector falls back to a default treatment and renders something plausible. The error names the block, every bad path, and the paths the schema does define |
 | `defaults` that fail the entry's own schema | Defaults are what a freshly dropped block renders with, so invalid defaults produce a block that is broken the instant it is placed |
+| A `data` hint on a path containing `[]` | A hole resolves to one value, and an array-member path names every member, so it has no single target. `label` and `control` stay legal there |
+| Two `data` hints on one block whose paths nest, such as `cta` and `cta.label` | Two holes writing into one value have no defined order of application — see [A `data` hint addresses a path, not a top-level key](../decisions/a-data-hint-addresses-a-path-not-a-top-level-key.md) |
 
 Hint paths are resolved by reading the schema through the Standard JSON Schema converter the
 schema itself exposes (`~standard.jsonSchema`, Standard Schema spec 1.1) — the package calls
