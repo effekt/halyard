@@ -145,7 +145,7 @@ describe("rich text through compile", () => {
   const documentWith = (body: unknown): DocumentVersion => ({
     documentId: "d1",
     version: 1,
-    root: "n1",
+    roots: ["n1"],
     elements: { n1: { id: "n1", block: "Prose", props: { body } } },
     meta: { title: "t" },
     createdAt: "2026-01-01T00:00:00Z",
