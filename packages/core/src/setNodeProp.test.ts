@@ -5,7 +5,7 @@ import { setNodeProp } from "./setNodeProp";
 const version: DocumentVersion = {
   documentId: "doc",
   version: 3,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: { id: "stack", block: "Stack", props: {}, slots: { sections: ["hero"] } },
     hero: {
@@ -37,11 +37,11 @@ describe("setNodeProp", () => {
     expect(version.elements.hero?.props.headline).toBe("Before");
   });
 
-  test("keeps identity fields — version, createdAt, root — untouched", () => {
+  test("keeps identity fields — version, createdAt, roots — untouched", () => {
     const next = setNodeProp(version, "hero", "headline", "After");
     expect(next.version).toBe(3);
     expect(next.createdAt).toBe(version.createdAt);
-    expect(next.root).toBe("stack");
+    expect(next.roots).toEqual(["stack"]);
     expect(next.meta).toBe(version.meta);
   });
 

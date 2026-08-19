@@ -6,7 +6,7 @@ import { ctaBannerDefaults } from "../src/blocks/ctaBannerDefaults";
 export const promotionsFlash: DocumentVersion = {
   documentId: "promotions-flash",
   version: 1,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: { id: "stack", block: "SectionStack", props: {}, slots: { sections: ["cta"] } },
     cta: {

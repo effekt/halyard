@@ -8,7 +8,7 @@ import { statBandDefaults } from "../src/blocks/statBandDefaults";
 export const livePulse: DocumentVersion = {
   documentId: "live-pulse",
   version: 1,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: { id: "stack", block: "SectionStack", props: {}, slots: { sections: ["stats", "faq"] } },
     stats: { id: "stats", block: "StatBand", props: { ...statBandDefaults } },

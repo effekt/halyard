@@ -25,7 +25,7 @@ test("a node whose block the catalog lacks gets no fields rather than a throw", 
   const stray = {
     ...about,
     elements: { lone: { id: "lone", block: "NoSuchBlock", props: {} } },
-    root: "lone",
+    roots: ["lone"],
   };
   expect(toInspectorNodes(stray, catalog).lone?.fields).toEqual([]);
 });

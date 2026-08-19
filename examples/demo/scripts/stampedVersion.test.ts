@@ -6,7 +6,7 @@ function version(elements: DocumentVersion["elements"]): DocumentVersion {
   return {
     documentId: "doc",
     version: 1,
-    root: "stack",
+    roots: ["stack"],
     elements,
     meta: { title: "t" },
     createdAt: "2026-01-01T00:00:00.000Z",

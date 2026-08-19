@@ -9,7 +9,7 @@ import type { DocumentVersion } from "@nubbin/core";
 export const changelog: DocumentVersion = {
   documentId: "changelog",
   version: 1,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: {
       id: "stack",

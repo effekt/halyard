@@ -8,7 +8,7 @@ import type { DocumentVersion } from "@nubbin/core";
 export const security: DocumentVersion = {
   documentId: "security",
   version: 1,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: {
       id: "stack",

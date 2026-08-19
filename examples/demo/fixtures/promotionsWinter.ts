@@ -8,7 +8,7 @@ import { testimonialQuoteDefaults } from "../src/blocks/testimonialQuoteDefaults
 export const promotionsWinter: DocumentVersion = {
   documentId: "promotions-winter",
   version: 1,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: {
       id: "stack",

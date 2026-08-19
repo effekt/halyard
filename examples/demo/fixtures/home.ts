@@ -4,7 +4,7 @@ import type { DocumentVersion } from "@nubbin/core";
 export const home: DocumentVersion = {
   documentId: "home",
   version: 1,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: {
       id: "stack",

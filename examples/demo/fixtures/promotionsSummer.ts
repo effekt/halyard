@@ -6,7 +6,7 @@ import { heroDefaults } from "../src/blocks/heroDefaults";
 export const promotionsSummer: DocumentVersion = {
   documentId: "promotions-summer",
   version: 1,
-  root: "stack",
+  roots: ["stack"],
   elements: {
     stack: { id: "stack", block: "SectionStack", props: {}, slots: { sections: ["hero", "cta"] } },
     hero: {

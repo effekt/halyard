@@ -1,4 +1,5 @@
 export type CompileIssueCode =
+  | "no-roots"
   | "unknown-block"
   | "dangling-child"
   | "cycle"

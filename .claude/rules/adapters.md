@@ -136,7 +136,7 @@ interface PresenceAdapter {
 }
 ```
 
-Presence is scoped to "a heartbeat, no conflict resolution" — most of the felt value for a fraction of the cost — and whether it needs a server at all is still open. The flat `{root, elements}` model also preserved a CRDT sync layer as an *optional* swap rather than a rewrite; `PresenceAdapter` should preserve the same optionality by not requiring a push channel. **Gate:** none.
+Presence is scoped to "a heartbeat, no conflict resolution" — most of the felt value for a fraction of the cost — and whether it needs a server at all is still open. The flat `{roots, elements}` model also preserved a CRDT sync layer as an *optional* swap rather than a rewrite; `PresenceAdapter` should preserve the same optionality by not requiring a push channel. **Gate:** none.
 
 ## Checklist
 

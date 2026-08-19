@@ -6,7 +6,7 @@ status: stable
 
 # Flat while authoring, nested once published
 
-A draft is `{ root, elements }` keyed by id; an artifact is a resolved tree. Editing wants
+A draft is `{ roots, elements }` keyed by id; an artifact is a resolved tree. Editing wants
 random access — selection, patching, undo, and reordering all key on id — while rendering
 wants a self-contained structure with no lookups.
 

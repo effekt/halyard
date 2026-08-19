@@ -31,8 +31,9 @@ prop validation over a document with dangling references would bury the real cau
 cascading noise:
 
 1. **Structure.** Every node names a registered block, every referenced child id exists, the
-   graph reaches every element from `root` without cycles, and every filled slot is declared,
-   within its `min`/`max` bounds, and holds only blocks its `allow` list admits.
+   graph reaches every element from some entry in `roots` without cycles, and every filled
+   slot is declared, within its `min`/`max` bounds, and holds only blocks its `allow` list
+   admits.
 2. **Props.** Every node's props are validated by its catalog entry's schema — the schema's
    own `~standard.validate`, never a projection — and the parsed output is what the artifact
    keeps. A node whose block has no catalog entry is an issue here too.
@@ -71,7 +72,7 @@ const catalog = defineCatalog({
 const version: DocumentVersion = {
   documentId: "d1",
   version: 1,
-  root: "n1",
+  roots: ["n1"],
   elements: {
     n1: { id: "n1", block: "Hero", props: { title: "T", price: 10 }, slots: { items: ["n2"] } },
     n2: { id: "n2", block: "Card", props: { label: "L" } },
@@ -107,7 +108,7 @@ props lands in exactly one of the two.
 interface DocumentVersion {
   documentId: string;
   version: number;
-  root: string;
+  roots: readonly string[];
   elements: Record<string, Node>;
   meta: DocumentMeta;
   createdAt: string;
@@ -134,10 +135,8 @@ ordered child ids rather than nested nodes, so every editor operation addresses 
 directly. Compiling denormalizes it into the artifact's nested tree — the trade is
 [Flat while authoring, nested once published](../decisions/flat-while-authoring-nested-once-published.md).
 
-`root` names the single entry element, while `Artifact.tree` is an array. How that boundary
-should treat a page of stacked sections — which has no single containing block — is the open
-design question [#60](https://github.com/effekt/nubbin/issues/60); this page documents the
-shapes as they ship and takes no position on it.
+`roots` lists entry elements in order, and `Artifact.tree` holds one denormalized tree for
+each — see [A document has many roots](../decisions/a-document-has-many-roots.md).
 
 How a `DocumentVersion` is stored is the authoring store, an open design question of its own
 ([#11](https://github.com/effekt/nubbin/issues/11)) — so the examples here construct one as a
@@ -214,15 +213,18 @@ interface CompileIssue {
 }
 ```
 
-`path` locates the problem inside the node: `block`, `root`, `slots.<name>`, a dotted prop
-path from the schema's own issue, or `""` when the issue concerns the node as a whole.
+`path` locates the problem inside the node: `block`, `roots`, `slots.<name>`, a dotted prop
+path from the schema's own issue, or `""` when the issue concerns the node as a whole. A
+document-level issue carries an empty `nodeId`, since no node is at fault: `no-roots` is the
+only one.
 
 | Code | Raised when | Pass |
 |---|---|---|
+| `no-roots` | The document names no entry element at all | structure |
 | `unknown-block` | A node names a block the registry lacks, or one with no catalog entry | structure / props |
-| `dangling-child` | A slot references an id with no element, or `root` does | structure |
+| `dangling-child` | A slot references an id with no element, or a `roots` entry does | structure |
 | `cycle` | A node reaches back to an ancestor, so the graph cannot flatten into a tree | structure |
-| `unreachable` | No slot reaches the node from the root | structure |
+| `unreachable` | No slot reaches the node from any root | structure |
 | `slot-not-allowed` | A filled slot the block never declared, or a child whose block the slot's `allow` list rejects | structure |
 | `slot-min` | A declared slot holds fewer children than its `min` — an omitted slot counts as holding zero | structure |
 | `slot-max` | A slot holds more children than its `max` | structure |
