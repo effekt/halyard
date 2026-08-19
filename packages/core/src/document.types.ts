@@ -19,7 +19,11 @@ export interface Node {
 export interface DocumentVersion {
   documentId: string;
   version: number;
-  root: string;
+  /**
+   * Ordered entry elements — the artifact's tree is these, denormalized, in this order. See
+   * [A document has many roots](../../../docs/decisions/a-document-has-many-roots.md).
+   */
+  roots: readonly string[];
   elements: Record<string, Node>;
   meta: DocumentMeta;
   createdAt: string;

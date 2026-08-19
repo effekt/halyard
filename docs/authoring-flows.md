@@ -45,13 +45,13 @@ A preset is stored as `kind: "preset"`. Why it is not called a template is
 
 | Action | Mechanics |
 |---|---|
-| Place | Allocate a new id, write `Node { id, block, props: defaults }`, insert the id into the target slot's ordered array (or root). |
+| Place | Allocate a new id, write `Node { id, block, props: defaults }`, insert the id into the target slot's ordered array, or into the document's `roots`. |
 | Reorder | Reindex the id within its slot array. No id changes. |
-| Nest into a slot | Same as place, targeting a non-root slot. |
+| Nest into a slot | Same as place, targeting a node's slot rather than the document's `roots`. |
 | Duplicate / paste | Clone the subtree, remap every id via the shared clone utility. |
 | Delete | Remove the id from its parent's slot array; the orphaned `elements` entry is detected the same way compile detects unreachable nodes. |
 
-**System:** every operation is `elements[id] = …` against the flat `{ root, elements }` shape,
+**System:** every operation is `elements[id] = …` against the flat `{ roots, elements }` shape,
 never a deep tree rebuild. Slot legality is a `SlotConstraint` (`allow` / `min` / `max`)
 declared once on the block and read by both the compiler and the canvas — the same
 declaration greys out an invalid drop target during drag
@@ -183,6 +183,6 @@ can read and preview, not edit.
 | Mode | Consequence |
 |---|---|
 | Stale lock | First author's tab crashes without releasing. No TTL/heartbeat is specified, so the document can be locked out indefinitely with no defined "break glass" unlock. |
-| Granularity | A document-wide lock blocks two authors editing unrelated nodes in the same page (a hero and a footer) even though the flat `{root, elements}` model doesn't require that granularity — node-level locking or per-node merge is deferred, not ruled out. |
+| Granularity | A document-wide lock blocks two authors editing unrelated nodes in the same page (a hero and a footer) even though the flat `{roots, elements}` model doesn't require that granularity — node-level locking or per-node merge is deferred, not ruled out. |
 | Direct API writes bypass the lock | Nothing gates `elements[id] = …` behind lock ownership — the lock is a studio-UI convention unless a server enforces it, and that enforcement isn't specified. |
 | Interacts with layout propagation | Locking the layout document doesn't stop a page depending on it from publishing mid-edit under the render-time-resolution candidate above — the lock's blast radius is one document, the propagation's is every dependent page. |

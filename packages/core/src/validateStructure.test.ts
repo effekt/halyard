@@ -21,10 +21,13 @@ const card = defineBlock({
 });
 const registry = createRegistry([hero, card]);
 
-const doc = (elements: DocumentVersion["elements"], root = "n1"): DocumentVersion => ({
+const doc = (
+  elements: DocumentVersion["elements"],
+  roots: readonly string[] = ["n1"],
+): DocumentVersion => ({
   documentId: "d1",
   version: 1,
-  root,
+  roots,
   elements,
   meta: { title: "t" },
   createdAt: "2026-01-01T00:00:00Z",
@@ -125,5 +128,36 @@ describe("validateStructure", () => {
         }),
       ),
     ).toContain("slot-max:n1");
+  });
+
+  test("rejects a document with no roots at all", () => {
+    expect(codes(doc({ n1: { id: "n1", block: "Card", props: { label: "L" } } }, []))).toEqual([
+      "no-roots:",
+    ]);
+  });
+
+  test("names the root that has no matching element", () => {
+    const issues = validateStructure(
+      doc({ n1: { id: "n1", block: "Card", props: { label: "L" } } }, ["n1", "ghost"]),
+      registry,
+    );
+    const dangling = issues.find((issue) => issue.code === "dangling-child");
+    expect(dangling?.nodeId).toBe("ghost");
+    expect(dangling?.message).toContain('"ghost"');
+  });
+
+  test("reports a cycle reachable only from the second root", () => {
+    expect(
+      codes(
+        doc(
+          {
+            n1: { id: "n1", block: "Card", props: { label: "L" } },
+            n2: { id: "n2", block: "Hero", props: { title: "T" }, slots: { items: ["n3"] } },
+            n3: { id: "n3", block: "Card", props: { label: "L" }, slots: { items: ["n2"] } },
+          },
+          ["n1", "n2"],
+        ),
+      ),
+    ).toContain("cycle:n3");
   });
 });

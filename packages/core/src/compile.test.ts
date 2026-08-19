@@ -31,10 +31,13 @@ const catalog = defineCatalog({
   Card: { schema: cardSchema },
 });
 
-const doc = (elements: DocumentVersion["elements"], root = "n1"): DocumentVersion => ({
+const doc = (
+  elements: DocumentVersion["elements"],
+  roots: readonly string[] = ["n1"],
+): DocumentVersion => ({
   documentId: "d1",
   version: 1,
-  root,
+  roots,
   elements,
   meta: { title: "t" },
   createdAt: "2026-01-01T00:00:00Z",

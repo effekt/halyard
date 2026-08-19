@@ -12,7 +12,7 @@ export function findUnreachable(version: DocumentVersion): CompileIssue[] {
       nodeId: node.id,
       path: "",
       code: "unreachable",
-      message: `no slot reaches "${node.id}" from the root`,
+      message: `no slot reaches "${node.id}" from any root`,
     });
   }
   return issues;

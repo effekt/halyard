@@ -53,7 +53,7 @@ a bundler can follow. Chosen over one flat list of components, which forces ever
 all of them — [the decision](decisions/catalog-and-registry-are-separate.md).
 
 **Documents are flat while authoring, nested once published.** The draft shape is
-`{ root, elements }` keyed by id, so an editor addresses a node directly instead of walking a
+`{ roots, elements }` keyed by id, so an editor addresses a node directly instead of walking a
 tree to find it. Compile denormalizes that into the self-contained tree the renderer reads,
 checking reference integrity, cycle-freedom and reachability on the way —
 [the decision](decisions/flat-while-authoring-nested-once-published.md) has the rest.

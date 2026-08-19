@@ -2,10 +2,13 @@ import { describe, expect, test } from "vitest";
 import { denormalize } from "./denormalize";
 import type { DocumentVersion } from "./document.types";
 
-const doc = (elements: DocumentVersion["elements"], root = "n1"): DocumentVersion => ({
+const doc = (
+  elements: DocumentVersion["elements"],
+  roots: readonly string[] = ["n1"],
+): DocumentVersion => ({
   documentId: "d1",
   version: 1,
-  root,
+  roots,
   elements,
   meta: { title: "t" },
   createdAt: "2026-01-01T00:00:00Z",
@@ -42,5 +45,20 @@ describe("denormalize", () => {
     );
     expect(node?.holes).toEqual({ price: "request" });
     expect(node?.props).toEqual({ label: "L" });
+  });
+
+  test("denormalizes every root, in the order roots names them", () => {
+    const tree = denormalize(
+      doc(
+        {
+          a: { id: "a", block: "Hero", props: { title: "A" } },
+          b: { id: "b", block: "Card", props: { label: "B" } },
+        },
+        ["a", "b"],
+      ),
+      (node) => ({ props: node.props, holes: {} }),
+    );
+
+    expect(tree.map((node) => node.id)).toEqual(["a", "b"]);
   });
 });

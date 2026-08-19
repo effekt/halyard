@@ -37,7 +37,7 @@ interface Artifact {
 | `documentId`, `documentVersion` | Which document version this is the compilation of. |
 | `registryFingerprint` | The [registry fingerprint](blocks.md#registry) at compile time — every registered block's name and version. |
 | `blockVersions` | Name → version for only the blocks the document uses; a route loads what its artifact lists, so naming unused blocks would load them too. [`checkRollback`](#checkrollback) reads this field. |
-| `tree` | The denormalized node tree. Its relationship to the document's single `root` is design question [#60](https://github.com/effekt/nubbin/issues/60). |
+| `tree` | The document's `roots`, denormalized — one tree per entry element, in the order `roots` names them. |
 | `meta` | The document's `DocumentMeta`, carried through unchanged. |
 | `compiledWith` | The `@nubbin/core` version that produced the artifact. |
 

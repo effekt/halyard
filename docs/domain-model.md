@@ -24,7 +24,7 @@ erDiagram
     REGISTRY ||--|{ BLOCK : curates
     NODE }o--|| BLOCK : "instance of"
     DOCUMENT ||--|{ DOCUMENT_VERSION : appends
-    DOCUMENT_VERSION ||--o{ NODE : "root tree"
+    DOCUMENT_VERSION ||--o{ NODE : "root trees"
     NODE ||--o{ NODE : "slot children"
     DOCUMENT }o--o| DOCUMENT : "renders inside layout"
     DOCUMENT_VERSION ||--o| ARTIFACT : "compiles to"
@@ -192,7 +192,7 @@ published pointer.
 interface DocumentVersion {
   documentId: string;
   version: number;
-  root: string;                     // normalized — see Node, below
+  roots: readonly string[];         // ordered entry elements — see Node, below
   elements: Record<string, Node>;
   meta: DocumentMeta;               // title, description, robots, canonical
   createdAt: string;
@@ -200,7 +200,9 @@ interface DocumentVersion {
 }
 ```
 
-A layout's named slots need no separate field: they are the slots of the node at `root`.
+A layout's named slots need no separate field: they are the slots of the nodes `roots`
+names. Why a page lists entry elements rather than naming one block that contains them is
+[A document has many roots](decisions/a-document-has-many-roots.md).
 
 | Concern | Answer |
 |---|---|
@@ -210,7 +212,7 @@ A layout's named slots need no separate field: they are the slots of the node at
 | Second tab / device | Undefined — the same gap as two concurrent authors. Presence plus a node lock is expected to cover both; unresolved |
 | Crash mid-append | A version row is one atomic insert keyed on `(documentId, version)`; `head` advances only after commit — a crash leaves the log short one entry, never a partial one |
 
-Not a CRDT: `{root, elements}` maps onto a CRDT map-of-records incidentally, from the flat
+Not a CRDT: `{roots, elements}` maps onto a CRDT map-of-records incidentally, from the flat
 editing shape, not by choice. Neither Figma nor Linear — both centralized-server collaborative
 systems — uses one as its primary sync mechanism; presence plus node locks covers v1, with a
 CRDT sync layer left as a later swap.
@@ -247,7 +249,7 @@ Every prop lands in exactly one place: a frozen literal in `props`, or an entry 
 decided per field by `ui.fields[path].data` (default: static) — see
 [Data lifecycle is a field hint, not a block flag](api.md#data-lifecycle-is-a-field-hint-not-a-block-flag).
 
-The flat `{root, elements}` shape (children as id references, not a nested tree) earns its
+The flat `{roots, elements}` shape (children as id references, not a nested tree) earns its
 place in four ways:
 
 - **Editing is `elements[id] = {…}`**, not an immutable deep rebuild — selection, patching,
