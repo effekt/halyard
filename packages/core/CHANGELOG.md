@@ -1,5 +1,21 @@
 # @nubbin/core
 
+## [0.1.0-rc.5](https://github.com/effekt/nubbin/compare/core-v0.1.0-rc.4...core-v0.1.0-rc.5) (2026-08-19)
+
+
+### Features
+
+* **core:** a registry change that breaks a live page fails CI ([#476](https://github.com/effekt/nubbin/issues/476)) ([1931dd8](https://github.com/effekt/nubbin/commit/1931dd8384f9199fcba237926f8b9f411f11836c))
+* **repo:** a generated catalog answers "does this already exist" ([#473](https://github.com/effekt/nubbin/issues/473)) ([2d41486](https://github.com/effekt/nubbin/commit/2d414864667d41aa7ce2e055c540c3ceb5491364))
+* the studio edits — select a block, change a field, the preview follows ([#451](https://github.com/effekt/nubbin/issues/451)) ([23fbe05](https://github.com/effekt/nubbin/commit/23fbe0579c99972f0a5903d811f210119e5df510))
+* the studio's first vertical slice — parse, preview, publish ([#436](https://github.com/effekt/nubbin/issues/436)) ([35c79d6](https://github.com/effekt/nubbin/commit/35c79d63100f7036ec43d99170aa9204f7cb3d4c))
+
+
+### Bug Fixes
+
+* **core:** a `data` hint on an array-member path is refused at registration ([#223](https://github.com/effekt/nubbin/issues/223)) ([#225](https://github.com/effekt/nubbin/issues/225)) ([7fee54a](https://github.com/effekt/nubbin/commit/7fee54a1fdfe4667bd6542074852057ea481f9b1))
+* **repo:** release-please replaces changesets, and the publishing defects with it ([#477](https://github.com/effekt/nubbin/issues/477)) ([0f160c2](https://github.com/effekt/nubbin/commit/0f160c2e99039227cca6899ddbf43a9f7a859dea))
+
 ## 0.1.0-rc.4
 
 ### Patch Changes

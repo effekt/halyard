@@ -1,5 +1,12 @@
 # @nubbin/store-fs
 
+## [0.1.0-rc.5](https://github.com/effekt/nubbin/compare/store-fs-v0.1.0-rc.4...store-fs-v0.1.0-rc.5) (2026-08-19)
+
+
+### Features
+
+* **repo:** a generated catalog answers "does this already exist" ([#473](https://github.com/effekt/nubbin/issues/473)) ([2d41486](https://github.com/effekt/nubbin/commit/2d414864667d41aa7ce2e055c540c3ceb5491364))
+
 ## 0.1.0-rc.4
 
 ### Patch Changes

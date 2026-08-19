@@ -3,4 +3,4 @@
 // `release-please-config.json`. The annotation below is what it matches, and it has to stay on this
 // line: the updater reads line by line. `tests/coreVersionStamp.test.mjs` fails the release pull
 // request if it ever stops matching.
-export const NUBBIN_VERSION = "0.1.0-rc.4"; // x-release-please-version
+export const NUBBIN_VERSION = "0.1.0-rc.5"; // x-release-please-version
