@@ -74,6 +74,30 @@ describe("compile", () => {
     expect(artifact.tree[0]?.holes).toEqual({ price: "request" });
   });
 
+  test("takes a nested data hint's leaf as a hole and leaves the rest of its parent frozen", () => {
+    const bannerSchema = z.object({
+      title: z.string(),
+      cta: z.object({ label: z.string(), href: z.string() }),
+    });
+    const bannerRegistry = createRegistry([
+      defineBlock({ name: "Banner", schema: bannerSchema, component: null, version: 1, slots: {} }),
+    ]);
+    const bannerCatalog = defineCatalog({
+      Banner: { schema: bannerSchema, ui: { fields: { "cta.label": { data: "request" } } } },
+    });
+    const bannerDoc = doc({
+      n1: {
+        id: "n1",
+        block: "Banner",
+        props: { title: "T", cta: { label: "Go", href: "/x" } },
+      },
+    });
+
+    const artifact = compile(bannerDoc, bannerCatalog, bannerRegistry, "/x");
+    expect(artifact.tree[0]?.props).toEqual({ title: "T", cta: { href: "/x" } });
+    expect(artifact.tree[0]?.holes).toEqual({ "cta.label": "request" });
+  });
+
   test("throws one CompileError carrying every issue, not the first", () => {
     try {
       compile(docWithTwoBadNodes, catalog, registry, "/x");

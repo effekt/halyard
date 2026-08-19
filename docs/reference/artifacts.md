@@ -57,7 +57,7 @@ type Holes = Record<string, FieldHintData>;
 
 Fully resolved: `slots` hold nested nodes rather than ids, so rendering needs no lookups and
 no dangling reference is possible. `props` hold only frozen literal values; each entry in
-`holes` records a field the renderer resolves instead, keyed by field name and carrying the
+`holes` records a field the renderer resolves instead, keyed by schema path and carrying the
 [`FieldHintData`](catalog.md#fieldhintdata) that says how — see
 [Holes: what a `data` hint compiles to](compile.md#holes-what-a-data-hint-compiles-to). How a
 hole's value is sourced at render is per-adapter; who may aim one at a data source is the open

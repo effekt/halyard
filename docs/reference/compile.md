@@ -98,9 +98,11 @@ cannot change the address.
 After validation, each node's parsed props are split by the catalog's
 [`data` hints](catalog.md#fieldhintdata). A field with no hint freezes into
 `ArtifactNode.props`; a field hinted `"request"` or `{ revalidate }` is dropped from props and
-recorded in `ArtifactNode.holes` under the same key, carrying the hint as the instruction for
-render time. The split happens at the top level of the parsed value: each key of the validated
-props lands in exactly one of the two.
+recorded in `ArtifactNode.holes` under the path its hint names, carrying the hint as the
+instruction for render time. The split is by that whole dotted path: a hint on `cta.label`
+takes that leaf alone and the rest of `cta` stays frozen, which is why a hole's key is a path
+and not a field name — see
+[A `data` hint addresses a path, not a top-level key](../decisions/a-data-hint-addresses-a-path-not-a-top-level-key.md).
 
 ## `DocumentVersion`, `Node` and `DocumentMeta`
 
