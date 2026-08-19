@@ -57,17 +57,4 @@ describe("defineBlock", () => {
 
     expect([complete, withoutOptional, missingRequired, wrongType]).toHaveLength(4);
   });
-
-  test("rejects a migrate key that is not a version this block can migrate to", () => {
-    expect(() =>
-      defineBlock({
-        name: "Hero",
-        schema: heroSchema,
-        component: Hero,
-        version: 2,
-        slots: {},
-        migrate: { 5: (props) => props },
-      }),
-    ).toThrow(/5/);
-  });
 });

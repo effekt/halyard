@@ -56,7 +56,6 @@ export const heroBlock = defineBlock({
 |---|---|
 | A `version` that is not an integer of 1 or more | Artifacts record the block versions they compiled against, and a version below 1 has no artifact that could record it |
 | A slot whose `min` exceeds its `max` | No composition could satisfy it |
-| A `migrate` key outside `2..version` | It names a version this block never reaches |
 
 ## `Block`
 
@@ -68,7 +67,6 @@ interface Block<Schema extends StandardSchemaV1 = StandardSchemaV1, Component = 
   version: number;
   status?: "active" | "deprecated";
   slots: Record<string, SlotConstraint>;
-  migrate?: Record<number, (props: UnknownProps) => UnknownProps>;
 }
 ```
 
@@ -80,7 +78,6 @@ interface Block<Schema extends StandardSchemaV1 = StandardSchemaV1, Component = 
 | `version` | Bumped when the schema changes incompatibly. Recorded per block into every artifact — see [`checkRollback`](artifacts.md#checkrollback). |
 | `status` | A deprecated block still resolves and still compiles. The field is data for an editing surface. |
 | `slots` | Declared per name; a slot a document fills without declaring is a compile error (`slot-not-allowed`). |
-| `migrate` | Same-node prop reshaping only, keyed by target version. Keys are checked at `defineBlock`; `compile` validates against the current schema and runs no migration. The model is [Structural migration](../domain-model.md#structural-migration). |
 
 ## `InferProps`
 
@@ -112,8 +109,8 @@ slot the document never mentions.
 type UnknownProps = Record<string, unknown>;
 ```
 
-Props before validation has run — what a document node carries and what a `migrate` function
-reshapes.
+Props before validation has run — what a document node carries, and what a document operation
+writes.
 
 ## `createRegistry`
 
