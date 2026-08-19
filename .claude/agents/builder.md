@@ -84,10 +84,6 @@ one-unit-per-file rule counts module-private functions too.
 `commitlint.config.mjs` allows. Write `fix(core): the compiler dropped …`, lowercase after the
 colon.
 
-```
-Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
-```
-
 Set `LEFTHOOK=0` for any non-interactive `git push`. `pnpm install` installs lefthook's hooks, so
 a scripted push otherwise runs the whole pre-push suite against a tree that may not have built.
 
