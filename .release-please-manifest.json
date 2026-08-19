@@ -1,6 +1,6 @@
 {
-  "packages/core": "0.1.0-rc.5",
-  "packages/next": "0.1.0-rc.5",
-  "packages/react": "0.1.0-rc.5",
-  "packages/store-fs": "0.1.0-rc.5"
+  "packages/core": "0.1.0-rc.6",
+  "packages/next": "0.1.0-rc.6",
+  "packages/react": "0.1.0-rc.6",
+  "packages/store-fs": "0.1.0-rc.6"
 }

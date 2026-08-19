@@ -1,5 +1,12 @@
 # @nubbin/next
 
+## [0.1.0-rc.6](https://github.com/effekt/nubbin/compare/next-v0.1.0-rc.5...next-v0.1.0-rc.6) (2026-08-19)
+
+
+### Miscellaneous Chores
+
+* **next:** Synchronize nubbin versions
+
 ## [0.1.0-rc.5](https://github.com/effekt/nubbin/compare/next-v0.1.0-rc.4...next-v0.1.0-rc.5) (2026-08-19)
 
 
